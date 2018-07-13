@@ -1,0 +1,55 @@
+#
+# Description
+# -----------
+# This table stores the sales for each item, and how much the tenant and seller received. This stores the calculations
+# done for the fee percent and how the money is divided. 
+#
+# Each sales should be directly related to a single invoice. If multiple people bought the same book, there should be
+# multiple entries in this table, one for each invoice generated.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# item_id:                  The ID of the item sold.
+# exhibit_id:               The ID of the exhibit where the item was sold.
+# invoice_id:               The ID of the invoice the item was sold on.
+#
+# flags:                    The options for the sale.
+#
+#                               0x01 - Invoice Paid
+#                               0x02 - Exhibitor Paid
+#                               0x04 - 
+#                               0x08 - 
+#
+# sell_date:                The date the item sold.
+# quantity:                 The quantity sold, typically 1, but if they buy multiples it could be higher.
+# tenant_amount:            The portion of the total_amount that goes to the tenant.
+# exhibitor_amount:         The portion of the total_amount that goes to the exhibitor.
+# total_amount:             The total amount of the sale, this may be multiple quantity when selling books or cards.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_ags_item_sales (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+    item_id int not null,
+    exhibit_id int not null,
+    invoice_id int not null,
+    flags tinyint unsigned not null,
+    sell_date date not null,
+    quantity decimal(19,6) not null,
+    tenant_amount decimal(19,4) not null,
+    exhibitor_amount decimal(19,4) not null,
+    total_amount decimal(19,4) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (item_id, exhibit_id, invoice_id),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

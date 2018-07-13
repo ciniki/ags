@@ -1,0 +1,61 @@
+#
+# Description
+# -----------
+# This table stores the market places and exhibitions. The term exhibit is used as a generic term 
+# that can mean a permanent storefront or market place, temporary pop market, or an exhibition for a limited time.
+# All events have a start and end date, but can 
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# name:                     The name for the exhibit.
+# permalink:                The permalink for the exhibit.
+# location_id:              The ID of the location where the exhibit is.
+#
+# status:                   The current status of the exhibit.
+#
+#                               50 - Active
+#                               90 - Archived
+#
+# flags:                    The options for the marketplace/exhibition
+#
+#                               0x01 - Visible on the website
+#                               0x02 - Items for sale online
+#                               0x04 - 
+#                               0x08 - 
+#
+# start_date:               The first date of the marketplace or exhibition.
+# end_date:                 (optional) The last date of the marketplace or exhibition. 
+#                           For a storefront this can be blank, but the start_date must be filled in.
+#
+# primary_image_id:         The ID of the primary image for the item.
+# synopsis:                 The synopsis of the item.
+# description:              The full description of the item.
+#                   
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_ags_exhibits (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+    name varchar(250) not null,
+    permalink varchar(250) not null,
+    location_id int not null,
+    status tinyint unsigned not null,
+    flags tinyint unsigned not null,
+    start_date date not null,
+    end_date date not null,
+    primary_image_id int not null,
+    synopsis varchar(6000) not null,
+    description text not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (tnid, permalink),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

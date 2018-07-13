@@ -1,0 +1,62 @@
+#
+# Description
+# -----------
+# This table stores the locations for exhibitions or storefronts.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# name:                     The name of the location
+# permalink:                The permalink of the location
+# category:                 The category to become the submenu.
+# flags:                    The options for the location.
+#
+# address1:                 The first line of the address
+# address2:                 The second line of the address
+# city:                     The city for the address.
+# province:                 The province for the address.
+# postal:                   The postal for the address.
+# country:                  The country for the address.
+#
+# latitude:                 The latitude coordinate of the address.
+# longitude:                The longitude coordinate of the address.
+#
+# notes:                    The notes about the location, for admin only.
+#
+# primary_image_id:         The ID of the primary image for the location. **future**
+# synopsis:                 The synopsis of the location. **future**
+# description:              The description of the location. **future**
+#                   
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_ags_locations (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+    name varchar(150) not null,
+    permalink varchar(150) not null,
+    category varchar(150) not null,
+    flags tinyint unsigned not null,
+    address1 varchar(100) not null,
+    address2 varchar(100) not null,
+    city varchar(100) not null,
+    province varchar(100) not null, 
+    postal varchar(10) not null,
+    country varchar(50) not null,
+    latitude decimal(18,12) not null,
+    longitude decimal(18,12) not null,
+    notes text not null,
+    primary_image_id int not null,
+    synopsis varchar(6000) not null,
+    description text not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (permalink, tnid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

@@ -1,0 +1,83 @@
+#
+# Description
+# -----------
+# This table stores the master list and information for every item that's in any exhibit.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# exhibitor_id:             The ID of the exhibitor that created or is selling the item.
+#
+# exhibitor_code:           The code assigned by the exhibitor, different from item code. This allows the exhibitor
+#                           keep track of items by their own coding method.
+#
+# code:                     The code for the item, must be unique for the tenant.
+#                           This will include the exhibitor code from exhibitors table.
+#                           The format should be ABC-001, where ABC is the exhibitor code, and 001 is the item number.
+#
+# name:                     The name of the item
+# permalink:                The permalink is a combination of code and name.
+#
+# status:                   The current status of the item.
+#
+#                               50 - Active
+#                               70 - Sold
+#                               90 - Archived
+#
+# flags:                    The options for the item.
+#
+#                               0x01 - For Sale
+#                               0x02 - Sell Online **future**
+#                               0x04 - 
+#                               0x08 -
+#
+# unit_amount:              The price of them item.
+# unit_discount_amount:     The amount to deduct as a discount. **future**
+# unit_discount_percentage: The percentage to apply for a discount. **future**
+#
+# fee_percent:              The default percent commission that will be taken by the tenant.
+#                           This value will be used to fill in the fee_percent for the item when added to an marketplace/exhibition.
+#                           For each exhibit the fee_percent can be set individually if required.
+#
+# taxtype_id:               The ID of the tax type this item. Only used when ciniki.taxes module is enabled. **future**
+#
+# primary_image_id:         The ID of the primary image for the item.
+# synopsis:                 The synopsis of the item.
+# description:              The full description of the item.
+#
+# notes:                    Any notes for the item, special instructions, etc.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_ags_items (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+    exhibitor_id int not null,
+    exhibitor_code varchar(150) not null,
+    code varchar(50) not null,
+    name varchar(150) not null,
+    permalink varchar(250) not null,
+    status tinyint unsigned not null,
+    flags tinyint unsigned not null,
+    unit_amount decimal(19,4) not null,
+    unit_discount_amount decimal(19,4) not null,
+    unit_discount_percentage decimal(19,4) not null,
+    fee_percent decimal(19,4) not null,
+    taxtype_id int not null,
+    primary_image_id int not null,
+    synopsis varchar(6000) not null,
+    description text not null,
+    notes text not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (code, tnid),
+    unique index (permalink, tnid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

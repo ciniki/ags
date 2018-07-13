@@ -1,0 +1,49 @@
+#
+# Description
+# -----------
+# This table stores additional images of the item.
+#
+# Fields
+# ------
+# id:                   The ID of the item image.
+# uuid:                 The Universal Unique ID of the item image
+# tnid:                 The ID of the tenant the item is part of.
+#
+# item_id:              The ID of the item the images is for.
+# name:                 The name of the image.
+# permalink:            The permalink for the image, to be used in the url.
+#
+# flags:                The flags for the image.
+#
+#                           0x01 - Visible on website
+#                           0x02 - Sold (shows red dot)
+#                           0x04 -
+#                           0x08 - 
+#
+# sequence:             The order the images should be displayed on the website. **Future**
+#
+# image_id:             The ID of the image in the ciniki.images module.
+#
+# description:          The description for the image.
+#
+# date_added:           The UTC date and time the record was added.
+# last_updated:         The UTC date and time the record was updated.
+#
+create table ciniki_ags_item_images (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+    item_id int not null,
+    name varchar(200) not null,
+    permalink varchar(200) not null,
+    flags tinyint unsigned not null,
+    sequence int unsigned not null,
+    image_id int not null,
+    description varchar(6000) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index (item_id, name),
+    unique index (item_id, permalink),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

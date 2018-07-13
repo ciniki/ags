@@ -1,0 +1,57 @@
+#
+# Description
+# -----------
+# This table stores the master list and information for every item that's in any exhibit.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# customer_id:              The ID of the exhibitor.
+#
+# display_name_override:    The override name to display on the website and UI for the exhibitor.
+# display_name:             The name to display on the website and UI for the exhibitor. 
+#                           This field saves linking to the ciniki_customers for just the name.
+#
+# permalink:                The permalink for this exhibitor, if needed in urls.
+#
+# code:                     The unique code assigned to this exhibitor. This is used when assigning
+#                           codes to the items.
+#
+# status:                   The current status of the exhibitor.
+#
+#                               30 - Active
+#                               90 - Archived
+#
+# flags:                    The options for the exhibitor. **future**
+#
+#                               0x01 - 
+#                               0x02 - 
+#                               0x04 - 
+#                               0x08 - 
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_ags_exhibitors (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+    customer_id int not null,
+    display_name_override varchar(250) not null,
+    display_name varchar(250) not null,
+    permalink varchar(250) not null,
+    code varchar(50) not null,
+    status tinyint unsigned not null,
+    flags tinyint unsigned not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (tnid, customer_id),
+    unique index (tnid, permalink),
+    unique index (tnid, code),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
