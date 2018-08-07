@@ -16,7 +16,7 @@
 # inventory:                The current number in inventory for the exhibit.
 #
 # fee_percent:              The fee percent for this item for this exhibit.
-#                           This allows for different percents at different events.
+#                           This allows for different percents at different events. **future**
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.

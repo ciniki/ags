@@ -24,6 +24,8 @@ function ciniki_ags_participantGet($ciniki) {
         'participant_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Participant'),
         'exhibit_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit'),
         'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
+        'action'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Action'),
+        'sale_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sale Item'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -64,6 +66,36 @@ function ciniki_ags_participantGet($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
+
+    //
+    // Check if action is to mark item paid
+    //
+    if( isset($args['action']) && $args['action'] == 'itempaid' && isset($args['sale_id']) && $args['sale_id'] > 0 ) {
+        $strsql = "SELECT id, flags "
+            . "FROM ciniki_ags_item_sales "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['sale_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.137', 'msg'=>'Unable to load sale', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['item']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.138', 'msg'=>'Unable to find requested sale'));
+        }
+        $sale = $rc['item'];
+
+        //
+        // Mark sale as paid
+        //
+        if( ($sale['flags']&0x02) == 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.itemsale', $sale['id'], array('flags'=>($sale['flags']|0x02)), 0x07);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.139', 'msg'=>'', 'err'=>$rc['err']));
+            }
+        }
+    }
 
     //
     // Return default for new Participant
@@ -210,12 +242,18 @@ function ciniki_ags_participantGet($ciniki) {
         $totals = array(
             'num_inventory_items' => 0,
             'num_available_items' => 0,
-            'pending_payouts_tenant_amount' => 0,
-            'pending_payouts_exhibitor_amount' => 0,
-            'pending_payouts_total_amount' => 0,
-            'paid_sales_tenant_amount' => 0,
-            'paid_sales_exhibitor_amount' => 0,
-            'paid_sales_total_amount' => 0,
+            'pending_payouts' => array(
+                'num_items' => 0,
+                'tenant_amount' => 0,
+                'exhibitor_amount' => 0,
+                'total_amount' => 0,
+                ),
+            'paid_sales' => array(
+                'num_items' => 0,
+                'tenant_amount' => 0,
+                'exhibitor_amount' => 0,
+                'total_amount' => 0,
+                ),
             );
 
         //
@@ -268,8 +306,11 @@ function ciniki_ags_participantGet($ciniki) {
         // Get the participant sales
         //
         $strsql = "SELECT sales.id, "
+            . "items.code, "
+            . "items.name, "
             . "sales.exhibit_id, "
             . "sales.flags, "
+            . "sales.quantity, "
             . "sales.sell_date, "
             . "sales.tenant_amount, "
             . "sales.exhibitor_amount, "
@@ -285,7 +326,7 @@ function ciniki_ags_participantGet($ciniki) {
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
-            array('container'=>'sales', 'fname'=>'id', 'fields'=>array('id', 'exhibit_id', 'sell_date', 
+            array('container'=>'sales', 'fname'=>'id', 'fields'=>array('id', 'exhibit_id', 'sell_date', 'code', 'name',
                 'flags', 'tenant_amount', 'exhibitor_amount', 'total_amount'),
                 ),
             ));
@@ -304,27 +345,29 @@ function ciniki_ags_participantGet($ciniki) {
             //
             if( ($sale['flags']&0x02) == 0x02 ) {
                 $rsp['paid_sales'][] = $sale;
-                $totals['paid_sales_tenant_amount'] += $sale['tenant_amount'];
-                $totals['paid_sales_exhibitor_amount'] += $sale['exhibitor_amount'];
-                $totals['paid_sales_total_amount'] += $sale['total_amount'];
+                $totals['paid_sales']['num_items'] += $sale['quantity'];
+                $totals['paid_sales']['tenant_amount'] += $sale['tenant_amount'];
+                $totals['paid_sales']['exhibitor_amount'] += $sale['exhibitor_amount'];
+                $totals['paid_sales']['total_amount'] += $sale['total_amount'];
             } else {
                 $rsp['pending_payouts'][] = $sale;
-                $totals['pending_payouts_tenant_amount'] += $sale['tenant_amount'];
-                $totals['pending_payouts_exhibitor_amount'] += $sale['exhibitor_amount'];
-                $totals['pending_payouts_total_amount'] += $sale['total_amount'];
+                $totals['pending_payouts']['num_items'] += $sale['quantity'];
+                $totals['pending_payouts']['tenant_amount'] += $sale['tenant_amount'];
+                $totals['pending_payouts']['exhibitor_amount'] += $sale['exhibitor_amount'];
+                $totals['pending_payouts']['total_amount'] += $sale['total_amount'];
             }
         }
 
         //
         // Format totals
         //
-        $totals['paid_sales_tenant_amount_display'] = '$' . number_format($totals['paid_sales_tenant_amount'], 2);
-        $totals['paid_sales_exhibitor_amount_display'] = '$' . number_format($totals['paid_sales_exhibitor_amount'], 2);
-        $totals['paid_sales_total_amount_display'] = '$' . number_format($totals['paid_sales_total_amount'], 2);
-        $totals['pending_payouts_tenant_amount_display'] = '$' . number_format($totals['pending_payouts_tenant_amount'], 2);
-        $totals['pending_payouts_exhibitor_amount_display'] = '$' . number_format($totals['pending_payouts_exhibitor_amount'], 2);
-        $totals['pending_payouts_total_amount_display'] = '$' . number_format($totals['pending_payouts_total_amount'], 2);
-
+        $totals['paid_sales']['tenant_amount_display'] = '$' . number_format($totals['paid_sales']['tenant_amount'], 2);
+        $totals['paid_sales']['exhibitor_amount_display'] = '$' . number_format($totals['paid_sales']['exhibitor_amount'], 2);
+        $totals['paid_sales']['total_amount_display'] = '$' . number_format($totals['paid_sales']['total_amount'], 2);
+        $totals['pending_payouts']['tenant_amount_display'] = '$' . number_format($totals['pending_payouts']['tenant_amount'], 2);
+        $totals['pending_payouts']['exhibitor_amount_display'] = '$' . number_format($totals['pending_payouts']['exhibitor_amount'], 2);
+        $totals['pending_payouts']['total_amount_display'] = '$' . number_format($totals['pending_payouts']['total_amount'], 2);
+        $rsp['totals'] = $totals;
     }
 
     return $rsp;

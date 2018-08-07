@@ -105,9 +105,9 @@ function ciniki_ags_itemGet($ciniki) {
             }
             if( isset($rc['item']['num']) ) {
                 $max_num = preg_replace("/[^0-9]/", '', $rc['item']['num']);
-                $code = $exhibitor['code'] . '-' . sprintf("%03d", ($max_num + 1));
+                $code = $exhibitor['code'] . '-' . sprintf("%04d", ($max_num + 1));
             } else {
-                $code = $exhibitor['code'] . '-001';
+                $code = $exhibitor['code'] . '-0001';
             }
         }
         $item = array('id'=>0,
