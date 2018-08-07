@@ -326,7 +326,7 @@ function ciniki_ags_participantGet($ciniki) {
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
-            array('container'=>'sales', 'fname'=>'id', 'fields'=>array('id', 'exhibit_id', 'sell_date', 'code', 'name',
+            array('container'=>'sales', 'fname'=>'id', 'fields'=>array('id', 'exhibit_id', 'sell_date', 'code', 'name', 'quantity',
                 'flags', 'tenant_amount', 'exhibitor_amount', 'total_amount'),
                 ),
             ));
