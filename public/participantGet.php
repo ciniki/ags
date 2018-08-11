@@ -66,6 +66,7 @@ function ciniki_ags_participantGet($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
+    $mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
 
     //
     // Check if action is to mark item paid
@@ -311,7 +312,7 @@ function ciniki_ags_participantGet($ciniki) {
             . "sales.exhibit_id, "
             . "sales.flags, "
             . "sales.quantity, "
-            . "sales.sell_date, "
+            . "DATE_FORMAT(sales.sell_date, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS sell_date, "
             . "sales.tenant_amount, "
             . "sales.exhibitor_amount, "
             . "sales.total_amount "

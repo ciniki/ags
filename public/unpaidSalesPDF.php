@@ -50,6 +50,7 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
+    $mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
 
     if( (!isset($args['exhibit_id']) || $args['exhibit_id'] == 0 || $args['exhibit_id'] == '')
         && (!isset($args['exhibitor_id']) || $args['exhibitor_id'] == 0 || $args['exhibitor_id'] == '') 
@@ -98,6 +99,7 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
         . "items.code, "
         . "items.name, "
         . "sales.quantity, "
+        . "DATE_FORMAT(sales.sell_date, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS sell_date, "
         . "sales.tenant_amount, "
         . "sales.exhibitor_amount, "
         . "sales.total_amount "
@@ -123,7 +125,7 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
         array('container'=>'exhibitors', 'fname'=>'exhibitor_id', 
             'fields'=>array('display_name')),
         array('container'=>'items', 'fname'=>'sales_id', 
-            'fields'=>array('code', 'name', 'quantity', 'tenant_amount', 'exhibitor_amount', 'total_amount')),
+            'fields'=>array('code', 'name', 'quantity', 'sell_date', 'tenant_amount', 'exhibitor_amount', 'total_amount')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.141', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));

@@ -48,6 +48,8 @@
 # synopsis:                 The synopsis of the item.
 # description:              The full description of the item.
 #
+# medium:                   The medium of the item (optional).
+#
 # notes:                    Any notes for the item, special instructions, etc.
 #
 # date_added:               The UTC date and time the record was added.
@@ -72,6 +74,7 @@ create table ciniki_ags_items (
     primary_image_id int not null,
     synopsis varchar(6000) not null,
     description text not null,
+    medium varchar(250) not null,
     notes text not null,
     date_added datetime not null,
     last_updated datetime not null,

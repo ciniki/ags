@@ -576,17 +576,17 @@ function ciniki_ags_main() {
             'hint':'Search sales',
             'noData':'No items found',
             }, */
-        'pending_payouts':{'label':'Pending Payouts', 'type':'simplegrid', 'num_cols':6,
+        'pending_payouts':{'label':'Pending Payouts', 'type':'simplegrid', 'num_cols':7,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'sales' ? 'yes' : 'hidden'},
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'number', 'number', 'number', 'number'],
-            'headerValues':['Code', 'Item', 'Fees', 'Payout', 'Totals'],
+            'sortTypes':['text', 'text', 'number', 'date', 'number', 'number', 'number'],
+            'headerValues':['Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals'],
             },
-        'paid_sales':{'label':'Paid Sales', 'type':'simplegrid', 'num_cols':5,
+        'paid_sales':{'label':'Paid Sales', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'sales' ? 'yes' : 'hidden'},
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'number', 'number', 'number', 'number'],
-            'headerValues':['Code', 'Item', 'Fees', 'Payout', 'Totals'],
+            'sortTypes':['text', 'text', 'number', 'date', 'number', 'number', 'number'],
+            'headerValues':['Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals'],
             },
     }
     this.participant.fieldValue = function(s, i, d) { return this.data[i]; }
@@ -635,10 +635,11 @@ function ciniki_ags_main() {
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
-                case 2: return d.tenant_amount_display;
-                case 3: return d.exhibitor_amount_display;
-                case 4: return d.total_amount_display;
-                case 5: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
+                case 2: return d.sell_date;
+                case 3: return d.tenant_amount_display;
+                case 4: return d.exhibitor_amount_display;
+                case 5: return d.total_amount_display;
+                case 6: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
             }
         }
     }
@@ -647,9 +648,10 @@ function ciniki_ags_main() {
             switch(i) {
                 case 0: return '';
                 case 1: return '';
-                case 2: return this.data.totals.paid_sales.tenant_amount_display;
-                case 3: return this.data.totals.paid_sales.exhibitor_amount_display;
-                case 4: return this.data.totals.paid_sales.total_amount_display;
+                case 2: return ;
+                case 3: return this.data.totals.paid_sales.tenant_amount_display;
+                case 4: return this.data.totals.paid_sales.exhibitor_amount_display;
+                case 5: return this.data.totals.paid_sales.total_amount_display;
             }
             return '';
         }
@@ -657,9 +659,10 @@ function ciniki_ags_main() {
             switch(i) {
                 case 0: return '';
                 case 1: return '';
-                case 2: return this.data.totals.pending_payouts.tenant_amount_display;
-                case 3: return this.data.totals.pending_payouts.exhibitor_amount_display;
-                case 4: return this.data.totals.pending_payouts.total_amount_display;
+                case 2: return '';
+                case 3: return this.data.totals.pending_payouts.tenant_amount_display;
+                case 4: return this.data.totals.pending_payouts.exhibitor_amount_display;
+                case 5: return this.data.totals.pending_payouts.total_amount_display;
             }
             return '';
         }
@@ -1664,6 +1667,7 @@ function ciniki_ags_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'50':'Active', '70':'Sold', '90':'Archived'}},
             'code':{'label':'Code', 'required':'yes', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'medium':{'label':'Medium', 'required':'yes', 'type':'text'},
             'exhibitor_code':{'label':'Exhibitor Code', 'type':'text'},
             }},
         '_types':{'label':'Type', 'aside':'yes', 'fields':{
@@ -1699,7 +1703,7 @@ function ciniki_ags_main() {
         '_synopsis':{'label':'Synopsis', 'panelcolumn':1, 'fields':{
             'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
             }},
-        '_description':{'label':'Description', 'panelcolumn':2, 'fields':{
+        '_description':{'label':'Description', 'panelcolumn':1, 'fields':{
             'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
         'images':{'label':'Additional Images', 'panelcolumn':2, 'type':'simplethumbs'},
@@ -1707,6 +1711,9 @@ function ciniki_ags_main() {
             'addTxt':'Add Image',
             'addFn':'M.ciniki_ags_main.item.save("M.ciniki_ags_main.itemimage.open(\'M.ciniki_ags_main.item.open();\',0,M.ciniki_ags_main.item.item_id);");',
             },
+        '_notes':{'label':'Notes', 'panelcolumn':2, 'fields':{
+            'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
         '_buttons':{'label':'', 'panelcolumn':2, 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_ags_main.item.save();'},
             'delete':{'label':'Delete', 
