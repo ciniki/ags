@@ -264,23 +264,31 @@ function ciniki_ags_participantGet($ciniki) {
             . "IFNULL(exhibit.id, 0) AS exhibit_item_id, "
             . "items.code, "
             . "items.name, "
+            . "items.tag_info, "
             . "items.status, "
             . "items.flags, "
             . "items.unit_amount, "
             . "IFNULL(exhibit.fee_percent, items.fee_percent) AS fee_percent, "
-            . "IFNULL(exhibit.inventory, 0) AS inventory "
+            . "IFNULL(exhibit.inventory, 0) AS inventory, "
+            . "IFNULL(tags.tag_name, '') AS types "
             . "FROM ciniki_ags_items AS items "
             . "LEFT JOIN ciniki_ags_exhibit_items AS exhibit ON ("
                 . "items.id = exhibit.item_id "
                 . "AND exhibit.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibit_id']) . "' "
                 . "AND exhibit.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_ags_item_tags AS tags ON ("
+                . "items.id = tags.item_id "
+                . "AND tags.tag_type = 10 "
+                . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibitor_id']) . "' "
             . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'items', 'fname'=>'item_id', 
-                'fields'=>array('item_id', 'exhibit_item_id', 'code', 'name', 'status', 'flags', 'unit_amount', 'fee_percent', 'inventory'),
+                'fields'=>array('item_id', 'exhibit_item_id', 'code', 'name', 'status', 'flags', 'unit_amount', 'fee_percent', 'tag_info', 'inventory', 'types'),
+                'dlists'=>array('types'=>', '),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

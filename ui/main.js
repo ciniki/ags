@@ -559,7 +559,7 @@ function ciniki_ags_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'number', 'number'],
             'headerValues':['Code', 'Item', 'Price', 'Quantity', ''],
-            'cellClasses':['', '', '', 'alignright'],
+            'cellClasses':['multiline', 'multiline', '', 'alignright'],
             'noData':'No items in this exhibit',
             },
         'available':{'label':'Catalog Items', 'type':'simplegrid', 'panelcolumn':2, 'num_cols':4,
@@ -567,7 +567,7 @@ function ciniki_ags_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'number', ''],
             'headerValues':['Code', 'Item', 'Price', ''],
-            'cellClasses':['', '', '', 'alignright'],
+            'cellClasses':['multiline', 'multiline', '', 'alignright'],
             'noData':'No items in their catalog',
             },
 /*        'sales_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
@@ -615,8 +615,16 @@ function ciniki_ags_main() {
         }
         if( s == 'inventory' ) {
             switch(j) {
-                case 0: return d.code;
-                case 1: return d.name;
+                case 0: 
+                    if( d.types != null && d.types != '' ) {
+                        return '<span class="maintext">' + d.code + '</span><span class="subtext">' + d.types + '</span>';
+                    } 
+                    return d.code;
+                case 1: 
+                    if( d.tag_info != null && d.tag_info != '' ) {
+                        return '<span class="maintext">' + d.name + '</span><span class="subtext">' + d.tag_info + '</span>';
+                    }
+                    return d.name;
                 case 2: return d.unit_amount_display;
                 case 3: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
                 case 4: return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.item_id + ');">Remove</button>';
@@ -625,8 +633,16 @@ function ciniki_ags_main() {
         }
         if( s == 'available' ) {
             switch(j) {
-                case 0: return d.code;
-                case 1: return d.name;
+                case 0: 
+                    if( d.types != null && d.types != '' ) {
+                        return '<span class="maintext">' + d.code + '</span><span class="subtext">' + d.types + '</span>';
+                    } 
+                    return d.code;
+                case 1: 
+                    if( d.tag_info != null && d.tag_info != '' ) {
+                        return '<span class="maintext">' + d.name + '</span><span class="subtext">' + d.tag_info + '</span>';
+                    }
+                    return d.name;
                 case 2: return d.unit_amount_display;
                 case 3: return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemAdd(event,' + d.item_id + ');">Add</button>';
             }
@@ -1774,7 +1790,7 @@ function ciniki_ags_main() {
             }
             var p = M.ciniki_ags_main.item;
             p.data = rsp.item;
-            p.sections._types.tags = rsp.types;
+            p.sections._types.fields.types.tags = rsp.types;
             p.refresh();
             p.show(cb);
         });

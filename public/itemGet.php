@@ -266,6 +266,7 @@ function ciniki_ags_itemGet($ciniki) {
         }
         $item['inventory'] = isset($rc['items']) ? $rc['items'] : array();
     }
+    $rsp = array('stat'=>'ok', 'item'=>$item);
 
     //
     // Get the list of call types
@@ -292,7 +293,7 @@ function ciniki_ags_itemGet($ciniki) {
             }
         }
     }
-
-    return array('stat'=>'ok', 'item'=>$item);
+    
+    return $rsp;
 }
 ?>
