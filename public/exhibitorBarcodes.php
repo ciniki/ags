@@ -28,6 +28,7 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
         'end_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start End'),
         'start_col'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Column'),
         'start_row'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Row'),
+        'tag_info_price'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Info & Price'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -82,8 +83,10 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
     $strsql = "SELECT items.id, "
         . "items.code, "
         . "items.name, "
+        . "items.exhibitor_code, "
         . "items.status, "
         . "items.flags, "
+        . "items.tag_info, "
         . "items.unit_amount, "
         . "items.fee_percent "
         . "";
@@ -114,20 +117,31 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'items', 'fname'=>'id', 
-            'fields'=>array('id', 'code', 'name', 'status', 'flags', 'unit_amount', 'fee_percent', 'quantity'),
+            'fields'=>array('id', 'code', 'name', 'exhibitor_code', 'status', 'flags', 'tag_info', 'unit_amount', 'fee_percent', 'quantity'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.40', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
+    error_log($args['tag_info_price']);
     $args['barcodes'] = array();
     foreach($rc['items'] as $item) {
         if( $item['quantity'] > 1 ) {
             for($i=0;$i<$item['quantity'];$i++) {
+                $item['label_type'] = 'barcode';
                 $args['barcodes'][] = $item;
+                if( isset($args['tag_info_price']) && $args['tag_info_price'] == 'yes' ) {
+                    $item['label_type'] = 'info';
+                    $args['barcodes'][] = $item;
+                }
             }
         } else {
+            $item['label_type'] = 'barcode';
             $args['barcodes'][] = $item;
+            if( isset($args['tag_info_price']) && $args['tag_info_price'] == 'yes' ) {
+                $item['label_type'] = 'info';
+                $args['barcodes'][] = $item;
+            }
         }
     }
     if( count($args['barcodes']) < 1 ) {

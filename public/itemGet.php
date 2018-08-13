@@ -151,6 +151,7 @@ function ciniki_ags_itemGet($ciniki) {
             . "ciniki_ags_items.primary_image_id, "
             . "ciniki_ags_items.synopsis, "
             . "ciniki_ags_items.description, "
+            . "ciniki_ags_items.tag_info, "
             . "ciniki_ags_items.medium, "
             . "ciniki_ags_items.notes "
             . "FROM ciniki_ags_items "
@@ -161,7 +162,7 @@ function ciniki_ags_itemGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'items', 'fname'=>'id', 
                 'fields'=>array('exhibitor_id', 'exhibitor_code', 'code', 'name', 'permalink', 'status', 'flags', 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 'taxtype_id', 
-                    'primary_image_id', 'synopsis', 'description', 'medium', 'notes'),
+                    'primary_image_id', 'synopsis', 'description', 'tag_info', 'medium', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

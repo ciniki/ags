@@ -518,11 +518,12 @@ function ciniki_ags_main() {
             'fields':{
                 'start_row':{'label':'Row', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9', '10':'10', '11':'11', '12':'12', '13':'13', '14':'14', '15':'15', '16':'16', '17':'17', '18':'18', '19':'19', '20':'20'}},
                 'start_col':{'label':'Column', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4'}},
+                'tag_info_price':{'label':'Name/Prices', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'barcodes':{'label':'Exhibit Item Barcodes', 
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
-                'fn':'M.ciniki_ags_main.participant.barcodes();',
+                'fn':'M.ciniki_ags_main.participant.printBarcodes();',
                 },
             'accept':{'label':'Accept', 
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 30 ? 'yes' :'no';},
@@ -757,10 +758,11 @@ function ciniki_ags_main() {
         this.savePos();
         M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id, 'action':'itempaid', 'sale_id':i}, this.openFinish);
     }
-    this.participant.barcodes = function() {
+    this.participant.printBarcodes = function() {
         var row = this.formValue('start_row');
         var col = this.formValue('start_col');
-        M.api.openFile('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col});
+        var tip = this.formValue('tag_info_price');
+        M.api.openFile('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip});
     }
     this.participant.unpaidSalesPDF = function() {
         M.api.openFile('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
@@ -1324,6 +1326,7 @@ function ciniki_ags_main() {
             'fields':{
                 'start_row':{'label':'Row', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9', '10':'10', '11':'11', '12':'12', '13':'13', '14':'14', '15':'15', '16':'16', '17':'17', '18':'18', '19':'19', '20':'20'}},
                 'start_col':{'label':'Column', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4'}},
+                'tag_info_price':{'label':'Name/Prices', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'barcodes':{'label':'Print Barcodes', 
@@ -1488,7 +1491,8 @@ function ciniki_ags_main() {
     this.exhibitor.printBarcodes = function() {
         var row = this.formValue('start_row');
         var col = this.formValue('start_col');
-        M.api.openFile('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'start_row':row, 'start_col':col});
+        var tip = this.formValue('tag_info_price');
+        M.api.openFile('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip});
     }
     this.exhibitor.unpaidSalesPDF = function() {
         M.api.openFile('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id});
@@ -1667,7 +1671,8 @@ function ciniki_ags_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'50':'Active', '70':'Sold', '90':'Archived'}},
             'code':{'label':'Code', 'required':'yes', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
-            'medium':{'label':'Medium', 'required':'yes', 'type':'text'},
+            'tag_info':{'label':'Tag Info', 'required':'no', 'type':'text'},
+            'medium':{'label':'Medium', 'required':'no', 'type':'text'},
             'exhibitor_code':{'label':'Exhibitor Code', 'type':'text'},
             }},
         '_types':{'label':'Type', 'aside':'yes', 'fields':{

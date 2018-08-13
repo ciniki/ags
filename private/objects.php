@@ -128,6 +128,7 @@ function ciniki_ags_objects(&$ciniki) {
             'primary_image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis' => array('name'=>'Synopsis', 'default'=>''),
             'description' => array('name'=>'Description', 'default'=>''),
+            'tag_info' => array('name'=>'Tag Info', 'default'=>''),
             'medium' => array('name'=>'Medium', 'default'=>''),
             'notes' => array('name'=>'Notes', 'default'=>''),
             ),
