@@ -180,7 +180,7 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
                         }
                     } else {
                         if( $item['exhibitor_code'] != '' ) {
-                            $pdf->write1DBarcode($item['code'], 'C39', $col['x'], $row['y'], $label['cell']['width'], 14, 0.3, $style, 'N');
+                            $pdf->write1DBarcode($item['code'], 'C39', $col['x'], $row['y'], $label['cell']['width'], 17, 0.3, $style, 'N');
                             $pdf->SetFont('helvetica', '', 7);
                             $pdf->SetY($row['y']+10);
                             $pdf->SetX($col['x']);
