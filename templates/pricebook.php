@@ -111,9 +111,14 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
 
     $fill=0;
     $lh = 8;
+    $count = 0;
     foreach($args['types'] as $itemtype) {
 
-        $pdf->AddPage();
+        if( $count == 0 || $pdf->getY() > 150 ) {
+            $pdf->AddPage();
+        } else {
+            $pdf->Ln();
+        }
         $pdf->SetFont('', 'B', 16);
         $pdf->Cell(180, 12, $itemtype['name'], 0, 0, 'L', 0);
         $pdf->SetFont('', 'B', 10);
@@ -180,6 +185,7 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
             $pdf->SetY($y2);
             $fill=!$fill;
         }
+        $count++;
     }
 
     return array('stat'=>'ok', 'pdf'=>$pdf);
