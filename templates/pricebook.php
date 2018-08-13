@@ -150,7 +150,7 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
                 $lh = 10;
             }
             // Check if we need a page break
-            if( $pdf->getY() > ($pdf->getPageHeight() - 26) ) {
+            if( $pdf->getY() > ($pdf->getPageHeight() - 32) ) {
                 $pdf->AddPage();
                 $pdf->SetFont('', 'B', 16);
                 $pdf->Cell(180, 12, $itemtype['name'] . ' (continued)', 0, 0, 'L', 0);
