@@ -768,7 +768,7 @@ function ciniki_ags_main() {
         M.api.openFile('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
     }
     this.participant.addCustomer = function(cb, eid) {
-        this.cb = cb;
+        if( cb != null ) { this.cb = cb; }
         this.exhibit_id = eid;
         M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_ags_main.participant.addParticipant','customer_id':0});
     }
@@ -778,7 +778,7 @@ function ciniki_ags_main() {
     this.participant.open = function(cb, pid, list) {
         if( pid != null ) { this.participant_id = pid; }
         if( list != null ) { this.nplist = list; }
-        this.cb = cb;
+        if( cb != null ) { this.cb = cb; }
         M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id}, this.openFinish);
     }
     this.participant.openFinish = function(rsp) {
@@ -1482,7 +1482,7 @@ function ciniki_ags_main() {
         return '';
     }
     this.exhibitor.addCustomer = function(cb) {
-        this.cb = cb;
+        if( cb != null ) { this.cb = cb; }
         M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_ags_main.exhibitor.addExhibitor','customer_id':0});
     }
     this.exhibitor.addExhibitor = function(customer_id) {
@@ -1516,7 +1516,7 @@ function ciniki_ags_main() {
         if( eid != null ) { this.exhibitor_id = eid; }
         if( cid != null ) { this.customer_id = cid; }
         if( list != null ) { this.nplist = list; }
-        this.cb = cb;
+        if( cb != null ) { this.cb = cb; }
         M.api.getJSONCb('ciniki.ags.exhibitorGet', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'customer_id':this.customer_id}, M.ciniki_ags_main.exhibitor.openFinish);
     }
     this.exhibitor.openFinish = function(rsp) {
