@@ -107,6 +107,10 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
             . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
     }
+    //
+    // Only tagged items
+    //
+    $strsql .= "AND (items.flags&0x10) = 0 ";
     if( isset($args['start_code']) && $args['start_code'] != '' ) {
         $strsql .= "AND items.code >= '" . ciniki_core_dbQuote($ciniki, $args['start_code']) . "' ";
     }
@@ -123,7 +127,6 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.40', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
-    error_log($args['tag_info_price']);
     $args['barcodes'] = array();
     foreach($rc['items'] as $item) {
         if( $item['quantity'] > 1 ) {
