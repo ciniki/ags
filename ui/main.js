@@ -563,7 +563,7 @@ function ciniki_ags_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'number', 'number'],
             'headerValues':['Code', 'Item', 'Price', 'Quantity', ''],
-            'cellClasses':['multiline', 'multiline', '', 'alignright'],
+            'cellClasses':['multiline', 'multiline', 'multiline alignright', 'alignright'],
             'noData':'No items in this exhibit',
             },
         'available':{'label':'Catalog Items', 'type':'simplegrid', 'panelcolumn':2, 'num_cols':4,
@@ -571,7 +571,7 @@ function ciniki_ags_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'number', ''],
             'headerValues':['Code', 'Item', 'Price', ''],
-            'cellClasses':['multiline', 'multiline', '', 'alignright'],
+            'cellClasses':['multiline', 'multiline', 'multiline alignright', 'alignright'],
             'noData':'No items in their catalog',
             },
 /*        'sales_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
@@ -629,7 +629,11 @@ function ciniki_ags_main() {
                         return '<span class="maintext">' + d.name + '</span><span class="subtext">' + d.tag_info + '</span>';
                     }
                     return d.name;
-                case 2: return d.unit_amount_display;
+                case 2: 
+                    if( d.flags_text != null && d.flags_text != '' ) {
+                        return '<span class="maintext">' + d.unit_amount_display + '</span><span class="subtext">' + d.flags_text + '</span>';
+                    }
+                    return d.unit_amount_display;
                 case 3: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
                 case 4: return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.item_id + ');">Remove</button>';
             }
@@ -647,7 +651,11 @@ function ciniki_ags_main() {
                         return '<span class="maintext">' + d.name + '</span><span class="subtext">' + d.tag_info + '</span>';
                     }
                     return d.name;
-                case 2: return d.unit_amount_display;
+                case 2: 
+                    if( d.flags_text != null && d.flags_text != '' ) {
+                        return '<span class="maintext">' + d.unit_amount_display + '</span><span class="subtext">' + d.flags_text + '</span>';
+                    }
+                    return d.unit_amount_display;
                 case 3: return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemAdd(event,' + d.item_id + ');">Add</button>';
             }
             return '';
