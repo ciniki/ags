@@ -301,9 +301,9 @@ function ciniki_ags_participantGet($ciniki) {
                 $item['unit_amount_display'] = '$' . number_format($item['unit_amount'], 2);
                 $inventory[] = $item;
                 unset($available[$iid]);
+                $num_exhibit_items++;
             } else {
                 $available[$iid]['unit_amount_display'] = '$' . number_format($item['unit_amount'], 2);
-                $num_exhibit_items++;
             }
         }
         $rsp['inventory'] = $inventory;
