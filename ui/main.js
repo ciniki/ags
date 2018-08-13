@@ -136,6 +136,7 @@ function ciniki_ags_main() {
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'excelinventory':{'label':'Inventory (Excel)', 'fn':'M.ciniki_ags_main.exhibit.exhibitInventory();'},
             'pricespdf':{'label':'Price List (PDF)', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceList();'},
+            'pricebookpdf':{'label':'Untagged Price Book (PDF)', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceBook();'},
             'salespdf':{'label':'Unpaid Sales (PDF)', 'fn':'M.ciniki_ags_main.exhibit.unpaidSalesPDF();'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'participants', 
@@ -365,10 +366,13 @@ function ciniki_ags_main() {
         M.api.openFile('ciniki.ags.exhibitInventory', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
     }
     this.exhibit.exhibitPriceList = function() {
-        M.api.openFile('ciniki.ags.exhibitPriceList', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
+        M.api.openPDF('ciniki.ags.exhibitPriceList', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
+    }
+    this.exhibit.exhibitPriceBook = function() {
+        M.api.openPDF('ciniki.ags.exhibitPriceBook', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
     }
     this.exhibit.unpaidSalesPDF = function() {
-        M.api.openFile('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
+        M.api.openPDF('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
     }
     this.exhibit.addClose('Back');
 

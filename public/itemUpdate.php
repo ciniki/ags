@@ -18,7 +18,7 @@ function ciniki_ags_itemUpdate(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'item_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Item'),
         'exhibitor_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Exhibitor'),
-        'exhibitor_code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'),
+        'exhibitor_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Code'),
         'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
