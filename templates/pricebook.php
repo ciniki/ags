@@ -139,6 +139,9 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
                 $price = '$' . number_format($item['unit_amount'], 2);
             }
             $nlines = $pdf->getNumLines($name, $w[1]);
+            if( $pdf->getNumLines($item['display_name'], $w[2]) > $nlines ) {
+                $nlines = $pdf->getNumLines($item['display_name'], $w[2]);
+            }
             if( $nlines == 2 ) {
                 $lh = 3+($nlines*5);
             } elseif( $nlines > 2 ) {
