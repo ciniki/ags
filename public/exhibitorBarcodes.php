@@ -110,7 +110,7 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
     //
     // Only tagged items
     //
-    $strsql .= "AND (items.flags&0x10) = 0 ";
+    $strsql .= "AND (items.flags&0x10) = 0x10 ";
     if( isset($args['start_code']) && $args['start_code'] != '' ) {
         $strsql .= "AND items.code >= '" . ciniki_core_dbQuote($ciniki, $args['start_code']) . "' ";
     }
