@@ -117,7 +117,7 @@ function ciniki_ags_itemGet($ciniki) {
             'name'=>'',
             'permalink'=>'',
             'status'=>'50',
-            'flags'=>'0',
+            'flags'=>0x10,
             'unit_amount'=>'',
             'unit_discount_amount'=>'0',
             'unit_discount_percentage'=>'0',

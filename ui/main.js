@@ -1695,7 +1695,7 @@ function ciniki_ags_main() {
             'types':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new item type: '},
             }},
         'price':{'label':'Pricing', 'aside':'yes', 'fields':{
-            'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'For Sale'}, '2':{'name':'Sell Online'}}},
+            'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'For Sale'}, '2':{'name':'Sell Online'}, '5':{'name':'Tagged'}}},
             'unit_amount':{'label':'Price', 'type':'text', 'size':'small'},
 //            'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
 //            'unit_discount_percentage':{'label':'Discount Percent', 'type':'text', 'size':'small'},
