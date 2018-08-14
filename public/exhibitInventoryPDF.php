@@ -14,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_ags_unpaidSalesPDF($ciniki) {
+function ciniki_ags_exhibitInventoryPDF($ciniki) {
     //
     // Find all the required and optional arguments
     //
@@ -33,7 +33,7 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
     // Check access to tnid as owner, or sys admin. 
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'checkAccess');
-    $rc = ciniki_ags_checkAccess($ciniki, $args['tnid'], 'ciniki.ags.unpaidSalesPDF');
+    $rc = ciniki_ags_checkAccess($ciniki, $args['tnid'], 'ciniki.ags.exhibitInventoryPDF');
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -55,7 +55,7 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
     if( (!isset($args['exhibit_id']) || $args['exhibit_id'] == 0 || $args['exhibit_id'] == '')
         && (!isset($args['exhibitor_id']) || $args['exhibitor_id'] == 0 || $args['exhibitor_id'] == '') 
         ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.140', 'msg'=>'An exhibit or exhibitor must be specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.144', 'msg'=>'An exhibit or exhibitor must be specified'));
     }
 
     //
@@ -75,7 +75,7 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
     //
     // Get the exhibit name
     //
-    $report_title = 'Unpaid Sales';
+    $report_title = 'Inventory';
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
         $strsql = "SELECT name "
             . "FROM ciniki_ags_exhibits "
@@ -84,28 +84,28 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'exhibit');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.142', 'msg'=>'Unable to load exhibit', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.145', 'msg'=>'Unable to load exhibit', 'err'=>$rc['err']));
         }
         if( !isset($rc['exhibit']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.143', 'msg'=>'Unable to find requested exhibit'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.146', 'msg'=>'Unable to find requested exhibit'));
         }
         $exhibit = $rc['exhibit'];
-        $report_title = $exhibit['name'] . ' - Unpaid Sales';
+        $report_title = $exhibit['name'] . ' - Inventory';
     }
 
-    $strsql = "SELECT sales.id AS sales_id, "
+    $strsql = "SELECT eitems.id AS exhibit_item_id, "
         . "exhibitors.display_name, "
         . "items.exhibitor_id, "
         . "items.code, "
         . "items.name, "
-        . "sales.quantity, "
-        . "DATE_FORMAT(sales.sell_date, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS sell_date, "
-        . "sales.tenant_amount, "
-        . "sales.exhibitor_amount, "
-        . "sales.total_amount "
-        . "FROM ciniki_ags_item_sales AS sales "
+        . "items.tag_info, "
+        . "items.flags AS flags_text, "
+        . "items.exhibitor_code, "
+        . "items.unit_amount, "
+        . "eitems.inventory "
+        . "FROM ciniki_ags_exhibit_items AS eitems "
         . "INNER JOIN ciniki_ags_items AS items ON ("
-            . "sales.item_id = items.id "
+            . "eitems.item_id = items.id "
             . (isset($args['exhibitor_id']) && $args['exhibitor_id'] > 0 ? "AND items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' " : '')
             . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
@@ -113,22 +113,21 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
             . "items.exhibitor_id = exhibitors.id "
             . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE sales.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND (sales.flags&0x02) = 0 "
+        . "WHERE eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER by exhibitors.display_name, items.code, items.name "
         . "";
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
-        $strsql .= "AND sales.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' ";
+        $strsql .= "AND eitems.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' ";
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'exhibitors', 'fname'=>'exhibitor_id', 
             'fields'=>array('display_name')),
-        array('container'=>'items', 'fname'=>'sales_id', 
-            'fields'=>array('code', 'name', 'quantity', 'sell_date', 'tenant_amount', 'exhibitor_amount', 'total_amount')),
+        array('container'=>'items', 'fname'=>'exhibit_item_id', 
+            'fields'=>array('code', 'name', 'exhibitor_code', 'tag_info', 'flags_text', 'inventory', 'unit_amount')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.141', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.147', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
     }
     if( isset($rc['exhibitors']) ) {
         $exhibitors = $rc['exhibitors'];
@@ -138,8 +137,8 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
     
     $today = new DateTime('now', new DateTimezone($intl_timezone));
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'salesReport');
-    $rc = ciniki_ags_templates_salesReport($ciniki, $args['tnid'], array(
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'inventoryReport');
+    $rc = ciniki_ags_templates_inventoryReport($ciniki, $args['tnid'], array(
         'title'=>$report_title,
         'author'=>$tenant_details['name'],
         'footer'=>$today->format('M d, Y'),

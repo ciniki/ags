@@ -137,6 +137,7 @@ function ciniki_ags_main() {
             'excelinventory':{'label':'Inventory (Excel)', 'fn':'M.ciniki_ags_main.exhibit.exhibitInventory();'},
             'pricespdf':{'label':'Price List (PDF)', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceList();'},
             'pricebookpdf':{'label':'Untagged Price Book (PDF)', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceBook();'},
+            'inventorypdf':{'label':'Current Inventory (PDF)', 'fn':'M.ciniki_ags_main.exhibit.currentInventoryPDF();'},
             'salespdf':{'label':'Unpaid Sales (PDF)', 'fn':'M.ciniki_ags_main.exhibit.unpaidSalesPDF();'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'participants', 
@@ -371,6 +372,9 @@ function ciniki_ags_main() {
     this.exhibit.exhibitPriceBook = function() {
         M.api.openPDF('ciniki.ags.exhibitPriceBook', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
     }
+    this.exhibit.currentInventoryPDF = function() {
+        M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
+    }
     this.exhibit.unpaidSalesPDF = function() {
         M.api.openPDF('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
     }
@@ -540,6 +544,10 @@ function ciniki_ags_main() {
             'additem':{'label':'New Exhibitor Item', 
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
                 'fn':'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.participant.open();\',0,M.ciniki_ags_main.participant.exhibitor_id,M.ciniki_ags_main.participant.exhibit_id,null);',
+                },
+            'inventorypdf':{'label':'Current Inventory (PDF)', 
+                'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
+                'fn':'M.ciniki_ags_main.participant.exhibitInventoryPDF();',
                 },
             'summarypdf':{'label':'Unpaid Sales (PDF)', 
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
@@ -791,6 +799,9 @@ function ciniki_ags_main() {
         var col = this.formValue('start_col');
         var tip = this.formValue('tag_info_price');
         M.api.openFile('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip});
+    }
+    this.participant.exhibitInventoryPDF = function() {
+        M.api.openFile('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
     }
     this.participant.unpaidSalesPDF = function() {
         M.api.openFile('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
