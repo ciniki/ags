@@ -171,18 +171,18 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
                         $codes = '';
                         if( $item['tag_info'] != '' ) {
                             $pdf->SetFont('helvetica', '', 8);
-                            $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y']-1, true, 1);
+                            $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y'], true, 1);
                             $pdf->SetFont('helvetica', '', 9);
                             $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+7, true, 1);
                         } else {
                             $pdf->SetFont('helvetica', '', 12);
-                            $pdf->MultiCell($label['cell']['width'], $label['cell']['height'], '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+2, true, 1, false, true, 0, 'M');
+                            $pdf->MultiCell($label['cell']['width'], $label['cell']['height'], '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+4, true, 1, false, true, 0, 'M');
                         }
                     } else {
                         if( $item['exhibitor_code'] != '' ) {
-                            $pdf->write1DBarcode($item['code'], 'C39', $col['x'], $row['y'], $label['cell']['width'], 14, 0.3, $style, 'N');
+                            $pdf->write1DBarcode($item['code'], 'C39', $col['x'], $row['y']+2, $label['cell']['width'], 14, 0.3, $style, 'N');
                             $pdf->SetFont('helvetica', '', 7);
-                            $pdf->SetY($row['y']+10);
+                            $pdf->SetY($row['y']+12);
                             $pdf->SetX($col['x']);
                             $pdf->cell($label['cell']['width'], 7, $item['exhibitor_code'], 0, 0, 'C', false, '', 1, false, 'C', 'T');
                         } else {
