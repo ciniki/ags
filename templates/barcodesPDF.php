@@ -170,10 +170,20 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
                     if( isset($item['label_type']) && $item['label_type'] == 'info' ) {
                         $codes = '';
                         if( $item['tag_info'] != '' ) {
+                            //
+                            // Adjust spacing based on size
+                            //
                             $pdf->SetFont('helvetica', '', 8);
-                            $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y'], true, 1);
-                            $pdf->SetFont('helvetica', '', 9);
-                            $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+7, true, 1);
+                            $nlines = $pdf->getNumLines($item['tag_info'], $label['cell']['width']);
+                            if( $nlines > 1 ) {
+                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y'], true, 1);
+                                $pdf->SetFont('helvetica', '', 9);
+                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+7, true, 1);
+                            } else {
+                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y']+1, true, 1);
+                                $pdf->SetFont('helvetica', '', 9);
+                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+6, true, 1);
+                            }
                         } else {
                             $pdf->SetFont('helvetica', '', 12);
                             $pdf->MultiCell($label['cell']['width'], $label['cell']['height'], '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+4, true, 1, false, true, 0, 'M');
