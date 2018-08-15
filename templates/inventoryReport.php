@@ -135,10 +135,10 @@ function ciniki_ags_templates_inventoryReport(&$ciniki, $tnid, $args) {
             $lh = 6;
             $code = $item['code'];
             $name = $item['name'];
-            $total_amount += $item['total_amount'];
-            $total_tenant_amount += $item['tenant_amount'];
-            $total_exhibitor_amount += $item['exhibitor_amount'];
-            $num_items+=$item['quantity'];
+            //$total_amount += $item['total_amount'];
+            //$total_tenant_amount += $item['tenant_amount'];
+            //$total_exhibitor_amount += $item['exhibitor_amount'];
+            //$num_items+=$item['quantity'];
 
             $nlines = $pdf->getNumLines($name, $w[1]);
             if( $pdf->getNumLines($item['tag_info'], $w[2]) > $nlines ) {
