@@ -86,7 +86,7 @@ function ciniki_ags_exhibitPriceBook($ciniki) {
         return $rc;
     }
     if( !isset($rc['exhibition']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.22', 'msg'=>'Exhibition does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.31', 'msg'=>'Exhibition does not exist'));
     }
     $exhibit_name = $rc['exhibition']['name'];
 

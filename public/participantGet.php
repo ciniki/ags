@@ -79,10 +79,10 @@ function ciniki_ags_participantGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.137', 'msg'=>'Unable to load sale', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.153', 'msg'=>'Unable to load sale', 'err'=>$rc['err']));
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.138', 'msg'=>'Unable to find requested sale'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.154', 'msg'=>'Unable to find requested sale'));
         }
         $sale = $rc['item'];
 
@@ -93,7 +93,7 @@ function ciniki_ags_participantGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.itemsale', $sale['id'], array('flags'=>($sale['flags']|0x02)), 0x07);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.139', 'msg'=>'', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.155', 'msg'=>'', 'err'=>$rc['err']));
             }
         }
     }
@@ -150,7 +150,7 @@ function ciniki_ags_participantGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'exhibitorCode');
                 $rc = ciniki_ags_exhibitorCode($ciniki, $args['tnid'], $args['customer_id']);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.16', 'msg'=>'Unable to get customer code', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.30', 'msg'=>'Unable to get customer code', 'err'=>$rc['err']));
                 }
                 $participant['code'] = $rc['code'];
             }

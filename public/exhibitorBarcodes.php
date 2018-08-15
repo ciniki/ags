@@ -126,7 +126,7 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.40', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.159', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
     $args['barcodes'] = array();
     foreach($rc['items'] as $item) {

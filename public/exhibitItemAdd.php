@@ -99,7 +99,7 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
             'inventory'=>$exhibititem['inventory'] + $args['quantity'],
             ), 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.22', 'msg'=>'Unable to add item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.151', 'msg'=>'Unable to add item', 'err'=>$rc['err']));
         }
         $exhibititem['code'] = $item['code'];
         $exhibititem['name'] = $item['name'];
@@ -111,7 +111,7 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.ags.exhibititem', $args, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.22', 'msg'=>'Unable to add item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.152', 'msg'=>'Unable to add item', 'err'=>$rc['err']));
         }
         $exhibititem = array(
             'exhibit_item_id' => $rc['id'],

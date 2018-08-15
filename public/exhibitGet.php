@@ -291,7 +291,7 @@ function ciniki_ags_exhibitGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.12', 'msg'=>'Unable to load exhibit inventory', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.150', 'msg'=>'Unable to load exhibit inventory', 'err'=>$rc['err']));
         }
         $inventory = isset($rc['items']) ? $rc['items'] : array();
 
@@ -328,7 +328,7 @@ function ciniki_ags_exhibitGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.12', 'msg'=>'Unable to load exhibit sales', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.149', 'msg'=>'Unable to load exhibit sales', 'err'=>$rc['err']));
         }
         $sales = isset($rc['sales']) ? $rc['sales'] : array();
 

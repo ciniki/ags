@@ -46,7 +46,7 @@ function ciniki_ags_itemGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
     $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_ags_settings', 'tnid', $args['tnid'], 'ciniki.ags', 'settings', '');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.44', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.158', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
     }
     $settings = isset($rc['settings']) ? $rc['settings'] : array();
 
@@ -84,10 +84,10 @@ function ciniki_ags_itemGet($ciniki) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'exhibitor');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.45', 'msg'=>'Unable to load exhibitor', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.156', 'msg'=>'Unable to load exhibitor', 'err'=>$rc['err']));
             }
             if( !isset($rc['exhibitor']) ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.46', 'msg'=>'Unable to find requested exhibitor'));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.157', 'msg'=>'Unable to find requested exhibitor'));
             }
             $exhibitor = $rc['exhibitor'];
 
