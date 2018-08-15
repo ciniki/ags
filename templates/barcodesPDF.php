@@ -188,6 +188,19 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
                             $pdf->SetFont('helvetica', '', 12);
                             $pdf->MultiCell($label['cell']['width'], $label['cell']['height'], '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+4, true, 1, false, true, 0, 'M');
                         }
+                    } elseif( isset($item['label_type']) && $item['label_type'] == 'halfsize' ) {
+                        if( $item['exhibitor_code'] != '' ) {
+                            $pdf->write1DBarcode($item['code'], 'C39', $col['x'], $row['y']+2, (($label['cell']['width']/2)+1), 14, 0.3, $style, 'N');
+                            $pdf->SetFont('helvetica', '', 7);
+                            $pdf->SetY($row['y']+12);
+                            $pdf->SetX($col['x']);
+                            $pdf->cell((($label['cell']['width']/2)-1), 7, $item['exhibitor_code'], 0, 0, 'C', false, '', 1, false, 'C', 'T');
+                        } else {
+                            $pdf->write1DBarcode($item['code'], 'C39', $col['x'], $row['y']+2, (($label['cell']['width']/2)+1), 16, 0.3, $style, 'N');
+                        }
+                        $pdf->SetFont('helvetica', '', 12);
+                        $pdf->MultiCell((($label['cell']['width']/2)-1), $label['cell']['height'], '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, ($col['x'] + ($label['cell']['width']/2)+1), $row['y']+4, true, 1, false, true, 0, 'M');
+
                     } else {
                         if( $item['exhibitor_code'] != '' ) {
                             $pdf->write1DBarcode($item['code'], 'C39', $col['x']+1, $row['y']+2, $label['cell']['width'], 14, 0.3, $style, 'N');

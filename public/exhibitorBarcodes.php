@@ -29,6 +29,7 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
         'start_col'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Column'),
         'start_row'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Row'),
         'tag_info_price'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Info & Price'),
+        'halfsize'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Half Size'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -131,7 +132,11 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
     foreach($rc['items'] as $item) {
         if( $item['quantity'] > 1 ) {
             for($i=0;$i<$item['quantity'];$i++) {
-                $item['label_type'] = 'barcode';
+                if( isset($args['halfsize']) && $args['halfsize'] == 'yes' ) {
+                    $item['label_type'] = 'halfsize';
+                } else {
+                    $item['label_type'] = 'barcode';
+                }
                 $args['barcodes'][] = $item;
                 if( isset($args['tag_info_price']) && $args['tag_info_price'] == 'yes' ) {
                     $item['label_type'] = 'info';
@@ -139,7 +144,11 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
                 }
             }
         } else {
-            $item['label_type'] = 'barcode';
+            if( isset($args['halfsize']) && $args['halfsize'] == 'yes' ) {
+                $item['label_type'] = 'halfsize';
+            } else {
+                $item['label_type'] = 'barcode';
+            }
             $args['barcodes'][] = $item;
             if( isset($args['tag_info_price']) && $args['tag_info_price'] == 'yes' ) {
                 $item['label_type'] = 'info';
