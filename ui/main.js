@@ -153,6 +153,14 @@ function ciniki_ags_main() {
 //            'hint':'Search participants',
 //            'noData':'No participants found',
 //            },
+        'participant_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':2,
+            'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'participants' ? 'yes' : 'hidden'},
+            'headerValues':['Name', 'Status'],
+            'headerClasses':['','','alignright','alignright','alignright','alignright'],
+            'cellClasses':['','','alignright','alignright','alignright','alignright'],
+            'hint':'Search participants',
+            'noData':'No participants found',
+            },
         'participants':{'label':'Exhibit Participants', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'participants' ? 'yes' : 'hidden'},
             'sortable':'yes',
@@ -202,8 +210,8 @@ function ciniki_ags_main() {
     }
     this.exhibit.liveSearchCb = function(s, i, v) {
         if( s == 'participant_search' && v != '' ) {
-            M.api.getJSONBgCb('ciniki.ags.exhibitSearchParticipant', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'start_needle':v, 'limit':'25'}, function(rsp) {
-                M.ciniki_ags_main.exhibit.liveSearchShow('participant_search',null,M.gE(M.ciniki_ags_main.exhibit.panelUID + '_' + s), rsp.items);
+            M.api.getJSONBgCb('ciniki.ags.exhibitSearchParticipants', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'start_needle':v, 'limit':'25'}, function(rsp) {
+                M.ciniki_ags_main.exhibit.liveSearchShow('participant_search',null,M.gE(M.ciniki_ags_main.exhibit.panelUID + '_' + s), rsp.participants);
                 });
         }
         if( s == 'inventory_search' && v != '' ) {
@@ -213,19 +221,7 @@ function ciniki_ags_main() {
         }
     }
     this.exhibit.liveSearchResultValue = function(s, f, i, j, d) {
-            return this.cellValue(s, i, j, d);
-        if( s == 'participant_search' ) {
-            return this.cellValue(s, i, j, d);
-        }
-        if( s == 'inventory_search' ) {
-            switch(j) {
-                case 0: return d.display_name;
-                case 1: return d.code;
-                case 2: return d.name;
-                case 3: return d.unit_amount_display;
-                case 4: return d.inventory;
-            }
-        }
+        return this.cellValue(s, i, j, d);
     }
     this.exhibit.liveSearchResultCellFn = function(s, f, i, j, d) {
         return this.cellFn(s, i, j, d);

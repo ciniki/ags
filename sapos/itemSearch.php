@@ -30,7 +30,7 @@ function ciniki_ags_sapos_itemSearch($ciniki, $tnid, $args) {
         . "items.unit_discount_amount, "
         . "items.unit_discount_percentage, "
         . "items.taxtype_id, "
-        . "eitems.inventory AS quantity, "
+        . "eitems.inventory AS num_available, "
         . "exhibits.name AS exhibit_name "
         . "FROM ciniki_ags_items AS items "
         . "INNER JOIN ciniki_ags_exhibit_items AS eitems ON ("
@@ -54,7 +54,7 @@ function ciniki_ags_sapos_itemSearch($ciniki, $tnid, $args) {
         array('container'=>'items', 'fname'=>'id',
             'fields'=>array('id', 'exhibit_item_id', 'code', 'description', 
                 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 
-                'exhibit_name', 'quantity')),
+                'exhibit_name', 'num_available')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -66,6 +66,7 @@ function ciniki_ags_sapos_itemSearch($ciniki, $tnid, $args) {
             $item['description'] = $item['exhibit_name'] . ' - ' . $item['description'];
             $item['object'] = 'ciniki.ags.exhibititem';
             $item['object_id'] = $item['exhibit_item_id'];
+            $item['quantity'] = 1;
             $items[] = array('item'=>$item);
         }
     }
