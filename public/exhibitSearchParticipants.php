@@ -71,7 +71,6 @@ function ciniki_ags_exhibitSearchParticipants($ciniki) {
             . ") "
         . "ORDER BY exhibitors.display_name "
         . "";
-        error_log($strsql);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'participants', 'fname'=>'exhibitor_id', 
