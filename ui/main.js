@@ -526,6 +526,7 @@ function ciniki_ags_main() {
 //
 // halfsize not working, makes barcode to small to scan
 //                'halfsize':{'label':'Half Size', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+//                'codes':{'label':'Codes', 'type':'text'},
             }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'barcodes':{'label':'Exhibit Item Barcodes', 
@@ -565,12 +566,12 @@ function ciniki_ags_main() {
             'hint':'Search inventory',
             'noData':'No items found',
             }, */
-        'inventory':{'label':'Exhibit Items', 'type':'simplegrid', 'panelcolumn':1, 'num_cols':5,
+        'inventory':{'label':'Exhibit Items', 'type':'simplegrid', 'panelcolumn':1, 'num_cols':6,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' : 'hidden'},
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'number', 'number'],
-            'headerValues':['Code', 'Item', 'Price', 'Quantity', ''],
-            'cellClasses':['multiline', 'multiline', 'multiline alignright', 'alignright'],
+            'headerValues':['Code', '', 'Item', 'Price', 'Quantity', ''],
+            'cellClasses':['multiline', '', 'multiline', 'multiline alignright', 'alignright'],
             'noData':'No items in this exhibit',
             },
         'available':{'label':'Catalog Items', 'type':'simplegrid', 'panelcolumn':2, 'num_cols':4,
@@ -631,18 +632,21 @@ function ciniki_ags_main() {
                         return '<span class="maintext">' + d.code + '</span><span class="subtext">' + d.types + '</span>';
                     } 
                     return d.code;
-                case 1: 
+                case 1: return '<span id="code-' + d.code + '" class="faicon edit">&#xf02f;</span>';
+//                case 1: return '<input type="checkbox" id="code-' + d.code + '" onclick="M.ciniki_ags_main.participant.selectCode(\'' + d.code + '\');" value="1" name="' + d.code + '" checked ></input>';
+//                case 1: return '<input type="checkbox" id="code-' + d.code + '" onclick="M.ciniki_ags_main.participant.selectCode(\'' + d.code + '\');" value="1" name="' + d.code + '" checked ></input>';
+                case 2: 
                     if( d.tag_info != null && d.tag_info != '' ) {
                         return '<span class="maintext">' + d.name + '</span><span class="subtext">' + d.tag_info + '</span>';
                     }
                     return d.name;
-                case 2: 
+                case 3: 
                     if( d.flags_text != null && d.flags_text != '' ) {
                         return '<span class="maintext">' + d.unit_amount_display + '</span><span class="subtext">' + d.flags_text + '</span>';
                     }
                     return d.unit_amount_display;
-                case 3: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
-                case 4: return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.item_id + ');">Remove</button>';
+                case 4: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
+                case 5: return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.item_id + ');">Remove</button>';
             }
             return '';
         }
@@ -705,7 +709,10 @@ function ciniki_ags_main() {
         return null;
     }
     this.participant.cellFn = function(s, i, j, d) {
-        if( s == 'inventory' && j == 3 ) {
+        if( s == 'inventory' && j == 1 ) {
+            return 'event.stopPropagation(); return M.ciniki_ags_main.participant.selectCode(event,\'' + d.code + '\');';
+        }
+        if( s == 'inventory' && j == 4 ) {
             return 'event.stopPropagation(); return M.ciniki_ags_main.participant.inventoryUpdate(event,\'' + d.exhibit_item_id + '\');';
         }
         return '';
@@ -715,6 +722,17 @@ function ciniki_ags_main() {
             return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.participant.open();\',\'' + d.item_id + '\',0,0);';
         }
         return '';
+    }
+    this.participant.selectCode = function(event, code) {
+        event.stopPropagation();
+        var i = M.gE('code-' + code);
+        if( i.codeselected == null || i.codeselected == 'no' ) {
+            i.codeselected = 'yes';
+            i.style.color = '#900';
+        } else {
+            i.style.color = '#bbb';
+            i.codeselected = 'no';
+        }
     }
     this.participant.switchTab = function(t) {
         this.sections._tabs.selected = t;
@@ -798,7 +816,15 @@ function ciniki_ags_main() {
         var col = this.formValue('start_col');
         var tip = this.formValue('tag_info_price');
         var hs = this.formValue('halfsize');
-        M.api.openFile('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip, 'halfsize':hs});
+        // Get the codes selected
+        var codes = '';
+        for(var i in this.data.inventory) {
+            var e = M.gE('code-' + this.data.inventory[i].code);
+            if( e.codeselected != null && e.codeselected == 'yes' ) {
+                codes += (codes != '' ? ',' : '') + this.data.inventory[i].code;
+            }
+        }
+        M.api.openFile('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip, 'halfsize':hs, 'codes':codes});
     }
     this.participant.exhibitInventoryPDF = function() {
         M.api.openFile('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});

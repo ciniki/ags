@@ -26,6 +26,7 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
         'exhibit_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit'),
         'start_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Code'),
         'end_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start End'),
+        'codes'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'name'=>'Codes'),
         'start_col'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Column'),
         'start_row'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Row'),
         'tag_info_price'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Info & Price'),
@@ -108,15 +109,20 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
             . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
     }
-    //
-    // Only tagged items
-    //
-    $strsql .= "AND (items.flags&0x10) = 0x10 ";
     if( isset($args['start_code']) && $args['start_code'] != '' ) {
         $strsql .= "AND items.code >= '" . ciniki_core_dbQuote($ciniki, $args['start_code']) . "' ";
     }
     if( isset($args['end_code']) && $args['end_code'] != '' ) {
         $strsql .= "AND items.code <= '" . ciniki_core_dbQuote($ciniki, $args['end_code']) . "' ";
+    }
+    if( isset($args['codes']) && count($args['codes']) > 0 && $args['codes'][0] != "" ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteList');
+        $strsql .= "AND items.code IN (" . ciniki_core_dbQuoteList($ciniki, $args['codes']) . ") ";
+    } else {
+        //
+        // Only tagged items if no specific codes requested
+        //
+        $strsql .= "AND (items.flags&0x10) = 0x10 ";
     }
     $strsql .= "ORDER BY items.code ";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -129,9 +135,22 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.159', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
     $args['barcodes'] = array();
-    foreach($rc['items'] as $item) {
-        if( $item['quantity'] > 1 ) {
-            for($i=0;$i<$item['quantity'];$i++) {
+    if( isset($rc['items']) ) {
+        foreach($rc['items'] as $item) {
+            if( $item['quantity'] > 1 ) {
+                for($i=0;$i<$item['quantity'];$i++) {
+                    if( isset($args['halfsize']) && $args['halfsize'] == 'yes' ) {
+                        $item['label_type'] = 'halfsize';
+                    } else {
+                        $item['label_type'] = 'barcode';
+                    }
+                    $args['barcodes'][] = $item;
+                    if( isset($args['tag_info_price']) && $args['tag_info_price'] == 'yes' ) {
+                        $item['label_type'] = 'info';
+                        $args['barcodes'][] = $item;
+                    }
+                }
+            } else {
                 if( isset($args['halfsize']) && $args['halfsize'] == 'yes' ) {
                     $item['label_type'] = 'halfsize';
                 } else {
@@ -142,17 +161,6 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
                     $item['label_type'] = 'info';
                     $args['barcodes'][] = $item;
                 }
-            }
-        } else {
-            if( isset($args['halfsize']) && $args['halfsize'] == 'yes' ) {
-                $item['label_type'] = 'halfsize';
-            } else {
-                $item['label_type'] = 'barcode';
-            }
-            $args['barcodes'][] = $item;
-            if( isset($args['tag_info_price']) && $args['tag_info_price'] == 'yes' ) {
-                $item['label_type'] = 'info';
-                $args['barcodes'][] = $item;
             }
         }
     }
