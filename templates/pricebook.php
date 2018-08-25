@@ -155,7 +155,7 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
                 $lh = 10;
             }
             // Check if we need a page break
-            if( $pdf->getY() > ($pdf->getPageHeight() - 32) ) {
+            if( $pdf->getY() > ($pdf->getPageHeight() - 35) ) {
                 $pdf->AddPage();
                 $pdf->SetFont('', 'B', 16);
                 $pdf->Cell(180, 12, $itemtype['name'] . ' (continued)', 0, 0, 'L', 0);
@@ -177,12 +177,12 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
             $pdf->MultiCell($w[1], $lh, $name, 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[2], $lh, $item['display_name'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[3], $lh, $price, 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->Ln(); 
             $x2 = $pdf->getX();
             $y2 = $pdf->getY();
             $pdf->write1DBarcode($code, 'C39', $x, $y+0.25, $w[0], 14, 0.3, $style, 'C');
             $pdf->SetX($x2);
             $pdf->SetY($y2);
-            $pdf->Ln(); 
             $fill=!$fill;
         }
         $count++;
