@@ -22,6 +22,8 @@ function ciniki_ags_participantUpdate(&$ciniki) {
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
+        'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
+        'code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Code'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -51,13 +53,43 @@ function ciniki_ags_participantUpdate(&$ciniki) {
     }
 
     //
+    // Check if updating exhibitor name or code
+    //
+    if( isset($args['display_name_override']) || isset($args['code']) ) {
+        $strsql = "SELECT participants.id, "
+            . "participants.exhibitor_id "
+            . "FROM ciniki_ags_participants AS participants "
+            . "WHERE participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND participants.id = '" . ciniki_core_dbQuote($ciniki, $args['participant_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'participant');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.32', 'msg'=>'Unable to load participant', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['participant']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.33', 'msg'=>'Unable to find requested participant'));
+        }
+        $participant = $rc['participant'];
+        $ciniki['request']['args']['exhibitor_id'] = $participant['exhibitor_id'];
+        
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'public', 'exhibitorUpdate');
+        $rc = ciniki_ags_exhibitorUpdate($ciniki);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+            return $rc;
+        }
+    }
+
+    //
     // Update the Participant in the database
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.participant', $args['participant_id'], $args, 0x04);
-    if( $rc['stat'] != 'ok' ) {
-        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
-        return $rc;
+    if( isset($args['status']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.participant', $args['participant_id'], $args, 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+            return $rc;
+        }
     }
 
     //

@@ -196,6 +196,7 @@ function ciniki_ags_participantGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.109', 'msg'=>'Unable to find Participant'));
         }
         $participant = $rc['participants'][0];
+        $participant['display_name_override'] = $participant['display_name'];
 
         $rsp = array('stat'=>'ok', 'participant'=>$participant);
 
