@@ -107,7 +107,8 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
     //
     // Add the items
     //
-    $w = array(35, 80, 45, 20);
+    //$w = array(40, 75, 45, 20);
+    $w = array(45, 115, 20);
 
     $fill=0;
     $lh = 8;
@@ -127,9 +128,10 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
         $pdf->SetFont('', 'B');
         $pdf->SetCellPadding(2);
         $pdf->Cell($w[0], 10, 'Barcode', 1, 0, 'C', 1);
-        $pdf->Cell($w[1], 10, 'Item', 1, 0, 'C', 1);
-        $pdf->Cell($w[2], 10, 'Exhibitor', 1, 0, 'C', 1);
-        $pdf->Cell($w[3], 10, 'Price', 1, 0, 'C', 1);
+        $pdf->Cell($w[1], 10, 'Item/Exhibitor', 1, 0, 'C', 1);
+        $pdf->Cell($w[2], 10, 'Price', 1, 0, 'C', 1);
+//        $pdf->Cell($w[2], 10, 'Exhibitor', 1, 0, 'C', 1);
+//        $pdf->Cell($w[3], 10, 'Price', 1, 0, 'C', 1);
         $pdf->Ln(10);
         $pdf->SetFillColor(236);
         $pdf->SetTextColor(0);
@@ -144,18 +146,21 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
                 $price = '$' . number_format($item['unit_amount'], 2);
             }
             $nlines = $pdf->getNumLines($name, $w[1]);
-            if( $pdf->getNumLines($item['display_name'], $w[2]) > $nlines ) {
-                $nlines = $pdf->getNumLines($item['display_name'], $w[2]);
+//            if( $pdf->getNumLines($item['display_name'], $w[2]) > $nlines ) {
+//                $nlines = $pdf->getNumLines($item['display_name'], $w[2]);
+//            }
+            if( $pdf->getNumLines($item['display_name'], $w[1]) > $nlines ) {
+                $nlines = $pdf->getNumLines($item['display_name'], $w[1]);
             }
             if( $nlines == 2 ) {
                 $lh = 3+($nlines*5);
             } elseif( $nlines > 2 ) {
                 $lh = 2+($nlines*5);
             } else {
-                $lh = 10;
+                $lh = 13;
             }
             // Check if we need a page break
-            if( $pdf->getY() > ($pdf->getPageHeight() - 35) ) {
+            if( $pdf->getY() > ($pdf->getPageHeight() - 40) ) {
                 $pdf->AddPage();
                 $pdf->SetFont('', 'B', 16);
                 $pdf->Cell(180, 12, $itemtype['name'] . ' (continued)', 0, 0, 'L', 0);
@@ -163,9 +168,9 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
                 $pdf->Ln(12);
                 $pdf->SetFillColor(224);
                 $pdf->Cell($w[0], 10, 'Barcode', 1, 0, 'C', 1);
-                $pdf->Cell($w[1], 10, 'Item', 1, 0, 'C', 1);
-                $pdf->Cell($w[2], 10, 'Exhibitor', 1, 0, 'C', 1);
-                $pdf->Cell($w[3], 10, 'Price', 1, 0, 'C', 1);
+                $pdf->Cell($w[1], 10, 'Item/Exhibitor', 1, 0, 'C', 1);
+//                $pdf->Cell($w[2], 10, 'Exhibitor', 1, 0, 'C', 1);
+                $pdf->Cell($w[2], 10, 'Price', 1, 0, 'C', 1);
                 $pdf->Ln(10);
                 $pdf->SetFillColor(236);
                 $pdf->SetTextColor(0);
@@ -174,13 +179,13 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
             $x = $pdf->getX();
             $y = $pdf->getY();
             $pdf->MultiCell($w[0], $lh, '', 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[1], $lh, $name, 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[2], $lh, $item['display_name'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[1], $lh, $name . "\n" . $item['display_name'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+//            $pdf->MultiCell($w[2], $lh, $item['display_name'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[3], $lh, $price, 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->Ln(); 
             $x2 = $pdf->getX();
             $y2 = $pdf->getY();
-            $pdf->write1DBarcode($code, 'C39', $x, $y+0.25, $w[0], 14, 0.3, $style, 'C');
+            $pdf->write1DBarcode($code, 'C39', $x, $y+0.25, $w[0], 16, 0.3, $style, 'C');
             $pdf->SetX($x2);
             $pdf->SetY($y2);
             $fill=!$fill;

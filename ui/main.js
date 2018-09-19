@@ -11,7 +11,11 @@ function ciniki_ags_main() {
         }};
     this.switchTab = function(t) {
         this.menutabs.selected = t;
-        this[t].open();
+        if( this[t] == null ) {
+            this.exhibits.open(null,t);
+        } else {
+            this[t].open();
+        }
     }
 
     //
@@ -20,6 +24,7 @@ function ciniki_ags_main() {
     this.exhibits = new M.panel('Exhibits', 'ciniki_ags_main', 'exhibits', 'mc', 'xlarge', 'sectioned', 'ciniki.ags.main.exhibits');
     this.exhibits.data = {};
     this.exhibits.nplist = [];
+    this.exhibits.etype = '';
     this.exhibits.sections = {
         '_tabs':this.menutabs,
         'search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':4,
@@ -88,8 +93,9 @@ function ciniki_ags_main() {
         this.refreshSection('_years');
         this.refreshSection('exhibits');
     }
-    this.exhibits.open = function(cb) {
-        M.api.getJSONCb('ciniki.ags.exhibitList', {'tnid':M.curTenantID}, function(rsp) {
+    this.exhibits.open = function(cb,t) {
+        if( t != null ) { this.etype = t; } 
+        M.api.getJSONCb('ciniki.ags.exhibitList', {'tnid':M.curTenantID, 'etype':this.etype}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -2047,7 +2053,38 @@ function ciniki_ags_main() {
         if( ag != null ) {
             args = eval(ag);
         }
-        
+ 
+        this.menutabs.tabs = {
+            'exhibits':{'label':'Exhibits', 'fn':'M.ciniki_ags_main.switchTab("exhibits");'},
+            'locations':{'label':'Locations', 'fn':'M.ciniki_ags_main.switchTab("locations");'},
+            'exhibitors':{'label':'Exhibitors', 'fn':'M.ciniki_ags_main.switchTab("exhibitors");'},
+//            'reports':{'label':'Reports', 'fn':'M.ciniki_ags_main.switchTab("reports");'},
+        };
+
+        if( M.curTenant.modules['ciniki.ags'].settings != null 
+            && M.curTenant.modules['ciniki.ags'].settings.etypes != null 
+            ) {
+            var c = 0;
+            this.menutabs.tabs = {};
+            var first_tab = '';
+            for(var i in M.curTenant.modules['ciniki.ags'].settings.etypes) {
+                if( c == 0 ) {
+                    first_tab = i;
+                }
+                this.menutabs.tabs[i] = {'label':M.curTenant.modules['ciniki.ags'].settings.etypes[i].name, 'fn':'M.ciniki_ags_main.switchTab("' + i + '");'};
+                c++;
+            }
+            if( c <= 1 || c > 5 ) {
+                this.menutabs.tabs = {
+                    'exhibits':{'label':'Exhibits', 'fn':'M.ciniki_ags_main.switchTab("exhibits");'},
+                    };
+            } 
+            this.menutabs.tabs.locations = {'label':'Locations', 'fn':'M.ciniki_ags_main.switchTab("locations");'};
+            this.menutabs.tabs.exhibitors = {'label':'Exhibitors', 'fn':'M.ciniki_ags_main.switchTab("exhibitors");'};
+            if( this.menutabs.tabs[this.menutabs.selected] == null ) {
+                this.menutabs.selected = first_tab;
+            }
+        }
         //
         // Create the app container
         //
@@ -2056,7 +2093,14 @@ function ciniki_ags_main() {
             alert('App Error');
             return false;
         }
-       
-        this[this.menutabs.selected].open(cb);
+      
+        this.exhibits.cb = cb;
+        this.locations.cb = cb;
+        this.exhibitors.cb = cb;
+        if( this[this.menutabs.selected] == null ) {
+            this.exhibits.open(null,this.menutabs.selected);
+        } else {
+            this[this.menutabs.selected].open();
+        }
     }
 }

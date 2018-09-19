@@ -17,7 +17,31 @@ function ciniki_ags_hooks_uiSettings(&$ciniki, $tnid, $args) {
     //
     // Setup the default response
     //
-    $rsp = array('stat'=>'ok', 'menu_items'=>array(), 'settings_menu_items'=>array());
+    $rsp = array('stat'=>'ok', 'settings'=>array(), 'menu_items'=>array(), 'settings_menu_items'=>array());
+
+    //
+    // Check if all tags should be returned
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x01) ) {
+        //
+        // Get the available tags
+        //
+        $strsql = "SELECT DISTINCT permalink, tag_name "
+            . "FROM ciniki_ags_exhibit_tags "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND tag_type = 20 "
+            . "ORDER BY permalink "
+            . "";
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'tags', 'fname'=>'permalink', 'fields'=>array('name'=>'tag_name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.160', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
+        }
+        if( isset($rc['tags']) ) {
+            $rsp['settings']['etypes'] = $rc['tags'];
+        }
+    }
 
     //
     // Check permissions for what menu items should be available

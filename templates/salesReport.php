@@ -110,7 +110,7 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
         //
         // Add the items
         //
-        $w = array(24, 75, 22, 9, 20, 20, 20);
+        $w = array(24, 74, 23, 9, 20, 20, 20);
         $pdf->SetFillColor(224);
         $pdf->SetFont('', 'B');
         $pdf->SetCellPaddings(1.5,2,1.5,2);

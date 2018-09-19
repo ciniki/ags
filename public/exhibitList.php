@@ -20,6 +20,7 @@ function ciniki_ags_exhibitList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'etype'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit Type'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -66,15 +67,32 @@ function ciniki_ags_exhibitList($ciniki) {
         . "exhibits.start_date AS start_date_display, "
         . "DATE_FORMAT(exhibits.start_date, '%Y') AS year, "
         . "exhibits.end_date, "
-        . "exhibits.end_date AS end_date_display "
-        . "FROM ciniki_ags_exhibits AS exhibits "
-        . "LEFT JOIN ciniki_ags_locations AS locations ON ("
-            . "exhibits.location_id = locations.id "
-            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "WHERE exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "ORDER BY year, exhibits.start_date DESC, exhibits.name ASC "
-        . "";
+        . "exhibits.end_date AS end_date_display ";
+    if( isset($args['etype']) && $args['etype'] != '' ) {
+        $strsql .= "FROM ciniki_ags_exhibit_tags AS tags "
+            . "LEFT JOIN ciniki_ags_exhibits AS exhibits ON ("
+                . "tags.exhibit_id = exhibits.id "
+                . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_ags_locations AS locations ON ("
+                . "exhibits.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND tags.tag_type = 20 "
+            . "AND tags.permalink = '" . ciniki_core_dbQuote($ciniki, $args['etype']) . "' "
+            . "ORDER BY year, exhibits.start_date DESC, exhibits.name ASC "
+            . "";
+    } else {
+        $strsql .= "FROM ciniki_ags_exhibits AS exhibits "
+            . "LEFT JOIN ciniki_ags_locations AS locations ON ("
+                . "exhibits.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY year, exhibits.start_date DESC, exhibits.name ASC "
+            . "";
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'years', 'fname'=>'year', 'fields'=>array('year')),
