@@ -27,17 +27,17 @@ function ciniki_ags_main() {
     this.exhibits.etype = '';
     this.exhibits.sections = {
         '_tabs':this.menutabs,
-        'search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':4,
-            'headerValues':['Name', 'Location', 'Start', 'End'],
+        'search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
+            'headerValues':['Name', 'Location', 'Start', 'End', 'Visible'],
             'cellClasses':[''],
             'hint':'Search exhibits',
             'noData':'No exhibits found',
             },
         '_years':{'label':'', 'type':'paneltabs', 'selected':'', 'tabs':{}, 'visible':'no'},
-        'exhibits':{'label':'Exhibits', 'type':'simplegrid', 'num_cols':4,
-            'headerValues':['Name', 'Location', 'Start', 'End'],
+        'exhibits':{'label':'Exhibits', 'type':'simplegrid', 'num_cols':5,
+            'headerValues':['Name', 'Location', 'Start', 'End', 'Visible'],
             'sortable':'yes',
-            'sortTypes':['date', 'date', 'text', 'text'],
+            'sortTypes':['date', 'date', 'text', 'text', 'text'],
             'noData':'No exhibit',
             'addTxt':'Add Exhibit',
             'addFn':'M.ciniki_ags_main.exhibitedit.open(\'M.ciniki_ags_main.exhibits.open();\',0);'
@@ -56,6 +56,7 @@ function ciniki_ags_main() {
             case 1: return d.location_name;
             case 2: return d.start_date_display;
             case 3: return d.end_date_display;
+            case 4: return d.visible;
         }
     }
     this.exhibits.liveSearchResultRowFn = function(s, f, i, j, d) {
@@ -80,8 +81,15 @@ function ciniki_ags_main() {
                 case 1: return d.location_name;
                 case 2: return d.start_date_display;
                 case 3: return d.end_date_display;
+                case 4: return d.visible;
             }
         }
+    }
+    this.exhibits.rowClass = function(s, i, d) {
+        if( s == 'exhibits' && d.visible == 'No' ) {
+            return 'statusgrey';
+        }
+        return '';
     }
     this.exhibits.rowFn = function(s, i, d) {
         if( s == 'exhibits' ) {

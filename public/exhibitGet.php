@@ -178,6 +178,12 @@ function ciniki_ags_exhibitGet($ciniki) {
         }
     }
 
+    if( ($rsp['exhibit']['flags']&0x01) == 0x01 ) {
+        $rsp['exhibit_details'][] = array('label'=>'Visible', 'value'=>'Yes');
+    } else {
+        $rsp['exhibit_details'][] = array('label'=>'Visible', 'value'=>'No');
+    }
+
     //
     // Get the list of locations
     //

@@ -66,6 +66,7 @@ function ciniki_ags_exhibitList($ciniki) {
         . "exhibits.start_date, "
         . "exhibits.start_date AS start_date_display, "
         . "DATE_FORMAT(exhibits.start_date, '%Y') AS year, "
+        . "IF((exhibits.flags&0x01)=0x01, 'Yes', 'No') AS visible, "
         . "exhibits.end_date, "
         . "exhibits.end_date AS end_date_display ";
     if( isset($args['etype']) && $args['etype'] != '' ) {
@@ -98,7 +99,7 @@ function ciniki_ags_exhibitList($ciniki) {
         array('container'=>'years', 'fname'=>'year', 'fields'=>array('year')),
         array('container'=>'exhibits', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'permalink', 'location_id', 'location_name', 'status', 'status_text', 'flags', 
-                'start_date', 'start_date_display', 'end_date', 'end_date_display'),
+                'start_date', 'start_date_display', 'visible', 'end_date', 'end_date_display'),
             'maps'=>array('status_text'=>$maps['exhibit']['status']),
             'utctotz'=>array('start_date_display'=>array('timezone'=>'UTC', 'format'=>$date_format),
                 'end_date_display'=>array('timezone'=>'UTC', 'format'=>$date_format),
