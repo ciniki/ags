@@ -52,9 +52,12 @@
 # synopsis:                 The synopsis of the item.
 # description:              The full description of the item.
 #
-# tag_info:                 The information for the second tag side.
-#
+# creation_year:            The year the item was created.
 # medium:                   The medium of the item (optional).
+# size:                     The size of the item (optional).
+# current_condition:        The current condition of the item (optional).
+#
+# tag_info:                 The information for the second tag side.
 #
 # notes:                    Any notes for the item, special instructions, etc.
 #
@@ -80,8 +83,11 @@ create table ciniki_ags_items (
     primary_image_id int not null,
     synopsis varchar(6000) not null,
     description text not null,
-    tag_info varchar(250) not null,
+    creation_year varchar(20) not null,
     medium varchar(250) not null,
+    size varchar(50) not null,
+    current_condition varchar(250) not null,
+    tag_info varchar(250) not null,
     notes text not null,
     date_added datetime not null,
     last_updated datetime not null,
@@ -90,4 +96,4 @@ create table ciniki_ags_items (
     unique index (code, tnid),
     unique index (permalink, tnid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

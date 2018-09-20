@@ -152,7 +152,10 @@ function ciniki_ags_itemGet($ciniki) {
             . "ciniki_ags_items.synopsis, "
             . "ciniki_ags_items.description, "
             . "ciniki_ags_items.tag_info, "
+            . "ciniki_ags_items.creation_year, "
             . "ciniki_ags_items.medium, "
+            . "ciniki_ags_items.size, "
+            . "ciniki_ags_items.current_condition, "
             . "ciniki_ags_items.notes "
             . "FROM ciniki_ags_items "
             . "WHERE ciniki_ags_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -161,8 +164,10 @@ function ciniki_ags_itemGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'items', 'fname'=>'id', 
-                'fields'=>array('exhibitor_id', 'exhibitor_code', 'code', 'name', 'permalink', 'status', 'flags', 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 'taxtype_id', 
-                    'primary_image_id', 'synopsis', 'description', 'tag_info', 'medium', 'notes'),
+                'fields'=>array('exhibitor_id', 'exhibitor_code', 'code', 'name', 'permalink', 'status', 'flags', 
+                    'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 'taxtype_id', 
+                    'primary_image_id', 'synopsis', 'description', 'tag_info', 
+                    'creation_year', 'medium', 'size', 'current_condition', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

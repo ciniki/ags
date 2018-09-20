@@ -1793,7 +1793,10 @@ function ciniki_ags_main() {
             'code':{'label':'Code', 'required':'yes', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'tag_info':{'label':'Tag Info', 'required':'no', 'type':'text'},
+            'creation_year':{'label':'Creation Year', 'required':'no', 'size':'small', 'type':'text'},
             'medium':{'label':'Medium', 'required':'no', 'type':'text'},
+            'size':{'label':'Size', 'required':'no', 'size':'small', 'type':'text'},
+            'current_condition':{'label':'Condition', 'required':'no', 'type':'text'},
             'exhibitor_code':{'label':'Exhibitor Code', 'type':'text'},
             }},
         '_types':{'label':'Type', 'aside':'yes', 'fields':{

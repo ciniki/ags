@@ -1,0 +1,7 @@
+#
+# Adding extra fields for item tracking
+#
+ALTER TABLE ciniki_ags_items ADD COLUMN creation_year varchar(20) not null AFTER description;
+ALTER TABLE ciniki_ags_items ADD COLUMN size varchar(50) not null AFTER medium;
+ALTER TABLE ciniki_ags_items ADD COLUMN current_condition varchar(250) not null AFTER size;
+ALTER TABLE ciniki_ags_items COMMENT='v1.02';
