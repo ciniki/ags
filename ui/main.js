@@ -144,7 +144,7 @@ function ciniki_ags_main() {
     this.exhibit.sections = {
         'exhibit_details':{'label':'', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
             'cellClasses':['label', ''],
-            'changeTxt':'Edit',
+            'changeTxt':'Edit Exhibit',
             'changeFn':'M.ciniki_ags_main.exhibitedit.open(\'M.ciniki_ags_main.exhibit.open();\',M.ciniki_ags_main.exhibit.exhibit_id,null);',
             },
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
@@ -979,6 +979,10 @@ function ciniki_ags_main() {
                 'visible':function() { return M.ciniki_ags_main.editparticipant.participant_id > 0 ? 'yes' : 'no'},
                 'fn':'M.ciniki_ags_main.editparticipant.save();',
                 },
+            'delete':{'label':'Remove Participant', 
+                'visible':function() { return M.ciniki_ags_main.editparticipant.participant_id > 0 ? 'yes' : 'no'},
+                'fn':'M.ciniki_ags_main.editparticipant.remove();',
+                },
             }},
         };
     this.editparticipant.fieldValue = function(s, i, d) { return this.data[i]; }
@@ -1043,6 +1047,17 @@ function ciniki_ags_main() {
                 }
                 M.ciniki_ags_main.participant.participant_id = rsp.id;
                 M.ciniki_ags_main.participant.open();
+            });
+        }
+    }
+    this.editparticipant.remove = function() {
+        if( confirm('Are you sure you want to remove this participant?') ) {
+            M.api.getJSONCb('ciniki.ags.participantDelete', {'tnid':M.curTenantID, 'participant_id':this.participant_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_ags_main.participant.close();
             });
         }
     }

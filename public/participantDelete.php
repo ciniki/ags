@@ -40,7 +40,7 @@ function ciniki_ags_participantDelete(&$ciniki) {
     //
     // Get the current settings for the participant
     //
-    $strsql = "SELECT id, uuid "
+    $strsql = "SELECT id, uuid, exhibit_id, exhibitor_id "
         . "FROM ciniki_ags_participants "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['participant_id']) . "' "
@@ -57,6 +57,40 @@ function ciniki_ags_participantDelete(&$ciniki) {
     //
     // Check for any dependencies before deleting
     //
+    // Exhibit Items
+    $strsql = "SELECT COUNT(eitems.id) AS num_items "
+        . "FROM ciniki_ags_exhibit_items AS eitems, ciniki_ags_items AS items "
+        . "WHERE eitems.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibit_id']) . "' "
+        . "AND eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND eitems.item_id = items.id "
+        . "AND items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibitor_id']) . "' "
+        . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.ags', 'num');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( $rc['num'] > 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.57', 'msg'=>'There are exhibit items for this participant and cannot be removed.'));
+    }
+    // Sales
+    $strsql = "SELECT COUNT(sales.id) AS num_items "
+        . "FROM ciniki_ags_item_sales AS sales, ciniki_ags_items AS items "
+        . "WHERE sales.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibit_id']) . "' "
+        . "AND sales.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND sales.item_id = items.id "
+        . "AND items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibitor_id']) . "' "
+        . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.ags', 'num');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( $rc['num'] > 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.57', 'msg'=>'There are exhibit sales for this participant and cannot be removed.'));
+    }
 
     //
     // Check if any modules are currently using this object

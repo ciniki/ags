@@ -55,7 +55,7 @@ function ciniki_ags_locationDelete(&$ciniki) {
     $location = $rc['location'];
 
     //
-    // Check for any dependencies before deleting
+    // FIXME: Check for any dependencies before deleting
     //
 
     //
