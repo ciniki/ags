@@ -23,6 +23,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'exhibit_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit'),
         'exhibitor_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit'),
+        'template'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Template'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -75,12 +76,23 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
     //
     // Get the exhibit name
     //
-    $report_title = 'Inventory';
+    if( isset($args['template']) && $args['template'] == 'riskmanagement' ) {
+        $report_title = 'Risk Management';
+    } else {
+        $report_title = 'Inventory';
+    }
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
-        $strsql = "SELECT name "
-            . "FROM ciniki_ags_exhibits "
-            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
-            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        $strsql = "SELECT exhibits.name, "
+            . "DATE_FORMAT(exhibits.start_date, '%b %e, %Y') AS start_date, "
+            . "DATE_FORMAT(exhibits.end_date, '%b %e, %Y') AS end_date, "
+            . "locations.name AS location_name "
+            . "FROM ciniki_ags_exhibits AS exhibits "
+            . "LEFT JOIN ciniki_ags_locations AS locations ON ("
+                . "exhibits.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE exhibits.id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
+            . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'exhibit');
         if( $rc['stat'] != 'ok' ) {
@@ -98,6 +110,10 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
         . "items.exhibitor_id, "
         . "items.code, "
         . "items.name, "
+        . "items.creation_year, "
+        . "items.medium, "
+        . "items.size, "
+        . "items.current_condition, "
         . "items.tag_info, "
         . "items.flags AS flags_text, "
         . "items.exhibitor_code, "
@@ -114,17 +130,18 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
             . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "ORDER by exhibitors.display_name, items.code, items.name "
         . "";
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
         $strsql .= "AND eitems.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' ";
     }
+    $strsql .= "ORDER by exhibitors.display_name, items.code, items.name ";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'exhibitors', 'fname'=>'exhibitor_id', 
             'fields'=>array('display_name')),
         array('container'=>'items', 'fname'=>'exhibit_item_id', 
-            'fields'=>array('code', 'name', 'exhibitor_code', 'tag_info', 'flags_text', 'inventory', 'unit_amount')),
+            'fields'=>array('code', 'name', 'exhibitor_code', 'creation_year', 'medium', 'size', 'current_condition', 
+                'tag_info', 'flags_text', 'inventory', 'unit_amount')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.147', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
@@ -137,17 +154,34 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
     
     $today = new DateTime('now', new DateTimezone($intl_timezone));
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'inventoryReport');
-    $rc = ciniki_ags_templates_inventoryReport($ciniki, $args['tnid'], array(
-        'title'=>$report_title,
-        'author'=>$tenant_details['name'],
-        'footer'=>$today->format('M d, Y'),
-        'exhibitors'=>$exhibitors,
-        ));
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
+    if( isset($args['template']) && $args['template'] == 'riskmanagement' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'riskManagementReport');
+        $rc = ciniki_ags_templates_riskManagementReport($ciniki, $args['tnid'], array(
+            'title' => $report_title,
+            'start_date' => $exhibit['start_date'],
+            'end_date' => $exhibit['end_date'],
+            'author' => $tenant_details['name'],
+            'location' => $exhibit['location_name'],
+            'footer' => $today->format('M d, Y'),
+            'exhibitors' => $exhibitors,
+            ));
+        if( $rc['stat'] != 'ok' ) { 
+            return $rc;
+        }
+        $pdf = $rc['pdf'];
+    } else {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'inventoryReport');
+        $rc = ciniki_ags_templates_inventoryReport($ciniki, $args['tnid'], array(
+            'title' => $report_title,
+            'author' => $tenant_details['name'],
+            'footer' => $today->format('M d, Y'),
+            'exhibitors' => $exhibitors,
+            ));
+        if( $rc['stat'] != 'ok' ) { 
+            return $rc;
+        }
+        $pdf = $rc['pdf'];
     }
-    $pdf = $rc['pdf'];
 
     //
     // Output the pdf

@@ -153,6 +153,7 @@ function ciniki_ags_main() {
             'pricebookpdf':{'label':'Untagged Price Book (PDF)', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceBook();'},
             'inventorypdf':{'label':'Current Inventory (PDF)', 'fn':'M.ciniki_ags_main.exhibit.currentInventoryPDF();'},
             'salespdf':{'label':'Unpaid Sales (PDF)', 'fn':'M.ciniki_ags_main.exhibit.unpaidSalesPDF();'},
+            'riskpdf':{'label':'Risk Management Form', 'fn':'M.ciniki_ags_main.exhibit.riskManagementPDF();'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'participants', 
             'tabs':{
@@ -388,6 +389,9 @@ function ciniki_ags_main() {
     this.exhibit.unpaidSalesPDF = function() {
         M.api.openPDF('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
     }
+    this.exhibit.riskManagementPDF = function() {
+        M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'template':'riskmanagement'});
+    }
     this.exhibit.addClose('Back');
 
     //
@@ -572,6 +576,10 @@ function ciniki_ags_main() {
             'summarypdf':{'label':'Unpaid Sales (PDF)', 
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
                 'fn':'M.ciniki_ags_main.participant.unpaidSalesPDF();',
+                },
+            'riskpdf':{'label':'Risk Management Form', 
+                'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
+                'fn':'M.ciniki_ags_main.participant.riskManagementPDF();',
                 },
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'inventory', 
@@ -851,6 +859,9 @@ function ciniki_ags_main() {
     }
     this.participant.exhibitInventoryPDF = function() {
         M.api.openFile('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
+    }
+    this.participant.riskManagementPDF = function() {
+        M.api.openFile('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id, 'template':'riskmanagement'});
     }
     this.participant.unpaidSalesPDF = function() {
         M.api.openFile('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
