@@ -108,7 +108,7 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
     // Add the items
     //
     //$w = array(40, 75, 45, 20);
-    $w = array(45, 115, 20);
+    $w = array(50, 110, 20);
 
     $fill=0;
     $lh = 8;
@@ -181,7 +181,7 @@ function ciniki_ags_templates_pricebook(&$ciniki, $tnid, $args) {
             $pdf->MultiCell($w[0], $lh, '', 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[1], $lh, $name . "\n" . $item['display_name'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
 //            $pdf->MultiCell($w[2], $lh, $item['display_name'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[3], $lh, $price, 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[2], $lh, $price, 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->Ln(); 
             $x2 = $pdf->getX();
             $y2 = $pdf->getY();
