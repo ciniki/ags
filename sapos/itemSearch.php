@@ -73,6 +73,7 @@ function ciniki_ags_sapos_itemSearch($ciniki, $tnid, $args) {
             $item['object'] = 'ciniki.ags.exhibititem';
             $item['object_id'] = $item['exhibit_item_id'];
             $item['quantity'] = 1;
+            $item['notes'] = '';
             $items[] = array('item'=>$item);
         }
     }
