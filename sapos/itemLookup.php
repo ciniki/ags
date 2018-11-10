@@ -31,7 +31,7 @@ function ciniki_ags_sapos_itemLookup($ciniki, $tnid, $args) {
             . "items.unit_discount_amount, "
             . "items.unit_discount_percentage, "
             . "items.taxtype_id, "
-            . "eitems.inventory AS quantity, "
+            . "eitems.inventory AS inventory_current_num, "
             . "exhibits.name AS exhibit_name "
             . "FROM ciniki_ags_exhibit_items AS eitems "
             . "INNER JOIN ciniki_ags_items AS items ON ("
@@ -55,6 +55,7 @@ function ciniki_ags_sapos_itemLookup($ciniki, $tnid, $args) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.131', 'msg'=>'Unable to find item'));
         }
         $item = $rc['item'];
+        $item['quantity'] = 1;
         $item['status'] = 0;
         $item['flags'] = 0x02;
         $item['price_id'] = 0;
