@@ -270,12 +270,26 @@ function ciniki_ags_main() {
                 case 4: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
             }
         }
-        if( s == 'paid_sales' || s == 'pending_payouts' ) {
+        if( s == 'paid_sales' ) {
             switch(j) {
                 case 0: return d.display_name;
                 case 1: return d.code;
                 case 2: return d.name;
                 case 3: return d.tenant_amount_display;
+                case 4: return d.exhibitor_amount_display;
+                case 5: return d.total_amount_display;
+            }
+        }
+        if( s == 'pending_payouts' ) {
+            switch(j) {
+                case 0: return d.display_name;
+                case 1: return d.code;
+                case 2: return d.name;
+                case 3: 
+                    if( (M.userPerms&0x01) == 0x01 || M.curTenant.permissions.owners != null || M.curTenant.permissions.resellers != null ) {
+                        return d.tenant_amount_display + '<span class="faicon edit">&#xf040;</span>';
+                    }
+                    return d.tenant_amount_display;
                 case 4: return d.exhibitor_amount_display;
                 case 5: return d.total_amount_display;
             }
@@ -321,6 +335,9 @@ function ciniki_ags_main() {
         if( (s == 'inventory' || s == 'inventory_search') && j == 4 ) {
             return 'event.stopPropagation(); return M.ciniki_ags_main.exhibit.inventoryUpdate(event,\'' + d.id + '\');';
         }
+        if( s == 'pending_payouts' && j == 3 ) {
+            return 'event.stopPropagation(); return M.ciniki_ags_main.exhibit.saleFeeUpdate(event,\'' + d.id + '\');';
+        }
         return '';
     }
     this.exhibit.rowFn = function(s, i, d) {
@@ -342,6 +359,19 @@ function ciniki_ags_main() {
         this.showHideSection('sales_search');
         this.showHideSection('pending_payouts');
         this.showHideSection('paid_sales');
+    }
+    this.exhibit.saleFeeUpdate = function(event,sid) {
+        var i = prompt('Enter new fee: ');
+        if( i != null && i != '' ) {
+            i = parseFloat(i);
+            M.api.getJSONCb('ciniki.ags.itemSaleUpdate', {'tnid':M.curTenantID, 'sale_id':sid, 'tenant_amount':i}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_ags_main.exhibit.open();
+            });
+        }
     }
     this.exhibit.inventoryUpdate = function(event,ei_id) {
         var i = prompt('Enter new inventory quantity: ');
@@ -699,12 +729,27 @@ function ciniki_ags_main() {
             }
             return '';
         }
-        if( s == 'paid_sales' || s == 'pending_payouts' ) {
+        if( s == 'paid_sales' ) {
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
                 case 2: return d.sell_date;
                 case 3: return d.tenant_amount_display;
+                case 4: return d.exhibitor_amount_display;
+                case 5: return d.total_amount_display;
+                case 6: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
+            }
+        }
+        if( s == 'pending_payouts' ) {
+            switch(j) {
+                case 0: return d.code;
+                case 1: return d.name;
+                case 2: return d.sell_date;
+                case 3: 
+                    if( (M.userPerms&0x01) == 0x01 || M.curTenant.permissions.owners != null || M.curTenant.permissions.resellers != null ) {
+                        return d.tenant_amount_display + '<span class="faicon edit">&#xf040;</span>';
+                    }
+                    return d.tenant_amount_display;
                 case 4: return d.exhibitor_amount_display;
                 case 5: return d.total_amount_display;
                 case 6: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
@@ -743,6 +788,9 @@ function ciniki_ags_main() {
         if( s == 'inventory' && j == 4 ) {
             return 'event.stopPropagation(); return M.ciniki_ags_main.participant.inventoryUpdate(event,\'' + d.exhibit_item_id + '\');';
         }
+        if( s == 'pending_payouts' && j == 3 ) {
+            return 'event.stopPropagation(); return M.ciniki_ags_main.participant.saleFeeUpdate(event,\'' + d.id + '\');';
+        }
         return '';
     }
     this.participant.rowFn = function(s, i, d) {
@@ -772,6 +820,19 @@ function ciniki_ags_main() {
         this.showHideSection('available');
         this.showHideSection('pending_payouts');
         this.showHideSection('paid_sales');
+    }
+    this.participant.saleFeeUpdate = function(event,sid) {
+        var i = prompt('Enter new fee: ');
+        if( i != null && i != '' ) {
+            i = parseFloat(i);
+            M.api.getJSONCb('ciniki.ags.itemSaleUpdate', {'tnid':M.curTenantID, 'sale_id':sid, 'tenant_amount':i}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_ags_main.participant.open();
+            });
+        }
     }
     this.participant.inventoryUpdate = function(event,ei_id) {
         var i = prompt('Enter new inventory quantity: ');
