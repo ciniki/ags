@@ -51,6 +51,30 @@ function ciniki_ags_locationAdd(&$ciniki) {
     }
 
     //
+    // Setup permalink
+    //
+    if( !isset($args['permalink']) || $args['permalink'] == '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+    }
+    
+    //
+    // Make sure the permalink is unique
+    //
+    $strsql = "SELECT id, name, permalink "
+        . "FROM ciniki_ags_locations "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return ;
+    }
+    if( $rc['num_rows'] > 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.163', 'msg'=>'You already have an item with that name, please choose another.', 'err'=>$rc['err']));
+    }
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
