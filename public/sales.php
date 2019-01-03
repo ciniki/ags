@@ -101,7 +101,7 @@ function ciniki_ags_sales($ciniki) {
         $end_date_formatted = $dt1->format($date_format);
     }
     if( !isset($args['start_date']) || $args['start_date'] == '' || $args['start_date'] == '0000-00-00' ) {
-        $dt->sub(new DateInterval('P67D'));
+        $dt->sub(new DateInterval('P7D'));
         $args['start_date'] = $dt->format('Y-m-d');
         $start_date_formatted = $dt->format($date_format);
     } else {
