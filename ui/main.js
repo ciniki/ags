@@ -2178,7 +2178,8 @@ function ciniki_ags_main() {
             'exhibitor_id':{'label':'Exhibitor', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_ags_main.sales.open'},
             }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
-            'update':{'label':'Update', 'fn':'M.ciniki_ags_main.sales.open();'},
+//            'update':{'label':'Update', 'fn':'M.ciniki_ags_main.sales.open();'},
+            'salespdf':{'label':'Unpaid Sales (PDF)', 'fn':'M.ciniki_ags_main.sales.unpaidSalesPDF();'},
             }},
 /*        'search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
             'headerValues':['Name', 'Location', 'Start', 'End', 'Visible'],
@@ -2256,6 +2257,13 @@ function ciniki_ags_main() {
         this.savePos();
         var c = this.serializeForm('yes');
         M.api.postJSONCb('ciniki.ags.sales', {'tnid':M.curTenantID, 'action':'itempaid', 'sale_id':i}, c, this.openFinish);
+    }
+    this.sales.unpaidSalesPDF = function() {
+        var args = {'tnid':M.curTenantID};
+        args['start_date'] = this.formValue('start_date');
+        args['end_date'] = this.formValue('end_date');
+        args['exhibitor_id'] = this.formValue('exhibitor_id');
+        M.api.openPDF('ciniki.ags.unpaidSalesPDF', args);
     }
     this.sales.openFinish = function(rsp) {
         if( rsp.stat != 'ok' ) {

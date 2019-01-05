@@ -32,6 +32,7 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
     class MYPDF extends TCPDF {
         //Page header
         public $title = '';
+        public $subtitle = '';
         public $footer_msg = '';
 
         public function Header() {
@@ -40,6 +41,9 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
             //
             $this->SetFont('', 'B', 14);
             $this->Cell(190, 12, $this->title, 0, false, 'C', 0);
+            $this->Ln(8);
+            $this->SetFont('', '', 14);
+            $this->Cell(190, 12, $this->subtitle, 0, false, 'C', 0);
         }
 
         // Page footer
@@ -71,6 +75,9 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
     if( isset($args['title']) ) {
         $pdf->title = $args['title'];
     }
+    if( isset($args['subtitle']) ) {
+        $pdf->subtitle = $args['subtitle'];
+    }
     if( isset($args['footer']) ) {
         $pdf->footer_msg = $args['footer'];
     }
@@ -85,7 +92,7 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
     $pdf->SetKeywords('');
 
     // set margins
-    $pdf->SetMargins(10, 19, 10);
+    $pdf->SetMargins(10, 30, 10);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
     $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
@@ -99,7 +106,8 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
         $pdf->SetFont('times', 'BI', 10);
         $pdf->SetCellPadding(2);
 
-        $pdf->title = $args['title'] . ' - ' . $exhibitor['display_name'];
+//        $pdf->title = $args['title']
+        $pdf->subtitle = $exhibitor['display_name'];
         // add a page
         $pdf->startPageGroup();
         $pdf->AddPage();

@@ -21,6 +21,8 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
+        'start_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Start'),
+        'end_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'End'),
         'exhibit_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit'),
         'exhibitor_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit'),
         ));
@@ -54,6 +56,7 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
 
     if( (!isset($args['exhibit_id']) || $args['exhibit_id'] == 0 || $args['exhibit_id'] == '')
         && (!isset($args['exhibitor_id']) || $args['exhibitor_id'] == 0 || $args['exhibitor_id'] == '') 
+        && (!isset($args['start_date']) || $args['start_date'] == '') 
         ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.140', 'msg'=>'An exhibit or exhibitor must be specified'));
     }
@@ -92,6 +95,16 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
         $exhibit = $rc['exhibit'];
         $report_title = $exhibit['name'] . ' - Unpaid Sales';
     }
+    if( isset($args['start_date']) && $args['start_date'] != '' ) {
+        $dt = new DateTime($args['start_date'], new DateTimezone($intl_timezone));
+        if( !isset($args['end_date']) ) {
+            $edt = new DateTime('now', new DateTimezone($intl_timezone));
+            $args['end_date'] = $dt->format('Y-m-d');
+        } else {
+            $edt = new DateTime($args['end_date'], new DateTimezone($intl_timezone));
+        }
+        $report_title .= ' from ' . $dt->format($date_format) . ' to ' . $edt->format($date_format);
+    }
 
     $strsql = "SELECT sales.id AS sales_id, "
         . "exhibitors.display_name, "
@@ -114,12 +127,18 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
             . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE sales.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND (sales.flags&0x02) = 0 "
-        . "ORDER by exhibitors.display_name, items.code, items.name "
-        . "";
+        . "AND (sales.flags&0x02) = 0 ";
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
         $strsql .= "AND sales.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' ";
     }
+    if( isset($args['start_date']) && $args['start_date'] != '' ) {
+        $strsql .= "AND sales.sell_date >= '" . ciniki_core_dbQuote($ciniki, $args['start_date']) . "' ";
+    }
+    if( isset($args['end_date']) && $args['end_date'] != '' ) {
+        $strsql .= "AND sales.sell_date <= '" . ciniki_core_dbQuote($ciniki, $args['end_date']) . "' ";
+    }
+    $strsql .= "ORDER by exhibitors.display_name, items.code, items.name "
+        . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'exhibitors', 'fname'=>'exhibitor_id', 
