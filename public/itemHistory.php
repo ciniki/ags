@@ -41,6 +41,9 @@ function ciniki_ags_itemHistory($ciniki) {
         return $rc;
     }
 
+    if( strncmp('inventory_', $args['field'], 10) == 0 ) {
+    }
+
     if( $args['field'] == 'unit_amount' || $args['field'] == 'unit_discount_amount' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
         return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.ags', 'ciniki_ags_history', $args['tnid'], 'ciniki_ags_items', $args['item_id'], $args['field'], 'currency');

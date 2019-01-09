@@ -1904,9 +1904,10 @@ function ciniki_ags_main() {
             }},
         'inventory':{'label':'Inventory', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
             'visible':function() { return M.ciniki_ags_main.item.item_id > 0 ? 'yes' : 'no'; },
-            'headerValues':['Exhibit', 'Inventory'],
-            'headerClasses':['', 'alignright'],
-            'cellClasses':['', 'alignright'],
+            'headerValues':['Exhibit', 'Inventory', ''],
+            'headerClasses':['', 'alignright', 'alignright'],
+            'cellClasses':['', 'alignright', 'alignright'],
+            'history':'yes',
             },
         '_primary_image_id':{'label':'Image', 'type':'imageform', 'panelcolumn':1, 'fields':{
             'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
@@ -1940,6 +1941,9 @@ function ciniki_ags_main() {
         };
     this.item.fieldValue = function(s, i, d) { return this.data[i]; }
     this.item.fieldHistoryArgs = function(s, i) {
+        if( s == 'inventory' ) {
+            return {'method':'ciniki.ags.exhibitItemHistory', 'args':{'tnid':M.curTenantID, 'exhibit_item_id':this.data.inventory[i].id, 'field':'inventory'}};
+        }
         return {'method':'ciniki.ags.itemHistory', 'args':{'tnid':M.curTenantID, 'item_id':this.item_id, 'field':i}};
     }
     this.item.thumbFn = function(s, i, d) {
@@ -1955,6 +1959,9 @@ function ciniki_ags_main() {
         if( s == 'inventory' && j == 1 ) {
             return 'event.stopPropagation(); return M.ciniki_ags_main.item.inventoryUpdate(event,\'' + d.id + '\');';
         }
+//        if( s == 'inventory' && j == 2 ) {
+//            return 'event.stopPropagation(); M.ciniki_ags_main.item.toggleFormFieldHistory(event, \'price\',\'flags\');';
+//        }
         return '';
     }
     this.item.inventoryUpdate = function(event,ei_id) {
