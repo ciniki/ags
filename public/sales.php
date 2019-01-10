@@ -46,7 +46,9 @@ function ciniki_ags_sales($ciniki) {
     //
     // Check if action is to mark item paid
     //
-    if( isset($args['action']) && $args['action'] == 'itempaid' && isset($args['sale_id']) && $args['sale_id'] > 0 ) {
+    if( isset($args['action']) && ($args['action'] == 'itempaid' || $args['action'] == 'itemnotpaid') 
+        && isset($args['sale_id']) && $args['sale_id'] > 0 
+        ) {
         $strsql = "SELECT id, flags "
             . "FROM ciniki_ags_item_sales "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['sale_id']) . "' "
@@ -64,9 +66,16 @@ function ciniki_ags_sales($ciniki) {
         //
         // Mark sale as paid
         //
-        if( ($sale['flags']&0x02) == 0 ) {
+        if( $args['action'] == 'itempaid' && ($sale['flags']&0x02) == 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.itemsale', $sale['id'], array('flags'=>($sale['flags']|0x02)), 0x07);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.166', 'msg'=>'', 'err'=>$rc['err']));
+            }
+        }
+        elseif( $args['action'] == 'itemnotpaid' && ($sale['flags']&0x02) == 0x02 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.itemsale', $sale['id'], array('flags'=>($sale['flags']&0xFFFD)), 0x07);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.166', 'msg'=>'', 'err'=>$rc['err']));
             }

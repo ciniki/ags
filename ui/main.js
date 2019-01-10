@@ -669,7 +669,7 @@ function ciniki_ags_main() {
             'sortTypes':['text', 'text', 'number', 'date', 'number', 'number', 'number'],
             'headerValues':['Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals', ''],
             },
-        'paid_sales':{'label':'Paid Sales', 'type':'simplegrid', 'num_cols':6,
+        'paid_sales':{'label':'Paid Sales', 'type':'simplegrid', 'num_cols':7,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'sales' ? 'yes' : 'hidden'},
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'date', 'number', 'number', 'number'],
@@ -745,17 +745,6 @@ function ciniki_ags_main() {
             }
             return '';
         }
-        if( s == 'paid_sales' ) {
-            switch(j) {
-                case 0: return d.code;
-                case 1: return d.name;
-                case 2: return d.sell_date;
-                case 3: return d.tenant_amount_display;
-                case 4: return d.exhibitor_amount_display;
-                case 5: return d.total_amount_display;
-                case 6: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
-            }
-        }
         if( s == 'pending_payouts' ) {
             switch(j) {
                 case 0: return d.code;
@@ -769,6 +758,17 @@ function ciniki_ags_main() {
                 case 4: return d.exhibitor_amount_display;
                 case 5: return d.total_amount_display;
                 case 6: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
+            }
+        }
+        if( s == 'paid_sales' ) {
+            switch(j) {
+                case 0: return d.code;
+                case 1: return d.name;
+                case 2: return d.sell_date;
+                case 3: return d.tenant_amount_display;
+                case 4: return d.exhibitor_amount_display;
+                case 5: return d.total_amount_display;
+                case 6: return '<button onclick="M.ciniki_ags_main.participant.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>';
             }
         }
     }
@@ -918,6 +918,11 @@ function ciniki_ags_main() {
         e.stopPropagation();
         this.savePos();
         M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id, 'action':'itempaid', 'sale_id':i}, this.openFinish);
+    }
+    this.participant.itemNotPaid = function(e, i) {
+        e.stopPropagation();
+        this.savePos();
+        M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id, 'action':'itemnotpaid', 'sale_id':i}, this.openFinish);
     }
     this.participant.printBarcodes = function() {
         var row = this.formValue('start_row');
@@ -1591,7 +1596,7 @@ function ciniki_ags_main() {
             'headerValues':['Item', 'Exhibit', 'Date/Inv #', 'Fees', 'Payout', 'Total'],
             'noData':'No pending payouts',
             },
-        'paid_sales':{'label':'Paid Sales', 'type':'simplegrid', 'num_cols':6,
+        'paid_sales':{'label':'Paid Sales', 'type':'simplegrid', 'num_cols':7,
             'visible':function() { return M.ciniki_ags_main.exhibitor.sections._tabs.selected == 'sales' ? 'yes' : 'hidden'},
             'headerValues':['Item', 'Exhibit', 'Date/Inv #', 'Fees', 'Payout', 'Total'],
             'noData':'No Paid Sales',
@@ -1653,7 +1658,7 @@ function ciniki_ags_main() {
                 case 4: return d.status_text;
             }
         }
-        if( s == 'pending_payouts' || s == 'paid_sales' ) {
+        if( s == 'pending_payouts' ) {
             switch(j) {
                 case 0: return d.code + ': ' + d.name;
                 case 1: return d.exhibit_name;
@@ -1662,6 +1667,17 @@ function ciniki_ags_main() {
                 case 4: return d.exhibitor_amount_display;
                 case 5: return d.total_amount_display;
                 case 6: return '<button onclick="M.ciniki_ags_main.exhibitor.itemPaid(event,' + d.id + ');">Paid</button>';
+            }
+        }
+        if( s == 'paid_sales' ) {
+            switch(j) {
+                case 0: return d.code + ': ' + d.name;
+                case 1: return d.exhibit_name;
+                case 2: return d.sell_date;
+                case 3: return d.tenant_amount_display;
+                case 4: return d.exhibitor_amount_display;
+                case 5: return d.total_amount_display;
+                case 6: return '<button onclick="M.ciniki_ags_main.exhibitor.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>';
             }
         }
     }
@@ -1710,6 +1726,11 @@ function ciniki_ags_main() {
         e.stopPropagation();
         this.savePos();
         M.api.getJSONCb('ciniki.ags.exhibitorGet', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'customer_id':this.customer_id, 'action':'itempaid', 'sale_id':i}, this.openFinish);
+    }
+    this.exhibitor.itemNotPaid = function(e, i) {
+        e.stopPropagation();
+        this.savePos();
+        M.api.getJSONCb('ciniki.ags.exhibitorGet', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'customer_id':this.customer_id, 'action':'itemnotpaid', 'sale_id':i}, this.openFinish);
     }
     this.exhibitor.switchTab = function(t) {
         this.sections._tabs.selected = t;
@@ -2234,7 +2255,7 @@ function ciniki_ags_main() {
                 case 6: return d.total_amount_display;
                 case 7: 
                     if( (d.flags&0x02) == 0x02 ) {
-                        return d.status_text;
+                        return '<button onclick="M.ciniki_ags_main.sales.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>';
                     } else {
                         return '<button onclick="M.ciniki_ags_main.sales.itemPaid(event,' + d.id + ');">Paid</button>';
                     }
@@ -2264,6 +2285,12 @@ function ciniki_ags_main() {
         this.savePos();
         var c = this.serializeForm('yes');
         M.api.postJSONCb('ciniki.ags.sales', {'tnid':M.curTenantID, 'action':'itempaid', 'sale_id':i}, c, this.openFinish);
+    }
+    this.sales.itemNotPaid = function(e, i) {
+        e.stopPropagation();
+        this.savePos();
+        var c = this.serializeForm('yes');
+        M.api.postJSONCb('ciniki.ags.sales', {'tnid':M.curTenantID, 'action':'itemnotpaid', 'sale_id':i}, c, this.openFinish);
     }
     this.sales.unpaidSalesPDF = function() {
         var args = {'tnid':M.curTenantID};
