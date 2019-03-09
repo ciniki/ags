@@ -91,6 +91,9 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         && isset($args['uri_split'][1]) && $args['uri_split'][1] != '' 
         ) {
         $category = $args['uri_split'][1];
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x20) && isset($categories[$category]) ) {
+            $category = $categories[$category]['name'];
+        }
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'processContent');

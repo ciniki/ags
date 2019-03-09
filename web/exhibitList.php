@@ -96,7 +96,6 @@ function ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, $args, $format=''
     } elseif( $args['limit'] != '' && $args['limit'] > 0 && is_int($args['limit']) ) {
         $strsql .= "LIMIT " . $args['limit'] . " ";
     }
-    
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'exhibits', 'fname'=>'id', 
