@@ -99,13 +99,14 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
         . "AND eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY items.name, images.name "
         . "";
-    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'items', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'permalink', 'status',
                 'image_id'=>'primary_image_id', 'synopsis', 'description', 'last_updated')),
         array('container'=>'images', 'fname'=>'image_id', 
             'fields'=>array('image_id', 'title'=>'image_name', 'permalink'=>'image_permalink',
-                'description'=>'image_description', 'sold'=>'image_sold', 'url'=>'image_url',
+                'description'=>'image_description', 'sold'=>'image_sold', 
                 'last_updated'=>'image_last_updated')),
         ));
     if( $rc['stat'] != 'ok' ) {
