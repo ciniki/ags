@@ -17,7 +17,7 @@ function ciniki_ags_main() {
             this[t].open();
         }
     }
-
+    
     //
     // The panel to list the item
     //
