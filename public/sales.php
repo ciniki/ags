@@ -70,7 +70,7 @@ function ciniki_ags_sales($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.itemsale', $sale['id'], array('flags'=>($sale['flags']|0x02)), 0x07);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.166', 'msg'=>'', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.175', 'msg'=>'', 'err'=>$rc['err']));
             }
         }
         elseif( $args['action'] == 'itemnotpaid' && ($sale['flags']&0x02) == 0x02 ) {

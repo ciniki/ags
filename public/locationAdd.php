@@ -71,7 +71,7 @@ function ciniki_ags_locationAdd(&$ciniki) {
         return ;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.163', 'msg'=>'You already have an item with that name, please choose another.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.174', 'msg'=>'You already have an item with that name, please choose another.', 'err'=>$rc['err']));
     }
 
     //

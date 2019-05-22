@@ -72,7 +72,7 @@ function ciniki_ags_participantDelete(&$ciniki) {
         return $rc;
     }
     if( $rc['num'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.57', 'msg'=>'There are exhibit items for this participant and cannot be removed.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.169', 'msg'=>'There are exhibit items for this participant and cannot be removed.'));
     }
     // Sales
     $strsql = "SELECT COUNT(sales.id) AS num_items "
@@ -89,7 +89,7 @@ function ciniki_ags_participantDelete(&$ciniki) {
         return $rc;
     }
     if( $rc['num'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.57', 'msg'=>'There are exhibit sales for this participant and cannot be removed.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.169', 'msg'=>'There are exhibit sales for this participant and cannot be removed.'));
     }
 
     //

@@ -67,7 +67,7 @@ function ciniki_ags_participantUpdate(&$ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.32', 'msg'=>'Unable to load participant', 'err'=>$rc['err']));
         }
         if( !isset($rc['participant']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.33', 'msg'=>'Unable to find requested participant'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.168', 'msg'=>'Unable to find requested participant'));
         }
         $participant = $rc['participant'];
         $ciniki['request']['args']['exhibitor_id'] = $participant['exhibitor_id'];

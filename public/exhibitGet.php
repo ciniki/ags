@@ -334,7 +334,7 @@ function ciniki_ags_exhibitGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.149', 'msg'=>'Unable to load exhibit sales', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.172', 'msg'=>'Unable to load exhibit sales', 'err'=>$rc['err']));
         }
         $sales = isset($rc['sales']) ? $rc['sales'] : array();
 
