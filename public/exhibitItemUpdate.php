@@ -45,7 +45,7 @@ function ciniki_ags_exhibitItemUpdate(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.24', 'msg'=>'Item is not part of this exhibit', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.176', 'msg'=>'Item is not part of this exhibit', 'err'=>$rc['err']));
     }
     $exhibititem = isset($rc['item']) ? $rc['item'] : null;
 

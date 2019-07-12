@@ -310,7 +310,7 @@ function ciniki_ags_itemGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.170', 'msg'=>'Unable to load logs', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.182', 'msg'=>'Unable to load logs', 'err'=>$rc['err']));
         }
         $item['logs'] = isset($rc['logs']) ? $rc['logs'] : array();
         foreach($item['logs'] as $lid => $log) {
