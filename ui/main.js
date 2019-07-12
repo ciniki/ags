@@ -632,6 +632,7 @@ function ciniki_ags_main() {
             'tabs':{
                 'inventory':{'label':'Inventory', 'fn':'M.ciniki_ags_main.participant.switchTab("inventory");'},
                 'sales':{'label':'Sales', 'fn':'M.ciniki_ags_main.participant.switchTab("sales");'},
+                'history':{'label':'History', 'fn':'M.ciniki_ags_main.participant.switchTab("history");'},
             }},
 /*        'inventory_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' : 'hidden'},
@@ -674,6 +675,12 @@ function ciniki_ags_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'date', 'number', 'number', 'number'],
             'headerValues':['Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals'],
+            },
+        'logs':{'label':'History', 'type':'simplegrid', 'num_cols':6,
+            'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'history' ? 'yes' : 'hidden'},
+            'sortable':'yes',
+            'sortTypes':['date', 'text', 'text', 'number', 'text', 'text'],
+            'headerValues':['Date', 'User', 'Action', 'Qty', 'Code', 'Item'],
             },
     }
     this.participant.fieldValue = function(s, i, d) { return this.data[i]; }
@@ -771,6 +778,16 @@ function ciniki_ags_main() {
                 case 6: return '<button onclick="M.ciniki_ags_main.participant.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>';
             }
         }
+        if( s == 'logs' ) {
+            switch(j) {
+                case 0: return d.log_date;
+                case 1: return d.display_name;
+                case 2: return d.action_text;
+                case 3: return d.quantity;
+                case 4: return d.code;
+                case 5: return d.item_name;
+            }
+        }
     }
     this.participant.footerValue = function(s, i, d) {
         if( s == 'paid_sales' ) {
@@ -836,6 +853,8 @@ function ciniki_ags_main() {
         this.showHideSection('available');
         this.showHideSection('pending_payouts');
         this.showHideSection('paid_sales');
+        this.showHideSection('logs');
+        this.openLogs();
     }
     this.participant.saleFeeUpdate = function(event,sid) {
         var i = prompt('Enter new fee: ');
@@ -864,6 +883,7 @@ function ciniki_ags_main() {
                 } else {
                     event.target.innerHTML = i + '<span class="faicon edit">&#xf040;</span>';
                 }
+                M.ciniki_ags_main.participant.openLogs();
             });
         }
     }
@@ -991,6 +1011,17 @@ function ciniki_ags_main() {
         p.exhibitor_id = rsp.participant.exhibitor_id;
         p.refresh();
         p.show();
+    }
+    this.participant.openLogs = function() {
+        M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_ags_main.participant;
+            p.data.logs = rsp.logs;
+            p.refreshSection('logs');
+            });
     }
     this.participant.save = function(cb) {
         if( cb == null ) { cb = 'M.ciniki_ags_main.participant.close();'; }
@@ -1930,6 +1961,13 @@ function ciniki_ags_main() {
             'cellClasses':['', 'alignright', 'alignright'],
             'history':'yes',
             },
+        'logs':{'label':'History', 'type':'simplegrid', 'num_cols':4, 'aside':'yes',
+            'visible':function() { return M.ciniki_ags_main.item.item_id > 0 ? 'yes' : 'no'; },
+            'sortable':'yes',
+            'sortTypes':['date', 'text', 'number', 'text', 'text'],
+            'cellClasses':['', 'multiline', '', ''],
+            'headerValues':['Date', 'Action', 'Qty', 'Exhibit'],
+            },
         '_primary_image_id':{'label':'Image', 'type':'imageform', 'panelcolumn':1, 'fields':{
             'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
                 'addDropImage':function(iid) {
@@ -1971,9 +2009,19 @@ function ciniki_ags_main() {
         return 'M.ciniki_ags_main.item.save("M.ciniki_ags_main.itemimage.open(\'M.ciniki_ags_main.item.open();\',' + d.id + ',M.ciniki_ags_main.item.item_id);");';
     }
     this.item.cellValue = function(s, i, j, d) {
-        switch(j) {
-            case 0: return d.exhibit_name;
-            case 1: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
+        if( s == 'inventory' ) {
+            switch(j) {
+                case 0: return d.exhibit_name;
+                case 1: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
+            }
+        }
+        if( s == 'logs' ) {
+            switch(j) {
+                case 0: return d.log_date;
+                case 1: return '<span class="maintext">' + d.action_text + '</span><span class="subtext">' + d.display_name + '</span>';
+                case 2: return d.quantity;
+                case 3: return d.exhibit_name;
+            }
         }
     }
     this.item.cellFn = function(s, i, j, d) {
@@ -1999,6 +2047,7 @@ function ciniki_ags_main() {
                 } else {
                     event.target.innerHTML = i + '<span class="faicon edit">&#xf040;</span>';
                 }
+                M.ciniki_ags_main.item.openLogs();
             });
         }
     }
@@ -2017,6 +2066,17 @@ function ciniki_ags_main() {
             p.sections._types.fields.types.tags = rsp.types;
             p.refresh();
             p.show(cb);
+        });
+    }
+    this.item.openLogs = function() {
+        M.api.getJSONBgCb('ciniki.ags.itemGet', {'tnid':M.curTenantID, 'item_id':this.item_id, 'exhibitor_id':this.exhibitor_id, 'exhibit_id':this.exhibit_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_ags_main.item;
+            p.data.logs = rsp.item.logs;
+            p.refreshSection('logs');
         });
     }
     this.item.save = function(cb) {

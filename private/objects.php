@@ -187,6 +187,23 @@ function ciniki_ags_objects(&$ciniki) {
             ),
         'history_table' => 'ciniki_ags_history',
         );
+    $objects['itemlog'] = array(
+        'name' => 'Item Log',
+        'sync' => 'yes',
+        'o_name' => 'itemlog',
+        'o_container' => 'itemlogs',
+        'table' => 'ciniki_ags_item_logs',
+        'fields' => array(
+            'item_id' => array('name'=>'Item', 'ref'=>'ciniki.ags.item'),
+            'action' => array('name'=>'Action', 'default'=>0),
+            'actioned_id' => array('name'=>'Actioned ID', 'default'=>0),
+            'quantity' => array('name'=>'Quantity', 'default'=>0),
+            'log_date' => array('name'=>'Log Date', 'default'=>''),
+            'user_id' => array('name'=>'User', 'default'=>0),
+            'notes' => array('name'=>'Notes', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_ags_history',
+        );
     $objects['participant'] = array(
         'name' => 'Participant',
         'sync' => 'yes',

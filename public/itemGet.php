@@ -64,6 +64,7 @@ function ciniki_ags_itemGet($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
+    $mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
 
     //
     // Return default for new Item
@@ -270,6 +271,66 @@ function ciniki_ags_itemGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.111', 'msg'=>'Unable to load items', 'err'=>$rc['err']));
         }
         $item['inventory'] = isset($rc['items']) ? $rc['items'] : array();
+
+        //
+        // Get the item history
+        //
+        $strsql = "SELECT logs.id, "
+            . "DATE_FORMAT(DATE(logs.log_date), '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS log_date, "
+            . "users.display_name, "
+            . "logs.action, "
+            . "logs.quantity, "
+            . "logs.item_id, "
+            . "items.code, "
+            . "items.name AS item_name, "
+            . "exhibits.name AS exhibit_name "
+            . "FROM ciniki_ags_item_logs AS logs "
+            . "INNER JOIN ciniki_ags_items AS items ON (" 
+                . "logs.item_id = items.id "
+                . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_ags_exhibits AS exhibits ON (" 
+                . "logs.actioned_id = exhibits.id "
+                . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_users AS users ON (" 
+                . "logs.user_id = users.id "
+                . ") "
+            . "WHERE logs.item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
+            . "AND logs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY logs.log_date DESC, logs.item_id, logs.action "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+//            array('container'=>'logdates', 'fname'=>'log_date', 
+//                'fields'=>array('log_date'),
+//                ),
+            array('container'=>'logs', 'fname'=>'id', 
+                'fields'=>array('display_name', 'log_date', 'action', 'quantity', 'item_id', 'code', 'item_name', 'exhibit_name'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.170', 'msg'=>'Unable to load logs', 'err'=>$rc['err']));
+        }
+        $item['logs'] = isset($rc['logs']) ? $rc['logs'] : array();
+        foreach($item['logs'] as $lid => $log) {
+            if( $log['action'] == 10 ) {
+                $item['logs'][$lid]['action_text'] = 'Added';
+            }
+            elseif( $log['action'] == 50 ) {
+                if( $log['quantity'] < 0 ) {
+                    $item['logs'][$lid]['action_text'] = 'Update';
+                } else {
+                    $item['logs'][$lid]['action_text'] = 'Update';
+                }
+            }
+            elseif( $log['action'] == 60 ) {
+                $item['logs'][$lid]['action_text'] = 'Sold';
+            }
+            elseif( $log['action'] == 90 ) {
+                $item['logs'][$lid]['action_text'] = 'Removed';
+            }
+        }
     }
     $rsp = array('stat'=>'ok', 'item'=>$item);
 

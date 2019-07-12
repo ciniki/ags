@@ -124,6 +124,23 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
             );
     }
 
+    //
+    // Add Log entry
+    //
+    $dt = new DateTime('now', new DateTimezone('UTC'));
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.ags.itemlog', array(
+        'item_id' => $args['item_id'],
+        'action' => 10,
+        'actioned_id' => $args['exhibit_id'],
+        'quantity' => $args['quantity'],
+        'log_date' => $dt->format('Y-m-d H:i:s'),
+        'user_id' => $ciniki['session']['user']['id'],
+        'notes' => '',
+        ), 0x04);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.152', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
+    }
+
     $exhibititem['unit_amount_display'] = '$' . number_format($exhibititem['unit_amount'], 2);
 
     //

@@ -40,7 +40,7 @@ function ciniki_ags_exhibitItemDelete(&$ciniki) {
     //
     // Check if the item is already a part of the exhibit
     //
-    $strsql = "SELECT id, exhibit_id, item_id "
+    $strsql = "SELECT id, exhibit_id, item_id, inventory "
         . "FROM ciniki_ags_exhibit_items "
         . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
         . "AND item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
@@ -86,6 +86,24 @@ function ciniki_ags_exhibitItemDelete(&$ciniki) {
     $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.ags.exhibititem', $exhibititem['id'], 0x04);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.26', 'msg'=>'Unable to remove item', 'err'=>$rc['err']));
+    }
+
+    //
+    // Add Log entry
+    //
+    $dt = new DateTime('now', new DateTimezone('UTC'));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.ags.itemlog', array(
+        'item_id' => $exhibititem['item_id'],
+        'action' => 90,
+        'actioned_id' => $exhibititem['exhibit_id'],
+        'quantity' => $exhibititem['inventory'],
+        'log_date' => $dt->format('Y-m-d H:i:s'),
+        'user_id' => $ciniki['session']['user']['id'],
+        'notes' => '',
+        ), 0x04);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.152', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
     }
 
     //

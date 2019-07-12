@@ -112,6 +112,25 @@ function ciniki_ags_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.136', 'msg'=>'Unable to update inventory', 'err'=>$rc['err']));
         }
 
+        if( isset($args['quantity']) ) {
+            //
+            // Add Log entry
+            //
+            $dt = new DateTime('now', new DateTimezone('UTC'));
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.ags.itemlog', array(
+                'item_id' => $item['item_id'],
+                'action' => 60,
+                'actioned_id' => $item['exhibit_id'],
+                'quantity' => -($args['quantity']),
+                'log_date' => $dt->format('Y-m-d H:i:s'),
+                'user_id' => $ciniki['session']['user']['id'],
+                'notes' => '',
+                ), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.152', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
+            }
+        }
         //
         // Return new object, object_id
         //

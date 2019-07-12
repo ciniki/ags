@@ -36,6 +36,20 @@ function ciniki_ags_exhibitItemUpdate(&$ciniki) {
     }
 
     //
+    // Check if the item is already a part of the exhibit
+    //
+    $strsql = "SELECT id, exhibit_id, item_id, inventory "
+        . "FROM ciniki_ags_exhibit_items "
+        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_item_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.24', 'msg'=>'Item is not part of this exhibit', 'err'=>$rc['err']));
+    }
+    $exhibititem = isset($rc['item']) ? $rc['item'] : null;
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -55,6 +69,26 @@ function ciniki_ags_exhibitItemUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
         return $rc;
+    }
+
+    if( isset($args['inventory']) ) {
+        //
+        // Add Log entry
+        //
+        $dt = new DateTime('now', new DateTimezone('UTC'));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+        $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.ags.itemlog', array(
+            'item_id' => $exhibititem['item_id'],
+            'action' => 50,
+            'actioned_id' => $exhibititem['exhibit_id'],
+            'quantity' => ($args['inventory'] - $exhibititem['quantity']),
+            'log_date' => $dt->format('Y-m-d H:i:s'),
+            'user_id' => $ciniki['session']['user']['id'],
+            'notes' => '',
+            ), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.152', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
+        }
     }
 
     //

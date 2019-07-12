@@ -27,16 +27,27 @@ function ciniki_ags_maps(&$ciniki) {
             0x10=>'Tagged',
         ),
     );
-    $maps['participant'] = array('status'=>array(
-        '0'=>'Unknown',
-        '30'=>'Applied',
-        '50'=>'Accepted',
-        '90'=>'Rejected',
-    ));
-    $maps['exhibit'] = array('status'=>array(
-        '50'=>'Active',
-        '90'=>'Archived',
-    ));
+    $maps['participant'] = array(
+        'status'=>array(
+            '0'=>'Unknown',
+            '30'=>'Applied',
+            '50'=>'Accepted',
+            '90'=>'Rejected',
+        ),
+    );
+    $maps['exhibit'] = array(
+        'status'=>array(
+            '50'=>'Active',
+            '90'=>'Archived',
+        ),
+    );
+    $maps['itemlog'] = array(
+        'action'=>array(
+            '10'=>'Add',
+            '50'=>'Update',
+            '90'=>'Update',
+        ),
+    );
 
 
     //

@@ -389,6 +389,67 @@ function ciniki_ags_participantGet($ciniki) {
         $totals['pending_payouts']['exhibitor_amount_display'] = '$' . number_format($totals['pending_payouts']['exhibitor_amount'], 2);
         $totals['pending_payouts']['total_amount_display'] = '$' . number_format($totals['pending_payouts']['total_amount'], 2);
         $rsp['totals'] = $totals;
+
+        //
+        // Get the participant history
+        //
+        $strsql = "SELECT logs.id, "
+            . "DATE_FORMAT(DATE(logs.log_date), '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS log_date, "
+            . "users.display_name, "
+            . "logs.action, "
+            . "logs.quantity, "
+            . "logs.item_id, "
+            . "items.code, "
+            . "items.name AS item_name, "
+            . "exhibits.name AS exhibit_name "
+            . "FROM ciniki_ags_item_logs AS logs "
+            . "INNER JOIN ciniki_ags_items AS items ON (" 
+                . "logs.item_id = items.id "
+                . "AND items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibitor_id']) . "' "
+                . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_users AS users ON (" 
+                . "logs.user_id = users.id "
+                . ") "
+            . "LEFT JOIN ciniki_ags_exhibits AS exhibits ON (" 
+                . "logs.actioned_id = exhibits.id "
+                . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE logs.actioned_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibit_id']) . "' "
+            . "AND logs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY logs.log_date DESC, logs.item_id, logs.action "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+//            array('container'=>'logdates', 'fname'=>'log_date', 
+//                'fields'=>array('log_date'),
+//                ),
+            array('container'=>'logs', 'fname'=>'id', 
+                'fields'=>array('log_date', 'action', 'quantity', 'display_name', 'item_id', 'code', 'item_name', 'exhibit_name'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.170', 'msg'=>'Unable to load logs', 'err'=>$rc['err']));
+        }
+        $rsp['logs'] = isset($rc['logs']) ? $rc['logs'] : array();
+        foreach($rsp['logs'] as $lid => $log) {
+            if( $log['action'] == 10 ) {
+                $rsp['logs'][$lid]['action_text'] = 'Item Added';
+            }
+            elseif( $log['action'] == 50 ) {
+                if( $log['quantity'] < 0 ) {
+                    $rsp['logs'][$lid]['action_text'] = 'Update Inventory';
+                } else {
+                    $rsp['logs'][$lid]['action_text'] = 'Update Inventory';
+                }
+            }
+            elseif( $log['action'] == 60 ) {
+                $rsp['logs'][$lid]['action_text'] = 'Sold';
+            }
+            elseif( $log['action'] == 90 ) {
+                $rsp['logs'][$lid]['action_text'] = 'Item Removed';
+            }
+        }
     }
 
     return $rsp;
