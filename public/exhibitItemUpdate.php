@@ -81,7 +81,7 @@ function ciniki_ags_exhibitItemUpdate(&$ciniki) {
             'item_id' => $exhibititem['item_id'],
             'action' => 50,
             'actioned_id' => $exhibititem['exhibit_id'],
-            'quantity' => ($args['inventory'] - $exhibititem['quantity']),
+            'quantity' => ($args['inventory'] - $exhibititem['inventory']),
             'log_date' => $dt->format('Y-m-d H:i:s'),
             'user_id' => $ciniki['session']['user']['id'],
             'notes' => '',
