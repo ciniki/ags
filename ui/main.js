@@ -644,7 +644,7 @@ function ciniki_ags_main() {
         'inventory':{'label':'Exhibit Items', 'type':'simplegrid', 'panelcolumn':1, 'num_cols':6,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' : 'hidden'},
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'number', 'number', 'number'],
+            'sortTypes':['alttext', 'text', 'number', 'number', 'number'],
             'headerValues':['Code', '', 'Item', 'Price', 'Quantity', ''],
             'cellClasses':['multiline', '', 'multiline', 'multiline alignright', 'alignright'],
             'noData':'No items in this exhibit',
@@ -652,7 +652,7 @@ function ciniki_ags_main() {
         'available':{'label':'Catalog Items', 'type':'simplegrid', 'panelcolumn':2, 'num_cols':4,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' : 'hidden'},
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'number', 'number', ''],
+            'sortTypes':['alttext', 'text', 'number', 'number', ''],
             'headerValues':['Code', 'Item', 'Price', ''],
             'cellClasses':['multiline', 'multiline', 'multiline alignright', 'alignright'],
             'noData':'No items in their catalog',
@@ -687,6 +687,13 @@ function ciniki_ags_main() {
 //    this.participant.fieldHistoryArgs = function(s, i) {
 //        return {'method':'ciniki.ags.participantHistory', 'args':{'tnid':M.curTenantID, 'participant_id':this.participant_id, 'field':i}};
 //    }
+    this.participant.cellSortValue = function(s, i, j, d) {
+        if( s == 'inventory' || s == 'available' || s == 'paid_sales' || s == 'pending_sales' ) {
+            switch(j) {
+                case 0: return d.code;
+            }
+        }
+    }
     this.participant.cellValue = function(s, i, j, d) {
         if( s == 'exhibit_details' ) {
             switch(j) {
