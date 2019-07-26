@@ -53,6 +53,37 @@ function ciniki_ags_exhibitItemDelete(&$ciniki) {
     $exhibititem = isset($rc['item']) ? $rc['item'] : null;
 
     //
+    // Check if item is part of any incomplete sales
+    //
+    $strsql = "SELECT invoices.invoice_number "
+        . "FROM ciniki_sapos_invoice_items AS items "
+        . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
+            . "items.invoice_id = invoices.id "
+            . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE items.object = 'ciniki.ags.exhibititem' "
+        . "AND items.object_id = '" . ciniki_core_dbQuote($ciniki, $exhibititem['id']) . "' "
+        . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND invoices.invoice_type IN (10, 20, 30, 40) "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+        array('container'=>'invoices', 'fname'=>'invoice_number', 'fields'=>array('invoice_number')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.186', 'msg'=>'Unable to load invoices', 'err'=>$rc['err']));
+    }
+    if( isset($rc['invoices']) ) {
+        $invoice_list = '';
+        foreach($rc['invoices'] as $invoice) {
+            $invoice_list .= ($invoice_list != '' ? ', ' : '') . '#' . $invoice['invoice_number'];
+        }
+        if( $invoice_list != '' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.187', 'msg'=>'Item must first be removed from the following invoice(s): ' . $invoice_list));
+        }
+    }
+
+    //
     // Get the details about the item
     //
     $strsql = "SELECT id AS item_id, code, name, unit_amount, fee_percent "

@@ -11,7 +11,7 @@
 // =======
 //
 function ciniki_ags_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
-error_log('itemPayment');
+
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.132', 'msg'=>'No item specified.'));
