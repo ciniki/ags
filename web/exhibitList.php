@@ -53,7 +53,7 @@ function ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, $args, $format=''
     // Load all exhibitions
     //
     else {
-        $strsql .= "FROM JOIN ciniki_ags_exhibits AS exhibits "
+        $strsql .= "FROM ciniki_ags_exhibits AS exhibits "
             . "INNER JOIN ciniki_ags_locations AS locations ON ("
                 . "exhibits.location_id = locations.id "
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
