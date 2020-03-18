@@ -23,7 +23,8 @@ function ciniki_ags_maps(&$ciniki) {
         ),
         'flags'=>array(
             0x01=>'For Sale',
-            0x02=>'Online',
+            0x02=>'Visible',
+            0x04=>'Sold Online',
             0x10=>'Tagged',
         ),
     );
@@ -32,6 +33,7 @@ function ciniki_ags_maps(&$ciniki) {
             '0'=>'Unknown',
             '30'=>'Applied',
             '50'=>'Accepted',
+            '70'=>'Inactive',
             '90'=>'Rejected',
         ),
     );

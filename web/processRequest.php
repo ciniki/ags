@@ -48,19 +48,84 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
     }
 
     //
+    // The initial limit is how many to show on the exhibits page after current and upcoming.  
+    // This allows a shorter list in the initial page, and longer lists for the archive
+    //
+    $page_past_initial_limit = 2;
+    $page_past_limit = 10;
+    $page_submenu = '';
+    if( $exhibit_type != '' ) {
+        if( isset($settings['page-ags-' . $exhibit_type . '-initial-number']) 
+            && $settings['page-ags-' . $exhibit_type . '-initial-number'] != ''
+            && is_numeric($settings['page-ags-' . $exhibit_type . '-initial-number'])
+            && $settings['page-ags-' . $exhibit_type . '-initial-number'] > 0 ) {
+            $page_past_initial_limit = intval($settings['page-ags-' . $exhibit_type . '-initial-number']);
+        }
+        if( isset($settings['page-ags-' . $exhibit_type . '-archive-number']) 
+            && $settings['page-ags-' . $exhibit_type . '-archive-number'] != ''
+            && is_numeric($settings['page-ags-' . $exhibit_type . '-archive-number'])
+            && $settings['page-ags-' . $exhibit_type . '-archive-number'] > 0 ) {
+            $page_past_limit = intval($settings['page-ags-' . $exhibit_type . '-archive-number']);
+        }
+        if( isset($settings["page-ags-{$exhibit_type}-submenu-categories"]) 
+            && $settings["page-ags-{$exhibit_type}-submenu-categories"] == 'yes'
+            ) {
+            $page_submenu = 'categories';
+        }
+    } else {
+        if( isset($settings['page-ags-initial-number']) 
+            && $settings['page-ags-initial-number'] != ''
+            && is_numeric($settings['page-ags-initial-number'])
+            && $settings['page-ags-initial-number'] > 0 ) {
+            $page_past_initial_limit = intval($settings['page-ags-initial-number']);
+        }
+        if( isset($settings['page-ags-archive-number']) 
+            && $settings['page-ags-archive-number'] != ''
+            && is_numeric($settings['page-ags-archive-number'])
+            && $settings['page-ags-archive-number'] > 0 ) {
+            $page_past_limit = intval($settings['page-ags-archive-number']);
+        }
+        if( isset($settings['page-ags-submenu-categories']) 
+            && $settings['page-ags-submenu-categories'] != ''
+            ) {
+            $page_submenu = 'categories';
+        }
+    }
+    if( isset($ciniki['request']['args']['page']) && $ciniki['request']['args']['page'] != '' && is_numeric($ciniki['request']['args']['page']) ) {
+        $page_past_cur = intval($ciniki['request']['args']['page']);
+    } else {
+        $page_past_cur = 1;
+    }
+
+    //
     // Check for categories
     //
     $categories = array();
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x20) ) {
-        $strsql = "SELECT DISTINCT locations.category "
-            . "FROM ciniki_ags_exhibits AS exhibits, ciniki_ags_locations AS locations "
-            . "WHERE exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND exhibits.status = 50 "
-            . "AND (exhibits.flags&0x01) = 0x01 "
-            . "AND exhibits.location_id = locations.id "
-            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY locations.category "
-            . "";
+        if( $exhibit_type != '' ) {
+            $strsql = "SELECT DISTINCT locations.category "
+                . "FROM ciniki_ags_exhibit_tags as tags, ciniki_ags_exhibits AS exhibits, ciniki_ags_locations AS locations "
+                . "WHERE tags.permalink = '" . ciniki_core_dbQuote($ciniki, $exhibit_type) . "' "
+                . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND tags.exhibit_id = exhibits.id "
+                . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND exhibits.status = 50 "
+                . "AND (exhibits.flags&0x01) = 0x01 "
+                . "AND exhibits.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "ORDER BY locations.category "
+                . "";
+        } else {
+            $strsql = "SELECT DISTINCT locations.category "
+                . "FROM ciniki_ags_exhibits AS exhibits, ciniki_ags_locations AS locations "
+                . "WHERE exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND exhibits.status = 50 "
+                . "AND (exhibits.flags&0x01) = 0x01 "
+                . "AND exhibits.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "ORDER BY locations.category "
+                . "";
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
         $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.ags', 'categories', 'category');
         if( $rc['stat'] != 'ok' ) {
@@ -70,10 +135,12 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
             foreach($rc['categories'] as $category) {
                 $permalink = ciniki_core_makePermalink($ciniki, $category);
-                $page['submenu'][$permalink] = array(
-                    'name'=>$category,
-                    'url'=>$args['base_url'] . '/category/' . $permalink,
-                    );
+                if( $page_submenu == 'categories' ) {
+                    $page['submenu'][$permalink] = array(
+                        'name'=>$category,
+                        'url'=>$args['base_url'] . '/category/' . $permalink,
+                        );
+                }
                 $categories[$permalink] = array(
                     'name' => $category,
                     'permalink' => $permalink,
@@ -123,7 +190,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
     $content = '';
     $page_content = '';
     $page['title'] = 'Exhibitors';
-    $ciniki['response']['head']['og']['url'] = $args['base_url']; // $ciniki['request']['domain_base_url'] . '/exhibits';
+    $ciniki['response']['head']['og']['url'] = $args['domain_base_url']; // $ciniki['request']['domain_base_url'] . '/exhibits';
 
     if( count($page['breadcrumbs']) == 0 ) {
         $page['breadcrumbs'][] = array('name'=>$page_title, 'url'=>$args['base_url']);
@@ -131,45 +198,6 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
     
     if( $category != '' && isset($categories[$category]) ) {
         $page['breadcrumbs'][] = array('name'=>$categories[$category]['name'], 'url'=>$args['base_url'] . '/category/' . $category);
-    }
-
-    //
-    // The initial limit is how many to show on the exhibits page after current and upcoming.  
-    // This allows a shorter list in the initial page, and longer lists for the archive
-    //
-    $page_past_initial_limit = 2;
-    $page_past_limit = 10;
-    if( $exhibit_type != '' ) {
-        if( isset($settings['page-ags-' . $exhibit_type . '-initial-number']) 
-            && $settings['page-ags-' . $exhibit_type . '-initial-number'] != ''
-            && is_numeric($settings['page-ags-' . $exhibit_type . '-initial-number'])
-            && $settings['page-ags-' . $exhibit_type . '-initial-number'] > 0 ) {
-            $page_past_initial_limit = intval($settings['page-ags-' . $exhibit_type . '-initial-number']);
-        }
-        if( isset($settings['page-ags-' . $exhibit_type . '-archive-number']) 
-            && $settings['page-ags-' . $exhibit_type . '-archive-number'] != ''
-            && is_numeric($settings['page-ags-' . $exhibit_type . '-archive-number'])
-            && $settings['page-ags-' . $exhibit_type . '-archive-number'] > 0 ) {
-            $page_past_limit = intval($settings['page-ags-' . $exhibit_type . '-archive-number']);
-        }
-    } else {
-        if( isset($settings['page-ags-initial-number']) 
-            && $settings['page-ags-initial-number'] != ''
-            && is_numeric($settings['page-ags-initial-number'])
-            && $settings['page-ags-initial-number'] > 0 ) {
-            $page_past_initial_limit = intval($settings['page-ags-initial-number']);
-        }
-        if( isset($settings['page-ags-archive-number']) 
-            && $settings['page-ags-archive-number'] != ''
-            && is_numeric($settings['page-ags-archive-number'])
-            && $settings['page-ags-archive-number'] > 0 ) {
-            $page_past_limit = intval($settings['page-ags-archive-number']);
-        }
-    }
-    if( isset($ciniki['request']['args']['page']) && $ciniki['request']['args']['page'] != '' && is_numeric($ciniki['request']['args']['page']) ) {
-        $page_past_cur = intval($ciniki['request']['args']['page']);
-    } else {
-        $page_past_cur = 1;
     }
 
     //
@@ -195,11 +223,216 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
     //
     // Check if we are to display an image, from the gallery, or latest images
     //
-    else*/if( isset($args['uri_split'][0]) && $args['uri_split'][0] != '' 
+    else*/
+    $display = 'list';
+    if( isset($args['uri_split'][0]) && $args['uri_split'][0] != '' 
         && $args['uri_split'][0] != 'category'
         ) {
+        $display = 'exhibit';
         $exhibit_permalink = $args['uri_split'][0];
-        $gallery_url = $args['base_url'] . "/" . $exhibit_permalink . "/gallery";
+    }
+
+
+    //
+    // Display the list of exhibitors if a specific one isn't selected
+    //
+    else {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'processExhibits');
+        //
+        // Check to see if there is an introduction message to display
+        //
+        /*
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+        $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_web_content', 'tnid', $tnid, 'ciniki.web', 'content', 'page-ags');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $ciniki['response']['head']['og']['description'] = strip_tags('Upcoming ' . $etype_label);
+        if( $page_past_cur == 1 && isset($rc['content']['page-ags-content']) && $rc['content']['page-ags-content'] != '' ) {
+            $page_content = '';
+            if( isset($settings['page-ags-image']) 
+                && $settings['page-ags-image'] != '' 
+                && $settings['page-ags-image'] > 0 
+                ) {
+                $page['blocks'][] = array('type'=>'asideimage', 'section'=>'primary-image', 'primary'=>'yes',
+                    'image_id'=>$settings['page-ags-image'],
+                    'captions'=>(isset($settings['page-ags-image-caption']) ? $settings['page-ags-image-caption'] : ''),
+                    );
+            }
+            $content = $rc['content']['page-ags-content'];
+
+            //
+            // Check if there is an application
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'info', 'web', 'pageDetails');
+            $rc = ciniki_info_web_pageDetails($ciniki, $settings, $tnid, array('content_type'=>10));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $application = $rc['content'];
+            if( $application['content'] != '' ) {
+                $content .= "\n\n<a href='" . $args['base_url'] . "/exhibitapplication'>Apply to be an exhibitor</a>";
+            }
+
+            $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'content'=>$content);
+        } 
+        */
+
+        //
+        // Display list of upcoming exhibits
+        //
+        $num_current = 0;
+        if( $page_past_cur == 1 ) {
+            // 
+            // Fetch the list of upcoming, incase there are none then display current
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'exhibitList');
+            $rc = ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, 
+                array('type'=>'upcoming', 'limit'=>0, 'category'=>$category, 'exhibit_type'=>$exhibit_type));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $upcoming = $rc['exhibits'];
+
+            //
+            // Display current exhibits first
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'exhibitList');
+            $rc = ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, 
+                array('type'=>'current', 'limit'=>0, 'category'=>$category, 'exhibit_type'=>$exhibit_type));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            //
+            // If there is only 1 exhibit, and no past exhibits, then jump straight to exhibit
+            //
+            if( count($rc['exhibits']) == 1 && count($upcoming) == 0 
+                && (($exhibit_type != '' 
+                        && (!isset($settings["page-ags-{$exhibit_type}-past"]) 
+                        || $settings["page-ags-{$exhibit_type}-past"] != 'yes'))
+                    || (isset($settings['page-ags-past']) && $settings['page-ags-past'] == 'yes')
+                    )
+                ) {
+                //
+                // Display the exhibit
+                //
+                $display = 'exhibit';
+                $exhibit_permalink = $rc['exhibits'][0]['permalink'];
+            } elseif( count($rc['exhibits']) > 0 ) {
+                $exhibits = $rc['exhibits'];
+                $num_current = count($exhibits);
+                if( $num_current > 0 ) {
+                    $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $exhibits, array(
+                        'base_url' => $args['base_url'],
+                        ));
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                    $page['blocks'][] = array(
+                        'type'=>'content', 
+                        'section'=>'current-exhibits',
+                        'title' => 'Current ' . $etype_label,
+                        'html' => $rc['content'],
+                        );
+                }
+            }
+
+            //
+            // Display upcoming exhibits second
+            //
+            if( count($upcoming) > 0 ) {
+                $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $upcoming, array(
+                    'base_url' => $args['base_url'],
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $page['blocks'][] = array(
+                    'type'=>'content', 
+                    'section'=>'exhibit-list', 
+                    'title'=>'Upcoming ' . $etype_label,
+                    'html'=>$rc['content'],
+                    ); 
+            } elseif( $display == 'list' ) {
+                $page['blocks'][] = array(
+                    'type'=>'content', 
+                    'title'=>'', 
+                    'content'=>'No upcoming exhibits',
+                    );
+            }
+        }
+
+        //
+        // Include past exhibits if the user wants
+        //
+        if( ($exhibit_type != '' 
+                && isset($settings['page-ags-' . $exhibit_type . '-past']) 
+                && $settings['page-ags-' . $exhibit_type . '-past'] == 'yes')
+            || (isset($settings['page-ags-past']) && $settings['page-ags-past'] == 'yes') 
+            ) {
+            //
+            // Generate the content of the page
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'exhibitList');
+            if( $page_past_cur == 1 ) {
+                $offset = 0;
+            } else {
+                $offset = $page_past_initial_limit + ($page_past_cur-2)*$page_past_limit;
+            }
+            $rc = ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, 
+                array('type'=>'past', 
+                    'exhibit_type'=>$exhibit_type,
+                    'category'=>$category,
+                    'offset'=>$offset, 
+                    'limit'=>($page_past_cur==1?($page_past_initial_limit+1):($page_past_limit+1))));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $exhibits = $rc['exhibits'];
+            if( count($exhibits) > 0 ) {
+                $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $exhibits, 
+                    array('page' => $page_past_cur,
+                        'limit' => ($page_past_cur==1?$page_past_initial_limit:$page_past_limit), 
+                        'prev' => "Newer $etype_label &rarr;",
+                        'next' => "&larr; Older $etype_label",
+                        'base_url' => $args['base_url'],
+                        'category' => $category,
+                        ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $page['blocks'][] = array('type'=>'content', 'title'=>'Past ' . $etype_label, 'html'=>$rc['content']);
+                $page['blocks'][] = array('type'=>'content', 'html'=>$rc['nav']);
+            } else {
+                $page['blocks'][] = array('type'=>'content', 'title'=>'Past ' . $etype_label, 'content'=>'No past ' . $etype_label);
+            }
+        }
+
+/*        //
+        // Check if the exhibit application should be displayed
+        //
+        if( isset($settings['page-ags-application-details']) 
+            && $settings['page-ags-application-details'] == 'yes' 
+            && $page_past_cur == 1
+            ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'info', 'web', 'pageDetails');
+            $rc = ciniki_info_web_pageDetails($ciniki, $settings, $tnid,
+                array('content_type'=>10));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $application = $rc['content'];
+            if( $application['content'] != '' ) {
+                $page['blocks'][] = array('type'=>'content', 'html'=>"<p class='exhibitors-application'>"
+                    . "<a href='" . $args['base_url'] . "/exhibitapplication'>Apply to be an exhibitor</a></p>",
+                    );
+            }
+        } */
+    }
+
+    if( $display == 'exhibit' ) {
+        $base_url = $args['base_url'] . '/' . $exhibit_permalink;
+        $gallery_url = $base_url . "/gallery";
         $ciniki['response']['head']['og']['url'] .= '/' . $exhibit_permalink;
 
         //
@@ -283,6 +516,90 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             }
         } 
         //
+        // Display the items in a category
+        //
+        elseif( isset($args['uri_split'][1]) && $args['uri_split'][1] == 'category' && isset($args['uri_split'][2]) && $args['uri_split'][2] != '' ) {
+            $category_permalink = $args['uri_split'][2];
+            $base_url .= '/category/' . $category_permalink;
+            $ciniki['response']['head']['og']['url'] .= '/category/' . $category_permalink;
+
+            if( !isset($exhibit['categories'][$category_permalink]['items']) ) {
+                return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.124', 'msg'=>"I'm sorry, the page you requested does not exist."));
+            } 
+
+            $category = $exhibit['categories'][$category_permalink];
+            $page['breadcrumbs'][] = array('name'=>$exhibit['categories'][$category_permalink]['name'], 'url'=>$base_url);
+
+            //
+            // Check if item specified
+            //
+            if( isset($args['uri_split'][3]) && $args['uri_split'][3] == 'item' && isset($args['uri_split'][4]) && $args['uri_split'][4] != '' ) {
+                $item_permalink = $args['uri_split'][4];
+
+                if( !isset($category['items'][$item_permalink]) ) {
+                    return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.124', 'msg'=>"I'm sorry, the page you requested does not exist."));
+                } 
+                $item_list = $category['items'];
+                $item = $category['items'][$item_permalink];
+                $base_url .= '/item/' . $item_permalink;
+                $ciniki['response']['head']['og']['url'] .= '/item/' . $item_permalink;
+                $ciniki['response']['head']['links'][] = array('rel'=>'canonical', 'href'=>$args['base_url'] . '/item/' . $item_permalink);
+                $page['breadcrumbs'][] = array('name'=>$item['name'], 'url'=>$base_url);
+                
+                //
+                // Display item.
+                //
+                $display = 'item'; 
+            } 
+           
+            //
+            // Display item thumbnails
+            //
+            else {
+                $page['blocks'][] = array('type'=>'tradingcards', 'base_url'=>$base_url . '/item', 'anchors'=>'permalink', 'cards'=>$category['items']);
+            }
+
+        }
+        //
+        // Display the item
+        //
+        elseif( isset($args['uri_split'][1]) && $args['uri_split'][1] == 'item' && isset($args['uri_split'][2]) && $args['uri_split'][2] != '' ) {
+            $item_permalink = $category['items'][$args['uri_split'][2]];
+            if( ($exhibit['flags']&0x02) == 0x02 ) {
+                foreach($exhibit['categories'] as $category) {
+                    if( !isset($category['items'][$args['uri_split'][2]]) ) {
+                        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.124', 'msg'=>"I'm sorry, the page you requested does not exist."));
+
+                    }
+                    $item_list = $category['items'];
+                    $item = $category['items'][$item_permalink];
+                    $base_url .= '/item/' . $item_permalink;
+                    $ciniki['response']['head']['og']['url'] .= '/item/' . $item_permalink;
+                    $page['breadcrumbs'][] = array('name'=>$item['name'], 'url'=>$base_url);
+
+                    $display = 'item';
+                    break;
+                }
+            }
+            elseif( isset($exhibit['items'][$item_permalink]) ) {
+                $item_list = $exhibit['items'];
+                $item = $exhibit['items'][$item_permalink];
+                $base_url .= '/item/' . $item_permalink;
+                $ciniki['response']['head']['og']['url'] .= '/item/' . $item_permalink;
+                $page['breadcrumbs'][] = array('name'=>$item['name'], 'url'=>$base_url);
+                $display = 'item';
+            }
+
+            //
+            // Check if gallery image
+            //
+            if( isset($args['uri_split'][3]) && $args['uri_split'][3] == 'gallery' 
+                && isset($args['uri_split'][4]) && $args['uri_split'][4] != '' 
+                ) {
+                $image_permalink = $args['uri_split'][4];
+            }
+        }
+        //
         // Display the exhibit details
         //
         else {
@@ -316,32 +633,6 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
 
                 $ciniki['request']['inline_javascript'] .= ''
                     . '<script type="text/javascript">'
-/*                    . 'var gmap_loaded=0;'
-                    . 'function gmap_initialize() {'
-                        . 'var myLatlng = new google.maps.LatLng(' . $exhibit['latitude'] . ',' . $exhibit['longitude'] . ');'
-                        . 'var mapOptions = {'
-                            . 'zoom: 13,'
-                            . 'center: myLatlng,'
-                            . 'panControl: false,'
-                            . 'zoomControl: true,'
-                            . 'scaleControl: true,'
-                            . 'mapTypeId: google.maps.MapTypeId.ROADMAP'
-                        . '};'
-                        . 'var map = new google.maps.Map(document.getElementById("googlemap"), mapOptions);'
-                        . 'var marker = new google.maps.Marker({'
-                            . 'position: myLatlng,'
-                            . 'map: map,'
-                            . 'title:"",'
-                            . '});'
-                    . '};'
-                    . 'function loadMap() {'
-                        . 'if(gmap_loaded==1) {return;}'
-                        . 'var script = document.createElement("script");'
-                        . 'script.type = "text/javascript";'
-                        . 'script.src = "' . ($ciniki['request']['ssl']=='yes'?'https':'http') . '://maps.googleapis.com/maps/api/js?key=' . $ciniki['config']['ciniki.web']['google.maps.api.key'] . '&sensor=false&callback=gmap_initialize";'
-                        . 'document.body.appendChild(script);'
-                        . 'gmap_loaded=1;'
-                    . '};' */
                     . 'function toggleMap(e) {'
                         . "var i = document.getElementById('aside-image');"
                         . "var m = document.getElementById('googlemap');"
@@ -358,9 +649,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                             . "}"
                         . "}"
                     . '};'
-//                    . ((!isset($exhibit['image_id']) || $exhibit['image_id'] == 0)?'window.onload=loadMap;':'')
                     . '</script>';
-//                $page['blocks'] .= "<aside id='aside-map' style='display:${aside_display};'><div class='googlemap' id='googlemap'></div></aside>"; */
             }
             $content = '';
             if( isset($exhibit['description']) && $exhibit['description'] != '' ) {
@@ -392,202 +681,73 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             //
             // Check if share buttons should be shown
             //
-            if( !isset($settings['page-exhibits-share-buttons']) || $settings['page-exhibits-share-buttons'] == 'yes' ) {
+            if( (!isset($settings['page-exhibits-share-buttons']) || $settings['page-exhibits-share-buttons'] == 'yes') 
+                && ($exhibit['flags']&0x02) == 0
+                ) {
                 $tags = array($etype_label);
-                if( !isset($settings['page-events-share-buttons']) || $settings['page-events-share-buttons'] == 'yes' ) {
-                    $tags = array();
-                    $page['blocks'][] = array('type'=>'sharebuttons', 'section'=>'share', 'pagetitle'=>$page['title'], 'tags'=>$tags);
-                }
+                $tags = array();
+                $page['blocks'][] = array('type'=>'sharebuttons', 'section'=>'share', 'pagetitle'=>$page['title'], 'tags'=>$tags);
             }
             
             //
             // Add images if they exist
             //
-            if( isset($exhibit['images']) && count($exhibit['images']) > 0 ) {
+            if( isset($exhibit['images']) && count($exhibit['images']) > 0 && ($exhibit['flags']&0x02) == 0 ) {
                 $page['blocks'][] = array('type'=>'gallery', 'section'=>'gallery', 'title'=>'Additional Images',
                     'base_url'=>$args['base_url'] . "/" . $exhibit_permalink . "/gallery",
                     'images'=>$exhibit['images']);
+            }
+            if( isset($exhibit['categories']) && count($exhibit['categories']) > 0 && ($exhibit['flags']&0x02) == 0x02 ) {
+                $page['blocks'][] = array('type'=>'buttonlist', 
+                    'section'=>'exhibit-categories', 
+                    'title'=>'Categories', 
+                    'base_url'=>$base_url . '/category', 
+                    'tags'=>$exhibit['categories'],
+                    );
             }
         }
     }
 
     //
-    // Display the list of exhibitors if a specific one isn't selected
+    // Display the page for the item
     //
-    else {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'processExhibits');
-        //
-        // Check to see if there is an introduction message to display
-        //
-        /*
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
-        $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_web_content', 'tnid', $tnid, 'ciniki.web', 'content', 'page-ags');
+    if( $display == 'item' && isset($item) ) {
+
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'itemDetails');
+        $rc = ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $item['id']);
         if( $rc['stat'] != 'ok' ) {
-            return $rc;
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.124', 'msg'=>"I'm sorry, the page you requested does not exist."));
         }
-        $ciniki['response']['head']['og']['description'] = strip_tags('Upcoming ' . $etype_label);
-        if( $page_past_cur == 1 && isset($rc['content']['page-ags-content']) && $rc['content']['page-ags-content'] != '' ) {
-            $page_content = '';
-            if( isset($settings['page-ags-image']) 
-                && $settings['page-ags-image'] != '' 
-                && $settings['page-ags-image'] > 0 
-                ) {
-                $page['blocks'][] = array('type'=>'asideimage', 'section'=>'primary-image', 'primary'=>'yes',
-                    'image_id'=>$settings['page-ags-image'],
-                    'captions'=>(isset($settings['page-ags-image-caption']) ? $settings['page-ags-image-caption'] : ''),
-                    );
-            }
-            $content = $rc['content']['page-ags-content'];
 
-            //
-            // Check if there is an application
-            //
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'info', 'web', 'pageDetails');
-            $rc = ciniki_info_web_pageDetails($ciniki, $settings, $tnid, array('content_type'=>10));
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $application = $rc['content'];
-            if( $application['content'] != '' ) {
-                $content .= "\n\n<a href='" . $args['base_url'] . "/exhibitapplication'>Apply to be an exhibitor</a>";
-            }
+        $item = $rc['item'];
 
-            $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'content'=>$content);
-        } 
-        */
-
-        //
-        // Display list of upcoming exhibits
-        //
-        $num_current = 0;
-        if( $page_past_cur == 1 ) {
-            //
-            // Display current exhibits first
-            //
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'exhibitList');
-            $rc = ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, 
-                array('type'=>'current', 'limit'=>0, 'category'=>$category, 'exhibit_type'=>$exhibit_type));
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            if( count($rc['exhibits']) > 0 ) {
-                $exhibits = $rc['exhibits'];
-                $num_current = count($exhibits);
-                if( $num_current > 0 ) {
-                    $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $exhibits, array(
-                        'base_url' => $args['base_url'],
-                        ));
-                    if( $rc['stat'] != 'ok' ) {
-                        return $rc;
-                    }
-                    $page['blocks'][] = array(
-                        'type'=>'content', 
-                        'section'=>'current-exhibits',
-                        'title' => 'Current ' . $etype_label,
-                        'html' => $rc['content'],
-                        );
-                }
-            }
-
-            //
-            // Display upcoming exhibits second
-            //
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'exhibitList');
-            $rc = ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, 
-                array('type'=>'upcoming', 'limit'=>0, 'category'=>$category, 'exhibit_type'=>$exhibit_type));
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $exhibits = $rc['exhibits'];
-            if( count($exhibits) > 0 ) {
-                $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $exhibits, array(
-                    'base_url' => $args['base_url'],
-                    ));
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-                $page['blocks'][] = array(
-                    'type'=>'content', 
-                    'section'=>'exhibit-list', 
-                    'title'=>'Upcoming ' . $etype_label,
-                    'html'=>$rc['content'],
-                    ); 
-            } else {
-                $page['blocks'][] = array(
-                    'type'=>'content', 
-                    'title'=>'', 
-                    'content'=>'No upcoming exhibits',
-                    );
-            }
+        if( isset($item['primary_image_id']) && $item['primary_image_id'] > 0 ) {
+            $page['blocks'][] = array(
+                'id' => 'aside-image',
+                'type' => 'asideimage', 
+                'section' => 'primary-image', 
+                'primary' => 'yes',
+                'image_id' => $item['primary_image_id'], 
+                'title' => $item['name'], 
+                'caption' => '',
+                );
+        }
+        if( isset($item['description']) && $item['description'] != '' ) {
+            $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>$item['description']);
+        } else {
+            $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>$item['synopsis']);
         }
 
         //
-        // Include past exhibits if the user wants
+        // Check if share buttons should be shown
         //
-//        $page['blocks'][] = array('type'=>'content', 'html'=>'<pre>' . print_r($settings, true) . "</pre>");
-        if( ($exhibit_type != '' 
-                && isset($settings['page-ags-' . $exhibit_type . '-past']) 
-                && $settings['page-ags-' . $exhibit_type . '-past'] == 'yes')
-            || (isset($settings['page-ags-past']) && $settings['page-ags-past'] == 'yes') 
-            ) {
-            //
-            // Generate the content of the page
-            //
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'exhibitList');
-            if( $page_past_cur == 1 ) {
-                $offset = 0;
-            } else {
-                $offset = $page_past_initial_limit + ($page_past_cur-2)*$page_past_limit;
-            }
-            $rc = ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, 
-                array('type'=>'past', 
-                    'exhibit_type'=>$exhibit_type,
-                    'category'=>$category,
-                    'offset'=>$offset, 
-                    'limit'=>($page_past_cur==1?($page_past_initial_limit+1):($page_past_limit+1))));
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $exhibits = $rc['exhibits'];
-            if( count($exhibits) > 0 ) {
-                $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $exhibits, 
-                    array('page' => $page_past_cur,
-                        'limit' => ($page_past_cur==1?$page_past_initial_limit:$page_past_limit), 
-                        'prev' => "Newer $etype_label &rarr;",
-                        'next' => "&larr; Older $etype_label",
-                        'base_url' => $args['base_url'],
-                        'category' => $category,
-                        ));
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-                $page['blocks'][] = array('type'=>'content', 'title'=>'Past ' . $etype_label, 'html'=>$rc['content']);
-                $page['blocks'][] = array('type'=>'content', 'html'=>$rc['nav']);
-            } else {
-                $page['blocks'][] = array('type'=>'content', 'title'=>'Past ' . $etype_label, 'content'=>'No past ' . $etype_label);
-            }
+        if( (!isset($settings['page-exhibits-share-buttons']) || $settings['page-exhibits-share-buttons'] == 'yes') ) {
+            $tags = array();
+            $page['blocks'][] = array('type'=>'sharebuttons', 'section'=>'share', 'pagetitle'=>$item['name'], 'tags'=>$tags);
         }
+            
 
-/*        //
-        // Check if the exhibit application should be displayed
-        //
-        if( isset($settings['page-ags-application-details']) 
-            && $settings['page-ags-application-details'] == 'yes' 
-            && $page_past_cur == 1
-            ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'info', 'web', 'pageDetails');
-            $rc = ciniki_info_web_pageDetails($ciniki, $settings, $tnid,
-                array('content_type'=>10));
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $application = $rc['content'];
-            if( $application['content'] != '' ) {
-                $page['blocks'][] = array('type'=>'content', 'html'=>"<p class='exhibitors-application'>"
-                    . "<a href='" . $args['base_url'] . "/exhibitapplication'>Apply to be an exhibitor</a></p>",
-                    );
-            }
-        } */
+//        $page['blocks'][] = array('type'=>'content', 'html'=>'<pre>' . print_r($item, true) . '</pre>');
     }
 
 /*    if( ($ciniki['tenant']['modules']['ciniki.ags']['flags']&0x04) > 0 ) {

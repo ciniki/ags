@@ -130,7 +130,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         // Get the types
         //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x01) ) {
-            $strsql = "SELECT tag_type, tag_name AS lists "
+            $strsql = "SELECT DISTINCT tag_type, tag_name AS lists "
                 . "FROM ciniki_ags_exhibit_tags "
                 . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -242,6 +242,36 @@ function ciniki_ags_exhibitGet($ciniki) {
     //
     if( isset($args['details']) && $args['details'] == 'yes' ) {
         //
+        // Get the list of past participants
+        //
+        $strsql = "SELECT participants.id, "
+            . "exhibitors.id AS exhibitor_id, "
+            . "exhibitors.display_name, "
+            . "participants.status, "
+            . "participants.status AS status_text "
+            . "FROM ciniki_ags_participants AS participants "
+            . "INNER JOIN ciniki_ags_exhibitors AS exhibitors ON ("
+                . "participants.exhibitor_id = exhibitors.id "
+                . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE participants.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
+            . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND participants.status = 70 "
+            . "ORDER BY exhibitors.display_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'participants', 'fname'=>'exhibitor_id', 
+                'fields'=>array('id', 'exhibitor_id', 'display_name', 'status', 'status_text'),
+                'maps'=>array('status_text'=>$maps['participant']['status']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.11', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
+        }
+        $rsp['inactive'] = isset($rc['participants']) ? $rc['participants'] : array();
+
+        //
         // Get the list of participants
         //
         $strsql = "SELECT participants.id, "
@@ -256,6 +286,7 @@ function ciniki_ags_exhibitGet($ciniki) {
                 . ") "
             . "WHERE participants.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
             . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND participants.status <> 70 "
             . "ORDER BY exhibitors.display_name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');

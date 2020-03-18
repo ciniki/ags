@@ -17,6 +17,7 @@
 #                               0 - Unknown
 #                               30 - Applied
 #                               50 - Accepted
+#                               70 - Inactive (may be back for long running exhibits)
 #                               90 - Rejected
 #
 # flags:                    The options for the exhibitor. **future**

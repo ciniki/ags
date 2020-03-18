@@ -30,8 +30,8 @@
 # flags:                    The options for the item.
 #
 #                               0x01 - For Sale
-#                               0x02 - Sell Online **future**
-#                               0x04 - 
+#                               0x02 - Visible Online
+#                               0x04 - Sell Online
 #                               0x08 -
 #                               0x10 - Tagged Item (print barcode sticker for tag)
 #                               0x20 -

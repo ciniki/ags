@@ -93,7 +93,17 @@ function ciniki_ags_hooks_webOptions(&$ciniki, $tnid, $args) {
                 'label'=>'Include Past Exhibits',
                 'setting'=>'page-ags-' . $row['permalink'] . '-past', 
                 'type'=>'toggle',
-                'value'=>(isset($settings['page-ags-' . $row['permalink'] . '-past'])?$settings['page-ags-' . $row['permalink'] . '-past']:'no'),
+                'value'=>(isset($settings["page-ags-{$row['permalink']}-past"])?$settings["page-ags-{$row['permalink']}-past"]:'no'),
+                'toggles'=>array(
+                    array('value'=>'no', 'label'=>'No'),
+                    array('value'=>'yes', 'label'=>'Yes'),
+                    ),
+                );
+            $options[] = array(
+                'label'=>'Exhibition Categories Submenu',
+                'setting'=>'page-ags-' . $row['permalink'] . '-submenu-categories', 
+                'type'=>'toggle',
+                'value'=>(isset($settings["page-ags-{$row['permalink']}-submenu-categories"])?$settings["page-ags-{$row['permalink']}-submenu-categories"]:'no'),
                 'toggles'=>array(
                     array('value'=>'no', 'label'=>'No'),
                     array('value'=>'yes', 'label'=>'Yes'),
@@ -109,9 +119,9 @@ function ciniki_ags_hooks_webOptions(&$ciniki, $tnid, $args) {
                 'label'=>'Archive Exhibits/page',
                 'setting'=>'page-ags-' . $row['permalink'] . '-archive-number', 
                 'type'=>'text',
-                'value'=>(isset($settings['page-ags-' . $row['permalink'] . '-archive-number'])?$settings['page-ags-' . $row['permalink'] . '-archive-number']:'10'),
+                'value'=>(isset($settings["page-ags-{$row['permalink']}-archive-number"])?$settings["page-ags-{$row['permalink']}-archive-number"]:'10'),
                 );
-            $pages['ciniki.ags.' . $row['permalink']] = array('name'=>'Exhibits - ' . $row['tag_name'], 'options'=>$options);
+            $pages["ciniki.ags.{$row['permalink']}"] = array('name'=>"Exhibits - {$row['tag_name']}", 'options'=>$options);
         } 
     }
     

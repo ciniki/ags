@@ -75,7 +75,7 @@ function ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, $args, $format=''
             . "ORDER BY exhibits.start_date DESC, exhibits.name "
             . "";
     } elseif( isset($args['type']) && $args['type'] == 'current' ) {
-        $strsql .= "AND (exhibits.end_date >= DATE(NOW()) AND exhibits.start_date <= DATE(NOW())) "
+        $strsql .= "AND ((exhibits.end_date >= DATE(NOW()) OR exhibits.end_date = '0000-00-00') AND exhibits.start_date <= DATE(NOW())) "
             . "GROUP BY exhibits.id "
             . "ORDER BY exhibits.start_date ASC, exhibits.name "
             . "";

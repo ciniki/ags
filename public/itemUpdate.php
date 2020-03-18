@@ -39,6 +39,7 @@ function ciniki_ags_itemUpdate(&$ciniki) {
         'tag_info'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Info'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'types'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Types'),
+        'categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -129,6 +130,20 @@ function ciniki_ags_itemUpdate(&$ciniki) {
         $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.ags', 'itemtag', $args['tnid'],
             'ciniki_ags_item_tags', 'ciniki_ags_history',
             'item_id', $args['item_id'], 10, $args['types']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+            return $rc;
+        }
+    }
+
+    //
+    // Update the categories
+    //
+    if( isset($args['categories']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.ags', 'itemtag', $args['tnid'],
+            'ciniki_ags_item_tags', 'ciniki_ags_history',
+            'item_id', $args['item_id'], 20, $args['categories']);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
             return $rc;

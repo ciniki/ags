@@ -200,7 +200,7 @@ function ciniki_ags_itemGet($ciniki) {
         }
         if( isset($rc['tags']) ) {
             foreach($rc['tags'] as $tags) {
-                if( $tags['tag_type'] = 10 ) {
+                if( $tags['tag_type'] == 10 ) {
                     $item['types'] = $tags['names'];
                 } elseif( $tags['tag_type'] == 20 ) {
                     $item['categories'] = $tags['names'];

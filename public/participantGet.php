@@ -108,6 +108,31 @@ function ciniki_ags_participantGet($ciniki) {
     }
 
     //
+    // Check if already a participant
+    //
+    if( $args['participant_id'] == 0 
+        && isset($args['exhibit_id']) && $args['exhibit_id'] > 0
+        && isset($args['customer_id']) && $args['customer_id'] > 0 
+        ) {
+        $strsql = "SELECT participants.id "
+            . "FROM ciniki_ags_participants AS participants, ciniki_ags_exhibitors AS exhibitors "
+            . "WHERE participants.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
+            . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND participants.exhibitor_id = exhibitors.id "
+            . "AND exhibitors.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
+            . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'participant');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.188', 'msg'=>'Unable to load participant', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['participant']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.189', 'msg'=>'Unable to find requested participant'));
+        }
+        $args['participant_id'] = $rc['participant']['id'];
+    }
+
+    //
     // Return default for new Participant
     //
     if( $args['participant_id'] == 0 ) {
@@ -278,10 +303,12 @@ function ciniki_ags_participantGet($ciniki) {
             . "items.status, "
             . "items.flags, "
             . "items.flags AS flags_text, "
+            . "(items.flags&0x06) AS online_flags_text, "
             . "items.unit_amount, "
+            . "items.primary_image_id, "
             . "IFNULL(exhibit.fee_percent, items.fee_percent) AS fee_percent, "
             . "IFNULL(exhibit.inventory, 0) AS inventory, "
-            . "IFNULL(tags.tag_name, '') AS types "
+            . "IFNULL(tags.tag_name, '') AS categories "
             . "FROM ciniki_ags_items AS items "
             . "LEFT JOIN ciniki_ags_exhibit_items AS exhibit ON ("
                 . "items.id = exhibit.item_id "
@@ -290,7 +317,7 @@ function ciniki_ags_participantGet($ciniki) {
                 . ") "
             . "LEFT JOIN ciniki_ags_item_tags AS tags ON ("
                 . "items.id = tags.item_id "
-                . "AND tags.tag_type = 10 "
+                . "AND tags.tag_type = 20 "
                 . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibitor_id']) . "' "
@@ -298,9 +325,11 @@ function ciniki_ags_participantGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'items', 'fname'=>'item_id', 
-                'fields'=>array('item_id', 'exhibit_item_id', 'code', 'name', 'status', 'flags', 'flags_text', 'unit_amount', 'fee_percent', 'tag_info', 'inventory', 'types'),
-                'dlists'=>array('types'=>', '),
-                'flags'=>array('flags_text'=>$maps['item']['flags']),
+                'fields'=>array('item_id', 'exhibit_item_id', 'primary_image_id', 'code', 'name', 'status', 
+                    'flags', 'flags_text', 'online_flags_text', 'unit_amount', 'fee_percent', 'tag_info', 'inventory', 'categories'),
+                'dlists'=>array('categories'=>', '),
+                'flags'=>array('flags_text'=>$maps['item']['flags'], 
+                    'online_flags_text'=>$maps['item']['flags']),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
