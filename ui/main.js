@@ -472,7 +472,8 @@ function ciniki_ags_main() {
             'location_id':{'label':'Location', 'type':'select', 'options':{}, 'complex_options':{'value':'id', 'name':'name'}},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'50':'Active', '90':'Archived'}},
             'flags1':{'label':'Visible', 'type':'flagtoggle', 'field':'flags', 'bit':0x01, 'default':'off'},
-            'flags2':{'label':'Show Categories', 'type':'flagtoggle', 'field':'flags', 'bit':0x02, 'default':'off'},
+            'flags2':{'label':'Category Buttons', 'type':'flagtoggle', 'field':'flags', 'bit':0x02, 'default':'off'},
+//            'flags3':{'label':'Link Members', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'on'},
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},
             }},
@@ -694,11 +695,11 @@ function ciniki_ags_main() {
             'sortTypes':['date', 'text', 'text', 'number', 'text', 'text'],
             'headerValues':['Date', 'User', 'Action', 'Qty', 'Code', 'Item'],
             },
-        'online':{'label':'Online Details', 'type':'simplegrid', 'num_cols':7,
+        'online':{'label':'Online Details', 'type':'simplegrid', 'num_cols':8,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'online' ? 'yes' : 'hidden'},
             'sortable':'yes',
             'sortTypes':['image', 'text', 'text', 'text', 'text', 'text', 'number', 'number'],
-            'headerValues':['Image', 'Item', 'Categories', 'For Sale', 'Visible', 'Sell Online', 'Price', 'Quantity', ''],
+            'headerValues':['Image', 'Item', 'Categories', 'For Sale', 'Visible', 'Sell Online', 'Price', 'Qty', ''],
             'cellClasses':['thumbnail', 'multiline', '', 'aligncenter', 'aligncenter', 'aligncenter', 'multiline alignright', ''],
             'headerClasses':['', '', '', 'aligncenter', 'aligncenter', 'aligncenter', 'alignright', ''],
             'noData':'No items in this exhibit',
@@ -884,6 +885,9 @@ function ciniki_ags_main() {
             return 'event.stopPropagation(); return M.ciniki_ags_main.participant.selectCode(event,\'' + d.code + '\');';
         }
         if( s == 'inventory' && j == 4 ) {
+            return 'event.stopPropagation(); return M.ciniki_ags_main.participant.inventoryUpdate(event,\'' + d.exhibit_item_id + '\');';
+        }
+        if( s == 'online' && j == 7 ) {
             return 'event.stopPropagation(); return M.ciniki_ags_main.participant.inventoryUpdate(event,\'' + d.exhibit_item_id + '\');';
         }
         if( s == 'pending_payouts' && j == 3 ) {

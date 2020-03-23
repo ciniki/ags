@@ -350,6 +350,7 @@ function ciniki_ags_itemGet($ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+    $rsp['categories'] = array();
     if( isset($rc['tags']) ) {
         foreach($rc['tags'] as $tid => $type) {
             if( $type['type'] == 10 ) {

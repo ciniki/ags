@@ -67,6 +67,7 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
         //
         $strsql = "SELECT tags.permalink AS tag_permalink, "
             . "tags.tag_name, "
+            . "eitems.inventory, "
             . "items.id, "
             . "items.name, "
             . "items.permalink, "
@@ -103,7 +104,7 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
             array('container'=>'categories', 'fname'=>'tag_permalink', 
                 'fields'=>array('permalink'=>'tag_permalink', 'name'=>'tag_name')),
             array('container'=>'items', 'fname'=>'permalink', 
-                'fields'=>array('id', 'name', 'permalink', 'status', 'flags',
+                'fields'=>array('id', 'name', 'permalink', 'inventory', 'status', 'flags',
                     'unit_amount', 'unit_discount_amount', 'unit_discount_percentage',
                     'image_id'=>'primary_image_id', 'synopsis', 
                     'customer_id', 'subname'=>'display_name')),
@@ -112,11 +113,14 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
             return $rc;
         }
         $exhibit['categories'] = isset($rc['categories']) ? $rc['categories'] : array();
-        foreach($exhibit['categories'] as $cid => $category) {
+/* Moved to processRequest before tradingcards block */
+/*        foreach($exhibit['categories'] as $cid => $category) {
             if( isset($category['items']) ) {
                 foreach($category['items'] as $iid => $item) {
-                    $display_price = '';
-                    if( ($item['flags']&0x01) ) {
+                    $display_price = 'Not for sale';
+                    error_log(print_r($item,true));
+                    if( ($item['flags']&0x01) == 0x01 ) {
+                        $display_price = '';
                         $final_amount = $item['unit_amount'];
                         if( $item['unit_discount_amount'] > 0 ) {
                             $final_amount = $final_amount - $item['unit_amount'];
@@ -134,7 +138,7 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
                     $exhibit['categories'][$cid]['items'][$iid]['display_price'] = $display_price;
                 }
             }
-        }
+        } */
     } else {
         //
         // Load the items and images
@@ -155,7 +159,6 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
                 . ") "
             . "WHERE eitems.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $exhibit['id']) . "' "
             . "AND eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND (items.flags&0x02) = 0x02 "
             . "ORDER BY items.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');

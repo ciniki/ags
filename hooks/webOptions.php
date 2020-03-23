@@ -99,8 +99,9 @@ function ciniki_ags_hooks_webOptions(&$ciniki, $tnid, $args) {
                     array('value'=>'yes', 'label'=>'Yes'),
                     ),
                 );
+            // This is the category submenu for the page when multiple exhibitions shown
             $options[] = array(
-                'label'=>'Exhibition Categories Submenu',
+                'label'=>'Categories Submenu',
                 'setting'=>'page-ags-' . $row['permalink'] . '-submenu-categories', 
                 'type'=>'toggle',
                 'value'=>(isset($settings["page-ags-{$row['permalink']}-submenu-categories"])?$settings["page-ags-{$row['permalink']}-submenu-categories"]:'no'),
@@ -108,6 +109,22 @@ function ciniki_ags_hooks_webOptions(&$ciniki, $tnid, $args) {
                     array('value'=>'no', 'label'=>'No'),
                     array('value'=>'yes', 'label'=>'Yes'),
                     ),
+                );
+            $options[] = array(
+                'label'=>'Link Member Profiles',
+                'setting'=>'page-ags-' . $row['permalink'] . '-members-link', 
+                'type'=>'toggle',
+                'value'=>(isset($settings["page-ags-{$row['permalink']}-members-link"])?$settings["page-ags-{$row['permalink']}-members-link"]:'no'),
+                'toggles'=>array(
+                    array('value'=>'no', 'label'=>'No'),
+                    array('value'=>'yes', 'label'=>'Yes'),
+                    ),
+                );
+            $options[] = array(
+                'label'=>'Exhibitor Label',
+                'setting'=>'page-ags-' . $row['permalink'] . '-exhibitor-label', 
+                'type'=>'text',
+                'value'=>(isset($settings['page-ags-' . $row['permalink'] . '-exhibitor-label'])?$settings['page-ags-' . $row['permalink'] . '-exhibitor-label']:'Artist'),
                 );
             $options[] = array(
                 'label'=>'Initial Exhibits/page',

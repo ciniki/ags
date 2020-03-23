@@ -23,7 +23,7 @@
 # flags:                    The options for the marketplace/exhibition
 #
 #                               0x01 - Visible on the website
-#                               0x02 - Items for sale online
+#                               0x02 - Show categories as Button List
 #                               0x04 - 
 #                               0x08 - 
 #

@@ -14,33 +14,48 @@
 // Returns
 // -------
 //
-function ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $item_id) {
+function ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $exhibit_id, $item_id) {
 
-    $strsql = "SELECT ciniki_ags_items.id, "
-        . "ciniki_ags_items.exhibitor_id, "
-        . "ciniki_ags_items.exhibitor_code, "
-        . "ciniki_ags_items.code, "
-        . "ciniki_ags_items.name, "
-        . "ciniki_ags_items.permalink, "
-        . "ciniki_ags_items.status, "
-        . "ciniki_ags_items.flags, "
-        . "ciniki_ags_items.unit_amount, "
-        . "ciniki_ags_items.unit_discount_amount, "
-        . "ciniki_ags_items.unit_discount_percentage, "
-        . "ciniki_ags_items.fee_percent, "
-        . "ciniki_ags_items.taxtype_id, "
-        . "ciniki_ags_items.primary_image_id, "
-        . "ciniki_ags_items.synopsis, "
-        . "ciniki_ags_items.description, "
-        . "ciniki_ags_items.tag_info, "
-        . "ciniki_ags_items.creation_year, "
-        . "ciniki_ags_items.medium, "
-        . "ciniki_ags_items.size, "
-        . "ciniki_ags_items.current_condition, "
-        . "ciniki_ags_items.notes "
-        . "FROM ciniki_ags_items "
-        . "WHERE ciniki_ags_items.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_ags_items.id = '" . ciniki_core_dbQuote($ciniki, $item_id) . "' "
+    $strsql = "SELECT items.id, "
+        . "items.exhibitor_id, "
+        . "items.exhibitor_code, "
+        . "items.code, "
+        . "items.name, "
+        . "items.permalink, "
+        . "items.status, "
+        . "items.flags, "
+        . "items.unit_amount, "
+        . "items.unit_discount_amount, "
+        . "items.unit_discount_percentage, "
+        . "items.fee_percent, "
+        . "items.taxtype_id, "
+        . "items.primary_image_id, "
+        . "items.synopsis, "
+        . "items.description, "
+        . "items.tag_info, "
+        . "items.creation_year, "
+        . "items.medium, "
+        . "items.size, "
+        . "items.current_condition, "
+        . "items.notes, "
+        . "exhibitors.display_name, "
+        . "exhibitors.flags AS exhibitor_flags, "
+        . "customers.member_status, "
+        . "customers.webflags, "
+        . "customers.permalink AS customer_permalink "
+        . "FROM ciniki_ags_items AS items "
+        . "LEFT JOIN ciniki_ags_exhibitors AS exhibitors ON ( "
+            . "items.exhibitor_id = exhibitors.id "
+            . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_customers AS customers ON ( "
+            . "exhibitors.customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND customers.member_status = 10 "
+            . "AND (customers.webflags&0x01) = 0x01 "
+            . ") "
+        . "WHERE items.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND items.id = '" . ciniki_core_dbQuote($ciniki, $item_id) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
@@ -48,7 +63,9 @@ function ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $item_id) {
             'fields'=>array('id', 'exhibitor_id', 'exhibitor_code', 'code', 'name', 'permalink', 'status', 'flags', 
                 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 'taxtype_id', 
                 'primary_image_id', 'synopsis', 'description', 'tag_info', 
-                'creation_year', 'medium', 'size', 'current_condition', 'notes'),
+                'creation_year', 'medium', 'size', 'current_condition', 'notes',
+                'display_name', 'exhibitor_flags', 'member_status', 'webflags', 'customer_permalink',
+                ),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -58,7 +75,6 @@ function ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $item_id) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.81', 'msg'=>'Unable to find Item'));
     }
     $item = $rc['items'][0];
-    $item['unit_amount'] = '$' . number_format($item['unit_amount'], 2);
 
     //
     // Get the categories
@@ -89,6 +105,7 @@ function ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $item_id) {
     $strsql = "SELECT ciniki_ags_item_images.id, "
         . "ciniki_ags_item_images.image_id, "
         . "ciniki_ags_item_images.name, "
+        . "ciniki_ags_item_images.permalink, "
         . "ciniki_ags_item_images.sequence, "
         . "ciniki_ags_item_images.description "
         . "FROM ciniki_ags_item_images "
@@ -99,7 +116,7 @@ function ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $item_id) {
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.blog', array(
         array('container'=>'images', 'fname'=>'id', 'name'=>'image',
-            'fields'=>array('id', 'image_id', 'name', 'sequence', 'description')),
+            'fields'=>array('id', 'image_id', 'title'=>'name', 'sequence', 'description', 'permalink')),
         ));
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
