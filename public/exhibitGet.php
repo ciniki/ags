@@ -267,7 +267,7 @@ function ciniki_ags_exhibitGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.11', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.200', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
         }
         $rsp['inactive'] = isset($rc['participants']) ? $rc['participants'] : array();
 

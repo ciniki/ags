@@ -17,7 +17,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.ags']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.124', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.203', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
     $page = array(
         'title'=>$args['page_title'],
@@ -521,7 +521,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             $ciniki['response']['head']['og']['url'] .= '/category/' . $category_permalink;
 
             if( !isset($exhibit['categories'][$category_permalink]['items']) ) {
-                return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.124', 'msg'=>"I'm sorry, the page you requested does not exist."));
+                return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.204', 'msg'=>"I'm sorry, the page you requested does not exist."));
             } 
 
             $category = $exhibit['categories'][$category_permalink];
@@ -534,7 +534,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 $item_permalink = $args['uri_split'][4];
 
                 if( !isset($category['items'][$item_permalink]) ) {
-                    return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.124', 'msg'=>"I'm sorry, the page you requested does not exist."));
+                    return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.205', 'msg'=>"I'm sorry, the page you requested does not exist."));
                 } 
                 $item_list = $category['items'];
                 $item = $category['items'][$item_permalink];
@@ -587,7 +587,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             if( ($exhibit['flags']&0x02) == 0x02 ) {
                 foreach($exhibit['categories'] as $category) {
                     if( !isset($category['items'][$args['uri_split'][2]]) ) {
-                        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.124', 'msg'=>"I'm sorry, the page you requested does not exist."));
+                        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.206', 'msg'=>"I'm sorry, the page you requested does not exist."));
 
                     }
                     $item_list = $category['items'];

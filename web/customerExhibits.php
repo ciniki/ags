@@ -68,23 +68,23 @@ function ciniki_ags_web_customerExhibits($ciniki, $tnid, $args) {
     
     foreach($exhibits as $eid => $exhibit) {
         // Get the base url of the customers module
-        $members_base_url = '';
+        $exhibit_base_url = '';
         ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'indexModuleBaseURL');
         if( $exhibit['type_permalink'] != '' ) {
             $rc = ciniki_web_indexModuleBaseURL($ciniki, $tnid, 'ciniki.ags.' . $exhibit['type_permalink']);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.190', 'msg'=>'Unable to get members base URL', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.208', 'msg'=>'Unable to get members base URL', 'err'=>$rc['err']));
             }
-            $exhibits[$eid]['base_url'] = $ciniki['request']['domain_base_url'] . (isset($rc['base_url']) ? $rc['base_url'] : '');
+            $exhibit_base_url = $ciniki['request']['domain_base_url'] . (isset($rc['base_url']) ? $rc['base_url'] : '');
         }
-        if( $members_base_url == '' ) {
-            $rc = ciniki_web_indexModuleBaseURL($ciniki, $tnid, 'ciniki.ags.' . $exhibit['type_permalink']);
+        if( $exhibit_base_url == '' ) {
+            $rc = ciniki_web_indexModuleBaseURL($ciniki, $tnid, 'ciniki.ags.exhibits');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.190', 'msg'=>'Unable to get members base URL', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.207', 'msg'=>'Unable to get members base URL', 'err'=>$rc['err']));
             }
-            $exhibits[$eid]['base_url'] = $ciniki['request']['domain_base_url'] . (isset($rc['base_url']) ? $rc['base_url'] : '');
+            $exhibit_base_url = $ciniki['request']['domain_base_url'] . (isset($rc['base_url']) ? $rc['base_url'] : '');
         }
-        $exhibits[$eid]['base_url'] .= '/' . $exhibit['permalink'] . '/item';
+        $exhibits[$eid]['base_url'] = $exhibit_base_url . '/' . $exhibit['permalink'] . '/item';
         if( isset($exhibit['items']) ) {
             foreach($exhibit['items'] as $iid => $item) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'formatPrice');

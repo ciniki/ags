@@ -172,10 +172,10 @@ function ciniki_ags_itemGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.80', 'msg'=>'Item not found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.201', 'msg'=>'Item not found', 'err'=>$rc['err']));
         }
         if( !isset($rc['items'][0]) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.81', 'msg'=>'Unable to find Item'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.202', 'msg'=>'Unable to find Item'));
         }
         $item = $rc['items'][0];
         $item['unit_amount'] = '$' . number_format($item['unit_amount'], 2);

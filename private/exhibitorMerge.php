@@ -23,7 +23,7 @@ function ciniki_ags_exhibitorMerge(&$ciniki, $tnid, $primary_exhibitor_id, $seco
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.192', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.211', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
     $items = isset($rc['rows']) ? $rc['rows'] : array();
     foreach($items as $item) {
@@ -32,7 +32,7 @@ function ciniki_ags_exhibitorMerge(&$ciniki, $tnid, $primary_exhibitor_id, $seco
         //
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.ags.item', $item['id'], array('exhibitor_id'=>$primary_exhibitor_id), 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.193', 'msg'=>'Unable to update exhibitor items.', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.213', 'msg'=>'Unable to update exhibitor items.', 'err'=>$rc['err']));
         }
         $updated++;
     }
@@ -47,7 +47,7 @@ function ciniki_ags_exhibitorMerge(&$ciniki, $tnid, $primary_exhibitor_id, $seco
         . "";
     $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.ags', 'pariticipants', 'exhibit_id');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.192', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.212', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
     }
     $primary_participants = isset($rc['participants']) ? $rc['participants'] : array();
 
