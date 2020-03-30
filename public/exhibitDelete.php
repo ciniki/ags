@@ -85,6 +85,10 @@ function ciniki_ags_exhibitDelete(&$ciniki) {
     }
 
     //
+    // FIXME: Remove the tags
+    //
+
+    //
     // Remove the exhibit
     //
     $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.ags.exhibit',
