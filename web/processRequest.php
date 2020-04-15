@@ -819,6 +819,12 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                     . "<a href='{$members_base_url}/{$item['customer_permalink']}'>"
                     . $item['display_name'] 
                     . '</a>';
+                if( $item['medium'] != '' ) {
+                    $content .= '<br/>Medium: ' . $item['medium'];
+                }
+                if( $item['size'] != '' ) {
+                    $content .= '<br/>Size: ' . $item['size'];
+                }
                 $page['blocks'][] = array('type'=>'content', 'section'=>'artist-link', 'content'=>$content);
             }
 
