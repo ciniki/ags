@@ -95,6 +95,18 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
     }
 
     //
+    // Check for image formats
+    //
+    $thumbnail_format = 'square-cropped';
+    $thumbnail_padding_color = '#ffffff';
+    if( isset($settings["{$settings_prefix}-thumbnail-format"]) && $settings["{$settings_prefix}-thumbnail-format"] == 'square-padded' ) {
+        $thumbnail_format = $settings["{$settings_prefix}-thumbnail-format"];
+        if( isset($settings["{$settings_prefix}-thumbnail-padding-color"]) && $settings["{$settings_prefix}-thumbnail-padding-color"] != '' ) {
+            $thumbnail_padding_color = $settings["{$settings_prefix}-thumbnail-padding-color"];
+        } 
+    }
+
+    //
     // Check for categories
     //
     $categories = array();
@@ -574,7 +586,12 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                     $category['items'][$iid]['display_price'] = $rc['display_price'];
                 }
 
-                $page['blocks'][] = array('type'=>'tradingcards', 'base_url'=>$base_url . '/item', 'anchors'=>'permalink', 'cards'=>$category['items']);
+                $page['blocks'][] = array('type'=>'tradingcards', 
+                    'thumbnail_format'=>$thumbnail_format,
+                    'thumbnail_padding_color' => $thumbnail_padding_color,
+                    'base_url'=>$base_url . '/item', 
+                    'anchors'=>'permalink', 
+                    'cards'=>$category['items']);
             }
 
         }

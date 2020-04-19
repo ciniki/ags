@@ -2098,7 +2098,7 @@ function ciniki_ags_main() {
         '_description':{'label':'Description', 'panelcolumn':1, 'fields':{
             'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
-        '_categories':{'label':'Categories', 'aside':'yes', 'panelcolumn':2, 'fields':{
+        '_categories':{'label':'Web Categories', 'aside':'yes', 'panelcolumn':2, 'fields':{
             'categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category: '},
             }},
         'images':{'label':'Additional Images', 'panelcolumn':2, 'type':'simplethumbs'},
