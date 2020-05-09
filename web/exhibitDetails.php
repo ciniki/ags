@@ -118,7 +118,6 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
             if( isset($category['items']) ) {
                 foreach($category['items'] as $iid => $item) {
                     $display_price = 'Not for sale';
-                    error_log(print_r($item,true));
                     if( ($item['flags']&0x01) == 0x01 ) {
                         $display_price = '';
                         $final_amount = $item['unit_amount'];
@@ -134,7 +133,6 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
                         $display_price .= ($display_price != '' ? '&nbsp;' : '') 
                             . '$' . number_format($final_amount, 2);
                     }
-                    error_log($display_price);
                     $exhibit['categories'][$cid]['items'][$iid]['display_price'] = $display_price;
                 }
             }
