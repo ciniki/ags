@@ -92,6 +92,7 @@ function ciniki_ags_main() {
         return '';
     }
     this.exhibits.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'exhibits' ) {
             return 'M.ciniki_ags_main.exhibit.open(\'M.ciniki_ags_main.exhibits.open();\',\'' + d.id + '\',M.ciniki_ags_main.exhibits.nplist);';
         }
@@ -366,6 +367,7 @@ function ciniki_ags_main() {
         return '';
     }
     this.exhibit.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'participants' || s == 'participant_search' || s == 'inactive' ) {
             return 'M.ciniki_ags_main.participant.open(\'M.ciniki_ags_main.exhibit.open();\',\'' + d.id + '\');';
         }
@@ -600,7 +602,7 @@ function ciniki_ags_main() {
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_ags_main.participant.open();\',\'mc\',{\'customer_id\':M.ciniki_ags_main.participant.data.participant.customer_id});',
             },
         'barcodes':{'label':'Print Barcodes', 'aside':'yes',
-            'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected != 'inventory' ? 'yes' :'no';},
+            'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' :'hidden';},
             'fields':{
                 'start_row':{'label':'Row', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9', '10':'10', '11':'11', '12':'12', '13':'13', '14':'14', '15':'15', '16':'16', '17':'17', '18':'18', '19':'19', '20':'20'}},
                 'start_col':{'label':'Column', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4'}},
@@ -612,7 +614,7 @@ function ciniki_ags_main() {
             }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'barcodes':{'label':'Exhibit Item Barcodes', 
-                'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected != 'inventory' ? 'yes' :'no';},
+                'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' :'no';},
                 'fn':'M.ciniki_ags_main.participant.printBarcodes();',
                 },
             'accept':{'label':'Accept', 
@@ -912,6 +914,7 @@ function ciniki_ags_main() {
         }
     }
     this.participant.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'inventory' || s == 'available' || s == 'online' ) {
             return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.participant.open();\',\'' + d.item_id + '\',0,0);';
         }
@@ -934,12 +937,14 @@ function ciniki_ags_main() {
     this.participant.switchTab = function(t) {
         this.sections._tabs.selected = t;
         this.refreshSection('_tabs');
+        this.refreshSection('_buttons');
         this.showHideSection('inventory');
         this.showHideSection('available');
         this.showHideSection('pending_payouts');
         this.showHideSection('paid_sales');
         this.showHideSection('logs');
         this.showHideSection('online');
+        this.showHideSection('barcodes');
         this.openLogs();
     }
     this.participant.upload_item_id = 0;
@@ -1401,6 +1406,7 @@ function ciniki_ags_main() {
 //        return '';
 //    }
     this.locations.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'locations' ) {
             return 'M.ciniki_ags_main.locations.open(\'M.ciniki_ags_main.locations.open();\',' + d.id + ');';
         } else if( s == 'exhibits' ) {
@@ -1643,6 +1649,7 @@ function ciniki_ags_main() {
         }
     }
     this.exhibitors.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'exhibitors' ) {
             return 'M.ciniki_ags_main.exhibitor.open(\'M.ciniki_ags_main.exhibitors.open();\',\'' + d.id + '\',M.ciniki_ags_main.exhibitor.nplist);';
         }
@@ -1847,6 +1854,7 @@ function ciniki_ags_main() {
         return null;
     }
     this.exhibitor.rowFn = function(s, i, d) {
+        if( d == null ) { return ''; }
         if( s == 'items' ) {
             return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibitor.open();\',\'' + d.id + '\',0,0);';
         }
