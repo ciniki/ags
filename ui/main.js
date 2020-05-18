@@ -555,15 +555,15 @@ function ciniki_ags_main() {
         }
     }
     this.exhibitedit.remove = function() {
-        if( confirm('Are you sure you want to remove exhibit?') ) {
-            M.api.getJSONCb('ciniki.ags.exhibitDelete', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove exhibit?',null,function() {
+            M.api.getJSONCb('ciniki.ags.exhibitDelete', {'tnid':M.curTenantID, 'exhibit_id':M.ciniki_ags_main.exhibitedit.exhibit_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_ags_main.exhibitedit.close();
             });
-        }
+        });
     }
     this.exhibitedit.addButton('save', 'Save', 'M.ciniki_ags_main.exhibitedit.save();');
     this.exhibitedit.addClose('Cancel');
@@ -1169,15 +1169,15 @@ function ciniki_ags_main() {
         }
     }
     this.participant.remove = function() {
-        if( confirm('Are you sure you want to remove participant?') ) {
-            M.api.getJSONCb('ciniki.ags.participantDelete', {'tnid':M.curTenantID, 'participant_id':this.participant_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove participant?',null,function() {
+            M.api.getJSONCb('ciniki.ags.participantDelete', {'tnid':M.curTenantID, 'participant_id':M.ciniki_ags_main.participant.participant_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_ags_main.participant.close();
             });
-        }
+        });
     }
     this.participant.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.participant_id) < (this.nplist.length - 1) ) {
@@ -1295,15 +1295,15 @@ function ciniki_ags_main() {
         }
     }
     this.editparticipant.remove = function() {
-        if( confirm('Are you sure you want to remove this participant?') ) {
-            M.api.getJSONCb('ciniki.ags.participantDelete', {'tnid':M.curTenantID, 'participant_id':this.participant_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove this participant?',null,function() {
+            M.api.getJSONCb('ciniki.ags.participantDelete', {'tnid':M.curTenantID, 'participant_id':M.ciniki_ags_main.editparticipant.participant_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_ags_main.participant.close();
             });
-        }
+        });
     }
     this.editparticipant.addButton('save', 'Save', 'M.ciniki_ags_main.editparticipant.save();');
     this.editparticipant.addClose('Cancel');
@@ -1525,7 +1525,7 @@ function ciniki_ags_main() {
                 M.ciniki_ags_main.location.setFieldValue('longitude', results[0].geometry.location.lng());
                 M.stopLoad();
             } else {
-                alert('We were unable to lookup your latitude/longitude, please check your address in Settings: ' + status);
+                M.alert('We were unable to lookup your latitude/longitude, please check your address in Settings: ' + status);
                 M.stopLoad();
             }
         }); 
@@ -1573,15 +1573,15 @@ function ciniki_ags_main() {
         }
     }
     this.location.remove = function() {
-        if( confirm('Are you sure you want to remove location?') ) {
-            M.api.getJSONCb('ciniki.ags.locationDelete', {'tnid':M.curTenantID, 'location_id':this.location_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove location?',null,function() {
+            M.api.getJSONCb('ciniki.ags.locationDelete', {'tnid':M.curTenantID, 'location_id':M.ciniki_ags_main.location.location_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_ags_main.location.close();
             });
-        }
+        });
     }
     this.location.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.location_id) < (this.nplist.length - 1) ) {
@@ -1915,15 +1915,15 @@ function ciniki_ags_main() {
         p.show();
     }
     this.exhibitor.remove = function() {
-        if( confirm('Are you sure you want to remove exhibitor?') ) {
-            M.api.getJSONCb('ciniki.ags.exhibitorDelete', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove exhibitor?',null,function() {
+            M.api.getJSONCb('ciniki.ags.exhibitorDelete', {'tnid':M.curTenantID, 'exhibitor_id':M.ciniki_ags_main.exhibitor.exhibitor_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_ags_main.exhibitor.close();
             });
-        }
+        });
     }
 /*    this.exhibitor.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.exhibitor_id) < (this.nplist.length - 1) ) {
@@ -2235,15 +2235,15 @@ function ciniki_ags_main() {
         }
     }
     this.item.remove = function() {
-        if( confirm('Are you sure you want to remove item?') ) {
-            M.api.getJSONCb('ciniki.ags.itemDelete', {'tnid':M.curTenantID, 'item_id':this.item_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove item?',null,function() {
+            M.api.getJSONCb('ciniki.ags.itemDelete', {'tnid':M.curTenantID, 'item_id':M.ciniki_ags_main.item.item_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_ags_main.item.close();
             });
-        }
+        });
     }
     this.item.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.item_id) < (this.nplist.length - 1) ) {
@@ -2342,15 +2342,15 @@ function ciniki_ags_main() {
         }
     }
     this.itemimage.remove = function() {
-        if( confirm('Are you sure you want to remove itemImage?') ) {
-            M.api.getJSONCb('ciniki.ags.itemImageDelete', {'tnid':M.curTenantID, 'itemimage_id':this.itemimage_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove item image?',null,function() {
+            M.api.getJSONCb('ciniki.ags.itemImageDelete', {'tnid':M.curTenantID, 'itemimage_id':M.ciniki_ags_main.itemimage.itemimage_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_ags_main.itemimage.close();
             });
-        }
+        });
     }
     this.itemimage.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.itemimage_id) < (this.nplist.length - 1) ) {
@@ -2557,7 +2557,7 @@ function ciniki_ags_main() {
         //
         var ac = M.createContainer(ap, 'ciniki_ags_main', 'yes');
         if( ac == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
       
