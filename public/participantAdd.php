@@ -118,7 +118,7 @@ function ciniki_ags_participantAdd(&$ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'exhibitorCodeCheck');
         $rc = ciniki_ags_exhibitorCodeCheck($ciniki, $args['tnid'], $args['code']);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.117', 'msg'=>'Code already exists, please choose another.', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.117', 'msg'=>'Code already exists, please choose another.'));
         }
         
         //
