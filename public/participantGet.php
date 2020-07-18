@@ -126,7 +126,9 @@ function ciniki_ags_participantGet($ciniki) {
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.188', 'msg'=>'Unable to load participant', 'err'=>$rc['err']));
         }
-        $args['participant_id'] = $rc['participant']['id'];
+        if( isset($rc['participant']) ) {
+            $args['participant_id'] = $rc['participant']['id'];
+        }
     }
 
     //
