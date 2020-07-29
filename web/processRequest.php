@@ -603,18 +603,16 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
 
             if( ($exhibit['flags']&0x02) == 0x02 ) {
                 foreach($exhibit['categories'] as $category) {
-                    if( !isset($category['items'][$args['uri_split'][2]]) ) {
-                        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.206', 'msg'=>"I'm sorry, the page you requested does not exist."));
+                    if( isset($category['items'][$args['uri_split'][2]]) ) {
+                        $item_list = $category['items'];
+                        $item = $category['items'][$item_permalink];
+                        $base_url .= '/item/' . $item_permalink;
+                        $ciniki['response']['head']['og']['url'] .= '/item/' . $item_permalink;
+                        $page['breadcrumbs'][] = array('name'=>$item['name'], 'url'=>$base_url);
 
+                        $display = 'item';
+                        break;
                     }
-                    $item_list = $category['items'];
-                    $item = $category['items'][$item_permalink];
-                    $base_url .= '/item/' . $item_permalink;
-                    $ciniki['response']['head']['og']['url'] .= '/item/' . $item_permalink;
-                    $page['breadcrumbs'][] = array('name'=>$item['name'], 'url'=>$base_url);
-
-                    $display = 'item';
-                    break;
                 }
             }
             elseif( isset($exhibit['items'][$item_permalink]) ) {

@@ -47,7 +47,12 @@ function ciniki_ags_web_customerExhibits($ciniki, $tnid, $args) {
             . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_ags_exhibit_tags AS tags ON ("
-            . "tags.id = (SELECT id FROM ciniki_ags_exhibit_tags AS b WHERE b.exhibit_id = exhibits.id LIMIT 1) "
+            . "tags.id = ("
+                . "SELECT id FROM ciniki_ags_exhibit_tags AS b "
+                . "WHERE b.exhibit_id = exhibits.id "
+                . "AND b.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "LIMIT 1"
+                . ") "
             . ") "
         . "WHERE exhibitors.customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
         . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -76,6 +81,7 @@ function ciniki_ags_web_customerExhibits($ciniki, $tnid, $args) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.208', 'msg'=>'Unable to get members base URL', 'err'=>$rc['err']));
             }
             $exhibit_base_url = $ciniki['request']['domain_base_url'] . (isset($rc['base_url']) ? $rc['base_url'] : '');
+            error_log($rc['base_url']);
         }
         if( $exhibit_base_url == '' ) {
             $rc = ciniki_web_indexModuleBaseURL($ciniki, $tnid, 'ciniki.ags.exhibits');
