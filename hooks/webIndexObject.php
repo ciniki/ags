@@ -67,14 +67,14 @@ function ciniki_ags_hooks_webIndexObject($ciniki, $tnid, $args) {
         if( $exhibit['type_permalink'] != '' ) {
             $rc = ciniki_web_indexModuleBaseURL($ciniki, $tnid, 'ciniki.ags.' . $exhibit['type_permalink']);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.210', 'msg'=>'Unable to get exhibit base URL', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.206', 'msg'=>'Unable to get exhibit base URL', 'err'=>$rc['err']));
             }
             $exhibit_base_url = (isset($rc['base_url']) ? $rc['base_url'] : '');
         }
         if( $exhibit_base_url == '' ) {
             $rc = ciniki_web_indexModuleBaseURL($ciniki, $tnid, 'ciniki.ags.exhibits');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.209', 'msg'=>'Unable to get exhibit base URL', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.189', 'msg'=>'Unable to get exhibit base URL', 'err'=>$rc['err']));
             }
             $exhibit_base_url = (isset($rc['base_url']) ? $rc['base_url'] : '');
         }

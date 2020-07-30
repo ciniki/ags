@@ -81,7 +81,6 @@ function ciniki_ags_web_customerExhibits($ciniki, $tnid, $args) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.208', 'msg'=>'Unable to get members base URL', 'err'=>$rc['err']));
             }
             $exhibit_base_url = $ciniki['request']['domain_base_url'] . (isset($rc['base_url']) ? $rc['base_url'] : '');
-            error_log($rc['base_url']);
         }
         if( $exhibit_base_url == '' ) {
             $rc = ciniki_web_indexModuleBaseURL($ciniki, $tnid, 'ciniki.ags.exhibits');

@@ -23,7 +23,6 @@ function ciniki_ags_hooks_customerMerge($ciniki, $tnid, $args) {
     // Keep track of how many items we've updated
     //
     $updated = 0;
-    error_log('merge' . $args['secondary_customer_id'] . ' to ' . $args['primary_customer_id']);
 
     //
     // Check if the exhibitor already exists
@@ -60,7 +59,6 @@ function ciniki_ags_hooks_customerMerge($ciniki, $tnid, $args) {
         // If primary_customer_id already exists as exhibitor, move the items from secondary to primary.
         //
         if( isset($primary_exhibitor_id) ) {
-    error_log('merge exhibitor' . $secondary_exhibitor_id . ' to ' . $primary_exhibitor_id);
             ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'exhibitorMerge');
             $rc = ciniki_ags_exhibitorMerge($ciniki, $tnid, $primary_exhibitor_id, $secondary_exhibitor_id);
             if( $rc['stat'] != 'ok' ) {
