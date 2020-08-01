@@ -475,7 +475,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         $exhibit_date .= ", " . $exhibit['start_year'];
         $page_title = $exhibit['name'];
         $page['title'] = $exhibit['name'];
-        $page['meta_data'] = $exhibit_date;
+        $page['article_meta'] = array($exhibit_date);
 //        $page['blocks'][] = array('type'=>'content', 'html'=>'<pre>' . print_r($exhibit, true) . '</pre>');
 
         //
