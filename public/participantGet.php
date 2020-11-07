@@ -317,7 +317,7 @@ function ciniki_ags_participantGet($ciniki) {
             . "LEFT JOIN ciniki_ags_item_tags AS tags ON ("
                 . "items.id = tags.item_id "
                 . "AND tags.tag_type = 20 "
-                . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibitor_id']) . "' "
             . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "

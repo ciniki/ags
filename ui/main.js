@@ -656,11 +656,20 @@ function ciniki_ags_main() {
             'hint':'Search inventory',
             'noData':'No items found',
             }, */
+        'inventory_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
+            'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' : 'hidden'},
+            'headerValues':['Code', 'Item', 'Price', 'Quantity', ''],
+            'headerClasses':['','','alignright','alignright',''],
+            'cellClasses':['multiline', 'multiline', 'multiline alignright', 'alignright'],
+            'hint':'Search inventory',
+            'noData':'No items found',
+            },
         'inventory':{'label':'Exhibit Items', 'type':'simplegrid', 'panelcolumn':1, 'num_cols':6,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' : 'hidden'},
             'sortable':'yes',
             'sortTypes':['alttext', 'text', 'number', 'number', 'number'],
             'headerValues':['Code', '', 'Item', 'Price', 'Quantity', ''],
+            'headerClasses':['','','','alignright','alignright',''],
             'cellClasses':['multiline', '', 'multiline', 'multiline alignright', 'alignright'],
             'noData':'No items in this exhibit',
             },
@@ -717,6 +726,23 @@ function ciniki_ags_main() {
 //    this.participant.fieldHistoryArgs = function(s, i) {
 //        return {'method':'ciniki.ags.participantHistory', 'args':{'tnid':M.curTenantID, 'participant_id':this.participant_id, 'field':i}};
 //    }
+    this.participant.liveSearchCb = function(s, i, v) {
+        if( s == 'inventory_search' && v != '' ) {
+            M.api.getJSONBgCb('ciniki.ags.exhibitorItemSearch', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id, 'start_needle':v, 'limit':'25'}, function(rsp) {
+                console.log(rsp.items);
+                M.ciniki_ags_main.participant.liveSearchShow('inventory_search',null,M.gE(M.ciniki_ags_main.participant.panelUID + '_' + s), rsp.items);
+                });
+        }
+    }
+    this.participant.liveSearchResultValue = function(s, f, i, j, d) {
+        return this.cellValue(s, i, j, d);
+    }
+    this.participant.liveSearchResultCellFn = function(s, f, i, j, d) {
+        return this.cellFn(s, i, j, d);
+    }
+    this.participant.liveSearchResultRowFn = function(s, f, i, j, d) {
+        return this.rowFn(s, i, d);
+    }
     this.participant.cellSortValue = function(s, i, j, d) {
         if( s == 'inventory' || s == 'available' || s == 'paid_sales' || s == 'pending_sales' ) {
             switch(j) {
@@ -743,7 +769,35 @@ function ciniki_ags_main() {
                 case 1: return d.value;
             }
         }
-        if( s == 'inventory' ) {
+        if( s == 'inventory_search' ) {
+            // Decide button on inventory search
+            switch(j) {
+                case 0: 
+                    if( d.categories != null && d.categories != '' ) {
+                        return '<span class="maintext">' + d.code + '</span><span class="subtext">' + d.categories + '</span>';
+                    } 
+                    return d.code;
+                case 1: 
+                    if( d.tag_info != null && d.tag_info != '' ) {
+                        return '<span class="maintext">' + d.name + '</span><span class="subtext">' + d.tag_info + '</span>';
+                    }
+                    return d.name;
+                case 2: 
+                    if( d.flags_text != null && d.flags_text != '' ) {
+                        return '<span class="maintext">' + d.unit_amount_display + '</span><span class="subtext">' + d.flags_text + '</span>';
+                    }
+                    return d.unit_amount_display;
+                case 3: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
+                case 4: 
+                    if( d.exhibit_id > 0 && d.exhibit_id == this.exhibit_id ) {
+                        return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.id + ');">Remove</button>';
+                    } 
+                    return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemAdd(event,' + d.id + ');">Add</button>';
+            }
+            return '';
+        }
+        if( s == 'inventory' || s == 'inventory_search' ) {
+            // Decide button on inventory search
             switch(j) {
                 case 0: 
                     if( d.categories != null && d.categories != '' ) {
@@ -915,6 +969,9 @@ function ciniki_ags_main() {
     }
     this.participant.rowFn = function(s, i, d) {
         if( d == null ) { return ''; }
+        if( s == 'inventory_search' ) {
+            return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.participant.open();\',\'' + d.id + '\',0,0);';
+        }
         if( s == 'inventory' || s == 'available' || s == 'online' ) {
             return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.participant.open();\',\'' + d.item_id + '\',0,0);';
         }
