@@ -154,6 +154,16 @@ function ciniki_ags_hooks_webOptions(&$ciniki, $tnid, $args) {
                 'type'=>'colour',
                 'value'=>(isset($settings['page-ags-' . $row['permalink'] . '-thumbnail-padding-color'])?$settings['page-ags-' . $row['permalink'] . '-thumbnail-padding-color']:'#ffffff'),
                 );
+            $options[] = array(
+                'label'=>'Image Quality',
+                'setting'=>'page-ags-' . $row['permalink'] . '-image-quality',
+                'type'=>'toggle',
+                'value'=>(isset($settings['page-ags-' . $row['permalink'] . '-image-quality'])?$settings['page-ags-' . $row['permalink'] . '-image-quality']:'low'),
+                'toggles'=>array(
+                    array('value'=>'low', 'label'=>'Low'),
+                    array('value'=>'high', 'label'=>'High'),
+                    ),
+                );
 
             $pages["ciniki.ags.{$row['permalink']}"] = array('name'=>"Exhibits - {$row['tag_name']}", 'options'=>$options);
         } 

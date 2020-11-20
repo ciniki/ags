@@ -87,6 +87,12 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         ) {
         $members_link = $settings["{$settings_prefix}-members-link"];
     }
+    $image_quality = 'regular';
+    if( isset($settings["{$settings_prefix}-image-quality"]) 
+        && $settings["{$settings_prefix}-image-quality"] == 'high'
+        ) {
+        $image_quality = 'high';
+    }
 
     if( isset($ciniki['request']['args']['page']) && $ciniki['request']['args']['page'] != '' && is_numeric($ciniki['request']['args']['page']) ) {
         $page_past_cur = intval($ciniki['request']['args']['page']);
@@ -645,6 +651,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                     'type' => 'asideimage', 
                     'section' => 'primary-image', 
                     'primary' => 'yes',
+                    'quality' => $image_quality,
                     'image_id' => $exhibit['primary_image_id'], 
                     'title' => $exhibit['name'], 
                     'caption' => '',
@@ -816,6 +823,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                     'type' => 'asideimage', 
                     'section' => 'primary-image', 
                     'primary' => 'yes',
+                    'quality' => $image_quality,
                     'image_id' => $item['primary_image_id'], 
                     'title' => $item['name'], 
                     'caption' => '',
