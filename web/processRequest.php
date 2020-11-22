@@ -863,14 +863,25 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             // Check if price should be shown
             //
             if( $item['inventory'] <= 0 ) {
-                $page['blocks'][] = array('type'=>'content', 'section'=>'sold-out', 'title'=>'', 'content'=>'<b>Sold</b>');
+                $page['blocks'][] = array('type'=>'content', 'section'=>'sold-out', 'title'=>'', 'content'=>'<b>Sold Out</b>');
             }
             elseif( ($item['flags']&0x01) == 0x01 ) {
                 $price = $item; 
                 $price['name'] = 'Price';
                 $price['limited_units'] = 'yes';
-                if( ($item['flags']&0x04) == 0x04 ) {
-//                    $price['cart'] = 'yes';
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.sapos', 0x30000040) && ($item['flags']&0x04) == 0x04 ) {
+                    $price['cart'] = 'yes';
+                    $price['object'] = 'ciniki.ags.exhibititem';
+                    $price['object_id'] = $eitem['exhibit_item_id'];
+
+                    // Check inventory
+                    if( $item['inventory'] <= 0 ) {
+                        $price['limited_units'] = 'yes';
+                        $price['units_available'] = 0;
+                    } else {
+                        $price['limited_units'] = 'yes';
+                        $price['units_available'] = $eitem['inventory'];
+                    }
                 }
                 $page['blocks'][] = array('type'=>'prices', 'section'=>'price-list', 'prices'=>array($price));
             } else {

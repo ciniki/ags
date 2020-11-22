@@ -1,0 +1,5 @@
+#
+# Adding extra fields for item shipping using ciniki.sapos shipping profiles
+#
+ALTER TABLE ciniki_ags_items ADD COLUMN shipping_profile_id int not null AFTER description;
+ALTER TABLE ciniki_ags_items COMMENT='v1.03';

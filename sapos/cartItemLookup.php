@@ -10,28 +10,27 @@
 // Returns
 // =======
 //
-function ciniki_ags_sapos_itemLookup($ciniki, $tnid, $args) {
+function ciniki_ags_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
 
     if( !isset($args['object']) || $args['object'] == ''
         || !isset($args['object_id']) || $args['object_id'] == '' 
         ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.130', 'msg'=>'No item specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.216', 'msg'=>'No item specified.'));
     }
 
     //
-    // An offering was added to an invoice item, get the details and see if we need to 
-    // create a registration for this offering
+    // Find the item
     //
     if( $args['object'] == 'ciniki.ags.exhibititem' ) {
         $strsql = "SELECT "
             . "eitems.id AS object_id, "
+            . "eitems.inventory, "
             . "items.code, "
             . "items.name AS description, "
             . "items.unit_amount, "
             . "items.unit_discount_amount, "
             . "items.unit_discount_percentage, "
             . "items.taxtype_id, "
-            . "items.shipping_profile_id, "
             . "eitems.inventory AS inventory_current_num, "
             . "exhibits.name AS exhibit_name "
             . "FROM ciniki_ags_exhibit_items AS eitems "
@@ -53,17 +52,16 @@ function ciniki_ags_sapos_itemLookup($ciniki, $tnid, $args) {
             return $rc;
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.131', 'msg'=>'Unable to find item'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.217', 'msg'=>'Unable to find item'));
         }
         $item = $rc['item'];
         $item['quantity'] = 1;
         $item['status'] = 0;
-        $item['flags'] = 0x42; // Shipped and Inventoried Item
-        if( $item['shipping_profile_id'] > 0 ) {
-            $item['flags'] |= 0x40; // Shipped item.
-        }
+        $item['flags'] = 0x42;
         $item['price_id'] = 0;
         $item['object'] = 'ciniki.ags.exhibititem';
+        $item['limited_units'] = 'yes';
+        $item['units_available'] = $item['inventory'];
         $item['notes'] = '';
 
         return array('stat'=>'ok', 'item'=>$item);

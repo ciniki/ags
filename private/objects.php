@@ -125,6 +125,7 @@ function ciniki_ags_objects(&$ciniki) {
             'unit_discount_percentage' => array('name'=>'Discount Percent', 'default'=>'0'),
             'fee_percent' => array('name'=>'Fee Percent', 'default'=>'0'),
             'taxtype_id' => array('name'=>'Tax', 'ref'=>'ciniki.taxes.type', 'default'=>'0'),
+            'shipping_profile_id' => array('name'=>'Shipping Profile', 'ref'=>'ciniki.sapos.shippingprofile', 'default'=>'0'),
             'primary_image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis' => array('name'=>'Synopsis', 'default'=>''),
             'description' => array('name'=>'Description', 'default'=>''),

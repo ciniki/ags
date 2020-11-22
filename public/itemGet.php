@@ -124,6 +124,7 @@ function ciniki_ags_itemGet($ciniki) {
             'unit_discount_percentage'=>'0',
             'fee_percent'=>(isset($settings['defaults-item-fee-percent']) ? $settings['defaults-item-fee-percent'] : ''),
             'taxtype_id'=>'',
+            'shipping_profile_id'=>0,
             'primary_image_id'=>'0',
             'synopsis'=>'',
             'description'=>'',
@@ -149,6 +150,7 @@ function ciniki_ags_itemGet($ciniki) {
             . "ciniki_ags_items.unit_discount_percentage, "
             . "ciniki_ags_items.fee_percent, "
             . "ciniki_ags_items.taxtype_id, "
+            . "ciniki_ags_items.shipping_profile_id, "
             . "ciniki_ags_items.primary_image_id, "
             . "ciniki_ags_items.synopsis, "
             . "ciniki_ags_items.description, "
@@ -166,7 +168,8 @@ function ciniki_ags_itemGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'items', 'fname'=>'id', 
                 'fields'=>array('exhibitor_id', 'exhibitor_code', 'code', 'name', 'permalink', 'status', 'flags', 
-                    'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 'taxtype_id', 
+                    'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 
+                    'taxtype_id', 'shipping_profile_id',
                     'primary_image_id', 'synopsis', 'description', 'tag_info', 
                     'creation_year', 'medium', 'size', 'current_condition', 'notes'),
                 ),
@@ -359,6 +362,19 @@ function ciniki_ags_itemGet($ciniki) {
                 $rsp['categories'] = explode('::', $type['names']);
             }
         }
+    }
+
+    //
+    // Get the shipping profiles from sapos if enabled
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.sapos', 0x40) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'shippingProfiles');
+        $rc = ciniki_sapos_hooks_shippingProfiles($ciniki, $args['tnid'], array());
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.216', 'msg'=>'Unable to load shipping profiles.', 'err'=>$rc['err']));
+        }
+        $rsp['shippingprofiles'] = isset($rc['profiles']) ? $rc['profiles'] : array();
+        array_unshift($rsp['shippingprofiles'], array('id'=>0, 'name'=>'No Shipping or Pickup'));
     }
     
     return $rsp;

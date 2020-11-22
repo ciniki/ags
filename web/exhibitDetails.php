@@ -67,6 +67,7 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
         //
         $strsql = "SELECT tags.permalink AS tag_permalink, "
             . "tags.tag_name, "
+            . "eitems.id AS exhibit_item_id, "
             . "eitems.inventory, "
             . "items.id, "
             . "items.name, "
@@ -104,7 +105,7 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
             array('container'=>'categories', 'fname'=>'tag_permalink', 
                 'fields'=>array('permalink'=>'tag_permalink', 'name'=>'tag_name')),
             array('container'=>'items', 'fname'=>'permalink', 
-                'fields'=>array('id', 'name', 'permalink', 'inventory', 'status', 'flags',
+                'fields'=>array('id', 'exhibit_item_id', 'name', 'permalink', 'inventory', 'status', 'flags',
                     'unit_amount', 'unit_discount_amount', 'unit_discount_percentage',
                     'image_id'=>'primary_image_id', 'synopsis', 
                     'customer_id', 'subname'=>'display_name')),

@@ -15,7 +15,7 @@ function ciniki_ags_web_formatPrice(&$ciniki, $tnid, $item) {
 
     $display_price = 'Not for sale';
     if( $item['inventory'] < 1 ) {
-        $display_price = 'Sold';
+        $display_price = 'Sold Out';
     }
     elseif( ($item['flags']&0x01) == 0x01 ) {
         $display_price = '';

@@ -2128,6 +2128,10 @@ function ciniki_ags_main() {
 //            'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
 //            'unit_discount_percentage':{'label':'Discount Percent', 'type':'text', 'size':'small'},
             'fee_percent':{'label':'Fee %', 'type':'text', 'size':'small'},
+            'shipping_profile_id':{'label':'Shipping', 'type':'select', 'options':{},
+                'complex_options':{'value':'id', 'name':'name'},
+                'visible':function() {return M.modFlagSet('ciniki.sapos', 0x40); }, // Shipping flag in ciniki.sapos
+                },
             }},
         'exhibit':{'label':'Inventory', 'aside':'yes', 
             'visible':function() { return M.ciniki_ags_main.item.item_id == 0 && M.ciniki_ags_main.item.exhibit_id > 0 ? 'yes' : 'no'; },
@@ -2248,6 +2252,7 @@ function ciniki_ags_main() {
             p.data = rsp.item;
             p.sections._types.fields.types.tags = rsp.types;
             p.sections._categories.fields.categories.tags = rsp.categories;
+            p.sections.price.fields.shipping_profile_id.options = (rsp.shippingprofiles != null ? rsp.shippingprofiles : []);
             p.refresh();
             p.show(cb);
         });

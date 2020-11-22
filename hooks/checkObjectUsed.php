@@ -59,6 +59,27 @@ function ciniki_ags_hooks_checkObjectUsed($ciniki, $tnid, $args) {
         }
     }
 
+    //
+    // Check for shipping profile usage
+    //
+    elseif( $args['object'] == 'ciniki.sapos.shippingprofile' ) {
+        
+        $strsql = "SELECT 'items', COUNT(*) "
+            . "FROM ciniki_ags_items "
+            . "WHERE shipping_profile_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.ags', 'num');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
+            $used = 'yes';
+            $count = $rc['num']['items'];
+            $msg .= "The profile is still used by " . $rc['num']['items'] . " in Exhibitions & Marketplaces";
+        }
+    }
+
     return array('stat'=>'ok', 'used'=>$used, 'count'=>$count, 'msg'=>$msg);
 }
 ?>

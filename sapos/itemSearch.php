@@ -30,6 +30,7 @@ function ciniki_ags_sapos_itemSearch($ciniki, $tnid, $args) {
         . "items.unit_discount_amount, "
         . "items.unit_discount_percentage, "
         . "items.taxtype_id, "
+        . "items.shipping_profile_id, "
         . "eitems.inventory AS num_available, "
         . "exhibits.name AS exhibit_name "
         . "FROM ciniki_ags_items AS items "
@@ -60,6 +61,7 @@ function ciniki_ags_sapos_itemSearch($ciniki, $tnid, $args) {
         array('container'=>'items', 'fname'=>'id',
             'fields'=>array('id', 'exhibit_item_id', 'code', 'description', 
                 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 
+                'taxtype_id', 'shipping_profile_id',
                 'exhibit_name', 'num_available')),
         ));
     if( $rc['stat'] != 'ok' ) {
