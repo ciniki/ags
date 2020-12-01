@@ -10,7 +10,7 @@
 // -------
 //
 function ciniki_ags_web_customerExhibits($ciniki, $tnid, $args) {
-error_log('test');
+
     //
     // Get the list of exhibits and items that are public and the
     // customer has visible items in

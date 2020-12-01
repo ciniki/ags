@@ -640,6 +640,10 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 ) {
                 $image_permalink = $args['uri_split'][4];
             }
+
+            if( $display == 'exhibit' ) {
+                $page['blocks'][] = array('type'=>'formmessage', 'level'=>'error', 'message'=>'Sorry, the item you requested is no longer available.');
+            }
         }
         //
         // Display the exhibit details
