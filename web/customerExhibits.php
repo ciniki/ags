@@ -10,7 +10,7 @@
 // -------
 //
 function ciniki_ags_web_customerExhibits($ciniki, $tnid, $args) {
-
+error_log('test');
     //
     // Get the list of exhibits and items that are public and the
     // customer has visible items in
@@ -43,7 +43,8 @@ function ciniki_ags_web_customerExhibits($ciniki, $tnid, $args) {
         . "INNER JOIN ciniki_ags_exhibits AS exhibits ON ("
             . "eitems.exhibit_id = exhibits.id "
             . "AND exhibits.status = 50 "   // Active
-            . "AND (exhibits.flags&0x01) = 0x01 " // Visible online
+            . "AND (exhibits.flags&0x05) = 0x05 " // Visible online and items visible online
+            . "AND (exhibits.end_date = '0000-00-00' OR exhibits.end_date > UTC_TIMESTAMP()) "
             . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_ags_exhibit_tags AS tags ON ("

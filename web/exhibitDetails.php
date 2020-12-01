@@ -61,7 +61,10 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
     $exhibit['images'] = array();
     $exhibit['categories'] = array();
 
-    if( ($exhibit['flags']&0x02) == 0x02 ) {
+    //
+    // Only show the items if the exhibit is to show items online
+    //
+    if( ($exhibit['flags']&0x04) == 0x04 ) {
         //
         // Load the items and images
         //
