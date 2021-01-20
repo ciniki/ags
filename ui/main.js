@@ -1286,7 +1286,7 @@ function ciniki_ags_main() {
         };
     this.editparticipant.fieldValue = function(s, i, d) { return this.data[i]; }
     this.editparticipant.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.ags.exhibitorHistory', 'args':{'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'field':i}};
+        return {'method':'ciniki.ags.participantHistory', 'args':{'tnid':M.curTenantID, 'participant_id':this.participant_id, 'field':i}};
     }
     this.editparticipant.addCustomer = function(cb, cid, eid) {
         this.participant_id = 0;
