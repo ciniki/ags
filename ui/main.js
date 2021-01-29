@@ -37,7 +37,7 @@ function ciniki_ags_main() {
         'exhibits':{'label':'Exhibits', 'type':'simplegrid', 'num_cols':5,
             'headerValues':['Name', 'Location', 'Start', 'End', 'Visible'],
             'sortable':'yes',
-            'sortTypes':['date', 'date', 'text', 'text', 'text'],
+            'sortTypes':['text', 'text', 'date', 'date', 'text'],
             'noData':'No exhibit',
             'addTxt':'Add Exhibit',
             'addFn':'M.ciniki_ags_main.exhibitedit.open(\'M.ciniki_ags_main.exhibits.open();\',0);'
