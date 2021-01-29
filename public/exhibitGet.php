@@ -75,7 +75,7 @@ function ciniki_ags_exhibitGet($ciniki) {
             'permalink'=>'',
             'location_id'=>'0',
             'status'=>'50',
-            'flags'=>0x01,
+            'flags'=>0x09,
             'start_date'=>'',
             'end_date'=>'',
             'primary_image_id'=>'0',
