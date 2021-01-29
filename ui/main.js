@@ -476,6 +476,7 @@ function ciniki_ags_main() {
             'flags1':{'label':'Visible', 'type':'flagtoggle', 'field':'flags', 'bit':0x01, 'default':'off'},
             'flags2':{'label':'Category Buttons', 'type':'flagtoggle', 'field':'flags', 'bit':0x02, 'default':'off'},
             'flags3':{'label':'Items Visible', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'off'},
+            'flags4':{'label':'Show Location', 'type':'flagtoggle', 'field':'flags', 'bit':0x08, 'default':'on'},
 //            'flags3':{'label':'Link Members', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'on'},
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},

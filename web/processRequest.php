@@ -728,13 +728,13 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             //
             // Check if share buttons should be shown
             //
-            if( (!isset($settings['page-exhibits-share-buttons']) || $settings['page-exhibits-share-buttons'] == 'yes') 
+/*            if( (!isset($settings['page-exhibits-share-buttons']) || $settings['page-exhibits-share-buttons'] == 'yes') 
                 && $page_submenu != 'categories'
                 ) {
                 $tags = array($etype_label);
                 $tags = array();
                 $page['blocks'][] = array('type'=>'sharebuttons', 'section'=>'share', 'pagetitle'=>$page['title'], 'tags'=>$tags);
-            }
+            } */
           
             //
             // Note: The exhibit categories will be shown as button list when the

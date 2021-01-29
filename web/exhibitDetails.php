@@ -190,28 +190,32 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
     //
     // Get the location for the exhibit
     //
-    $joined_address = $exhibit['address1'] . "<br/>";
-    if( isset($exhibit['address2']) && $exhibit['address2'] != '' ) {
-        $joined_address .= $exhibit['address2'] . "<br/>";
+    if( ($exhibit['flags']&0x08) == 0x08 ) {
+        $joined_address = $exhibit['address1'] . "<br/>";
+        if( isset($exhibit['address2']) && $exhibit['address2'] != '' ) {
+            $joined_address .= $exhibit['address2'] . "<br/>";
+        }
+        $city = '';
+        $comma = '';
+        if( isset($exhibit['city']) && $exhibit['city'] != '' ) {
+            $city = $exhibit['city'];
+            $comma = ', ';
+        }
+        if( isset($exhibit['province']) && $exhibit['province'] != '' ) {
+            $city .= $comma . $exhibit['province'];
+            $comma = ', ';
+        }
+        if( isset($exhibit['postal']) && $exhibit['postal'] != '' ) {
+            $city .= $comma . ' ' . $exhibit['postal'];
+            $comma = ', ';
+        }
+        if( $city != '' ) {
+            $joined_address .= $city . "<br/>";
+        }
+        $exhibit['location_address'] = $joined_address;
+    } else {
+        $exhibit['location_address'] = '';
     }
-    $city = '';
-    $comma = '';
-    if( isset($exhibit['city']) && $exhibit['city'] != '' ) {
-        $city = $exhibit['city'];
-        $comma = ', ';
-    }
-    if( isset($exhibit['province']) && $exhibit['province'] != '' ) {
-        $city .= $comma . $exhibit['province'];
-        $comma = ', ';
-    }
-    if( isset($exhibit['postal']) && $exhibit['postal'] != '' ) {
-        $city .= $comma . ' ' . $exhibit['postal'];
-        $comma = ', ';
-    }
-    if( $city != '' ) {
-        $joined_address .= $city . "<br/>";
-    }
-    $exhibit['location_address'] = $joined_address;
 
     return array('stat'=>'ok', 'exhibit'=>$exhibit);
 }
