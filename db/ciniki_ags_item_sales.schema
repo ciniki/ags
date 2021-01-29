@@ -27,7 +27,9 @@
 # sell_date:                The date the item sold.
 # quantity:                 The quantity sold, typically 1, but if they buy multiples it could be higher.
 # tenant_amount:            The portion of the total_amount that goes to the tenant.
+# tenant_tax_amount:        The tax portion of the total_amount that goes to the tenant.
 # exhibitor_amount:         The portion of the total_amount that goes to the exhibitor.
+# exhibitor_tax_amount:     The tax portion of the total amount that goes to the exhibitor.
 # total_amount:             The total amount of the sale, this may be multiple quantity when selling books or cards.
 #
 # date_added:               The UTC date and time the record was added.
@@ -44,7 +46,9 @@ create table ciniki_ags_item_sales (
     sell_date date not null,
     quantity decimal(19,6) not null,
     tenant_amount decimal(19,4) not null,
+    tenant_tax_amount decimal(19,4) not null,
     exhibitor_amount decimal(19,4) not null,
+    exhibitor_tax_amount decimal(19,4) not null,
     total_amount decimal(19,4) not null,
     date_added datetime not null,
     last_updated datetime not null,
@@ -52,4 +56,4 @@ create table ciniki_ags_item_sales (
     unique index (uuid),
     unique index (item_id, exhibit_id, invoice_id),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

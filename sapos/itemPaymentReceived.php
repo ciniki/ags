@@ -35,6 +35,18 @@ function ciniki_ags_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     $dt = new DateTime('now', new DateTimeZone($intl_timezone));
 
+    //
+    // Load the tax rates
+    //
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.taxes') ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'taxes', 'hooks', 'taxTypesRates');
+        $rc = ciniki_taxes_hooks_taxTypesRates($ciniki, $tnid, array());
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.220', 'msg'=>'Unable to load taxes', 'err'=>$rc['err']));
+        }
+        $tax_types = isset($rc['types']) ? $rc['types'] : array();
+    }
+
     if( $args['object'] == 'ciniki.ags.exhibititem' ) {
         //
         // Get the exhibit item
@@ -83,6 +95,26 @@ function ciniki_ags_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
         } else {
             $tenant_amount = 0;
         }
+        $tenant_tax_amount = 0;
+        $exhibitor_tax_amount = 0;
+        if( ciniki_core_checkModuleActive($ciniki, 'ciniki.taxes') 
+            && $item['taxtype_id'] > 0 
+            && isset($tax_types[$item['taxtype_id']]['rates']) 
+            ) {
+            //
+            // Calculate taxes on this item
+            //
+            $tax_amount = 0;
+            foreach($tax_types[$item['taxtype_id']]['rates'] as $rate) {
+                if( $rate['item_percentage'] > 0 ) {
+                    $tax_amount += ($args['total_amount'] * ($rate['item_percentage']/100));
+                }
+            }
+            if( $tax_amount > 0 ) {
+                $exhibitor_tax_amount = round($tax_amount, 2);
+            }
+            $args['total_amount'] += $exhibitor_tax_amount;
+        }
         $sales_item = array(
             'item_id' => $item['item_id'],
             'exhibit_id' => $item['exhibit_id'],
@@ -91,7 +123,9 @@ function ciniki_ags_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
             'sell_date' => $dt->format('Y-m-d'),
             'quantity' => $args['quantity'],
             'tenant_amount' => $tenant_amount,
+            'tenant_tax_amount' => $tenant_tax_amount,
             'exhibitor_amount' => bcsub($args['total_amount'], $tenant_amount, 6),
+            'exhibitor_tax_amount' => $exhibitor_tax_amount,
             'total_amount' => $args['total_amount'],
             );
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');

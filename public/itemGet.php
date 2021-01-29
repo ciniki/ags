@@ -376,6 +376,18 @@ function ciniki_ags_itemGet($ciniki) {
         $rsp['shippingprofiles'] = isset($rc['profiles']) ? $rc['profiles'] : array();
         array_unshift($rsp['shippingprofiles'], array('id'=>0, 'name'=>'No Shipping or Pickup'));
     }
+
+    //
+    // Get the list of taxes if enabled
+    //
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.sapos') ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'taxes', 'hooks', 'taxTypes');
+        $rc = ciniki_taxes_hooks_taxTypes($ciniki, $args['tnid'], array('notax'=>'yes'));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $rsp['taxtypes'] = $rc['types'];
+    }
     
     return $rsp;
 }

@@ -797,7 +797,7 @@ function ciniki_ags_main() {
             }
             return '';
         }
-        if( s == 'inventory' || s == 'inventory_search' ) {
+        if( s == 'inventory' ) {
             // Decide button on inventory search
             switch(j) {
                 case 0: 
@@ -818,8 +818,18 @@ function ciniki_ags_main() {
                         return '<span class="maintext">' + d.unit_amount_display + '</span><span class="subtext">' + d.flags_text + '</span>';
                     }
                     return d.unit_amount_display;
-                case 4: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
-                case 5: return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.item_id + ');">Remove</button>';
+            }
+            if( M.modOn('ciniki.taxes') ) {
+                switch(j) {
+                    case 4: return (d.taxtype_id > 0 ? 'Yes' : 'No');
+                    case 5: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
+                    case 6: return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.item_id + ');">Remove</button>';
+                }
+            } else {
+                switch(j) {
+                    case 4: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
+                    case 5: return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.item_id + ');">Remove</button>';
+                }
             }
             return '';
         }
@@ -2133,6 +2143,10 @@ function ciniki_ags_main() {
                 'complex_options':{'value':'id', 'name':'name'},
                 'visible':function() {return M.modFlagSet('ciniki.sapos', 0x40); }, // Shipping flag in ciniki.sapos
                 },
+            'taxtype_id':{'label':'Taxes', 'type':'select', 'options':{},
+                'complex_options':{'value':'id', 'name':'name'},
+                'visible':function() {return (M.modOn('ciniki.taxes') ? 'yes' :'no'); },
+                },
             }},
         'exhibit':{'label':'Inventory', 'aside':'yes', 
             'visible':function() { return M.ciniki_ags_main.item.item_id == 0 && M.ciniki_ags_main.item.exhibit_id > 0 ? 'yes' : 'no'; },
@@ -2254,6 +2268,7 @@ function ciniki_ags_main() {
             p.sections._types.fields.types.tags = rsp.types;
             p.sections._categories.fields.categories.tags = rsp.categories;
             p.sections.price.fields.shipping_profile_id.options = (rsp.shippingprofiles != null ? rsp.shippingprofiles : []);
+            p.sections.price.fields.taxtype_id.options = (rsp.taxtypes != null ? rsp.taxtypes : []);
             p.refresh();
             p.show(cb);
         });
@@ -2615,6 +2630,23 @@ function ciniki_ags_main() {
                 this.menutabs.selected = first_tab;
             }
         }
+        //
+        // Setup tax columns if enabled
+        //
+        if( M.modOn('ciniki.taxes') ) {
+            this.participant.sections.inventory.num_cols = 7;
+            this.participant.sections.inventory.sortTypes = ['alttext', 'text', 'number', 'number', 'number', 'number'];
+            this.participant.sections.inventory.headerValues = ['Code', '', 'Item', 'Price', 'Tax', 'Quantity', ''];
+            this.participant.sections.inventory.headerClasses = ['','','','alignright','alignright','',''];
+            this.participant.sections.inventory.cellClasses = ['multiline', '', 'multiline', 'multiline alignright', 'alignright','alignright'];
+        } else {
+            this.participant.sections.inventory.num_cols = 6;
+            this.participant.sections.inventory.sortTypes = ['alttext', 'text', 'number', 'number', 'number'];
+            this.participant.sections.inventory.headerValues = ['Code', '', 'Item', 'Price', 'Quantity', ''];
+            this.participant.sections.inventory.headerClasses = ['','','','alignright','alignright',''];
+            this.participant.sections.inventory.cellClasses = ['multiline', '', 'multiline', 'multiline alignright', 'alignright'];
+        }
+
         //
         // Create the app container
         //

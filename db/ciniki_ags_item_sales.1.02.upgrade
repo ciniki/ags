@@ -1,0 +1,6 @@
+#
+# Adding extra fields for taxes
+#
+ALTER TABLE ciniki_ags_item_sales ADD COLUMN tenant_tax_amount decimal(19,4) not null AFTER tenant_amount;
+ALTER TABLE ciniki_ags_item_sales ADD COLUMN exhibitor_tax_amount decimal(19,4) not null AFTER exhibitor_amount;
+ALTER TABLE ciniki_ags_item_sales COMMENT='v1.02';

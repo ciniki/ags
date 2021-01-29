@@ -41,7 +41,7 @@ function ciniki_ags_itemSaleUpdate(&$ciniki) {
     //
     // Get the sale details
     //
-    $strsql = "SELECT id, tenant_amount, exhibitor_amount, total_amount "
+    $strsql = "SELECT id, tenant_amount, tenant_tax_amount, exhibitor_amount, exhibitor_tax_amount, total_amount "
         . "FROM ciniki_ags_item_sales "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['sale_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
