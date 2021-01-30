@@ -64,7 +64,7 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
     //
     // Only show the items if the exhibit is to show items online
     //
-    if( ($exhibit['flags']&0x04) == 0x04 ) {
+    if( ($exhibit['flags']&0x04) == 0x04 && ($exhibit['flags']&0x12) > 0 ) {
         //
         // Load the items and images
         //
@@ -117,6 +117,48 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
             return $rc;
         }
         $exhibit['categories'] = isset($rc['categories']) ? $rc['categories'] : array();
+    } elseif( ($exhibit['flags']&0x04) == 0x04 && ($exhibit['flags']&0x12) == 0 ) {
+        $strsql = "SELECT "
+            . "eitems.id AS exhibit_item_id, "
+            . "eitems.inventory, "
+            . "items.id, "
+            . "items.name, "
+            . "items.permalink, "
+            . "items.status, "
+            . "items.flags, "
+            . "items.unit_amount, "
+            . "items.unit_discount_amount, "
+            . "items.unit_discount_percentage, "
+            . "items.primary_image_id, "
+            . "items.synopsis, "
+            . "exhibitors.customer_id, "
+            . "exhibitors.display_name "
+            . "FROM ciniki_ags_exhibit_items AS eitems "
+            . "INNER JOIN ciniki_ags_items AS items ON ("
+                . "eitems.item_id = items.id "
+                . "AND (items.flags&0x02) = 0x02 "
+                . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_ags_exhibitors AS exhibitors ON ("
+                . "items.exhibitor_id = exhibitors.id "
+                . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE eitems.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $exhibit['id']) . "' "
+            . "AND eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY items.name, eitems.date_added DESC " //, images.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'items', 'fname'=>'permalink', 
+                'fields'=>array('id', 'exhibit_item_id', 'name', 'permalink', 'inventory', 'status', 'flags',
+                    'unit_amount', 'unit_discount_amount', 'unit_discount_percentage',
+                    'image_id'=>'primary_image_id', 'synopsis', 
+                    'customer_id', 'subname'=>'display_name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $exhibit['items'] = isset($rc['items']) ? $rc['items'] : array();
 /* Moved to processRequest before tradingcards block */
 /*        foreach($exhibit['categories'] as $cid => $category) {
             if( isset($category['items']) ) {

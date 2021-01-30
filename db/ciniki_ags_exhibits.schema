@@ -26,6 +26,7 @@
 #                               0x02 - Show categories as Button List
 #                               0x04 - Show items
 #                               0x08 - Show Location on Website
+#                               0x10 - Show categories as thumbnail list
 #
 # start_date:               The first date of the marketplace or exhibition.
 # end_date:                 (optional) The last date of the marketplace or exhibition. 

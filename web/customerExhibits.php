@@ -71,7 +71,7 @@ function ciniki_ags_web_customerExhibits($ciniki, $tnid, $args) {
         return $rc;
     }
     $exhibits = isset($rc['exhibits']) ? $rc['exhibits'] : array();
-    
+
     foreach($exhibits as $eid => $exhibit) {
         // Get the base url of the customers module
         $exhibit_base_url = '';

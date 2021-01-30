@@ -745,18 +745,45 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             //
             // Add images if they exist
             //
+            error_log(print_r($exhibit, true));
             if( isset($exhibit['images']) && count($exhibit['images']) > 0 && ($exhibit['flags']&0x02) == 0 ) {
                 $page['blocks'][] = array('type'=>'gallery', 'section'=>'gallery', 'title'=>'Additional Images',
                     'base_url'=>$args['base_url'] . "/" . $exhibit_permalink . "/gallery",
                     'images'=>$exhibit['images']);
             }
-            if( isset($exhibit['categories']) && count($exhibit['categories']) > 0 && ($exhibit['flags']&0x02) == 0x02 ) {
+            elseif( isset($exhibit['categories']) && count($exhibit['categories']) > 0 && ($exhibit['flags']&0x02) == 0x02 ) {
                 $page['blocks'][] = array('type'=>'buttonlist', 
                     'section'=>'exhibit-categories', 
                     'title'=>'Categories', 
                     'base_url'=>$base_url . '/category', 
                     'tags'=>$exhibit['categories'],
                     );
+            }
+            elseif( isset($exhibit['categories']) && count($exhibit['categories']) > 0 && ($exhibit['flags']&0x10) == 0x10 ) {
+                $page['blocks'][] = array('type'=>'thumbnaillist', 
+                    'section'=>'exhibit-categories', 
+                    'title'=>'Categories', 
+                    'base_url'=>$base_url . '/category', 
+                    'list'=>$exhibit['categories'],
+                    );
+            }
+            elseif( isset($exhibit['items']) && count($exhibit['items']) > 0 && ($exhibit['flags']&0x12) == 0 ) {
+                foreach($exhibit['items'] as $iid => $item) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'formatPrice');
+                    $rc = ciniki_ags_web_formatPrice($ciniki, $tnid, $item);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.199', 'msg'=>'Unable to format price', 'err'=>$rc['err']));
+                    }
+                    $exhibit['items'][$iid]['display_price'] = $rc['display_price'];
+                }
+
+                $page['blocks'][] = array('type'=>'tradingcards', 
+                    'thumbnail_format'=>$thumbnail_format,
+                    'thumbnail_padding_color' => $thumbnail_padding_color,
+                    'base_url'=>$base_url . '/item', 
+                    'anchors'=>'permalink', 
+                    'cards'=>$exhibit['items']);
+                
             }
         }
     }
