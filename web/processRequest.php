@@ -585,6 +585,43 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             //
             else {
                 //
+                // Check for category details in settings
+                //
+                $strsql = "SELECT detail_key, detail_value "
+                    . "FROM ciniki_ags_settings "
+                    . "WHERE detail_key LIKE 'category-" . ciniki_core_dbQuote($ciniki, $category_permalink) . "-%' "
+                    . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.222', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                }
+                if( isset($rc['rows']) ) {
+                    foreach($rc['rows'] as $row) {
+                        if( $row['detail_key'] == "category-{$category_permalink}-image" ) {
+                            $category_image_id = $row['detail_value'];
+                        } elseif( $row['detail_key'] == "category-{$category_permalink}-description" ) {
+                            $category_description = $row['detail_value'];
+                        }
+                    }
+                }
+                if( isset($category_image_id) && $category_image_id > 0 && $category_image_id != '' 
+                    && isset($category_description) && $category_description != '' 
+                    ) {
+                    $page['blocks'][] = array(
+                        'id' => 'aside-image',
+                        'type' => 'asideimage', 
+                        'section' => 'primary-image', 
+                        'primary' => 'yes',
+                        'quality' => $image_quality,
+                        'image_id' => $category_image_id, 
+                        'title' => $exhibit['categories'][$category_permalink]['name'], 
+                        'caption' => '',
+                        );
+                    $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>$category_description);
+                }
+                
+                //
                 // Format prices
                 //
                 foreach($category['items'] as $iid => $item) {
@@ -599,6 +636,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 $page['blocks'][] = array('type'=>'tradingcards', 
                     'thumbnail_format'=>$thumbnail_format,
                     'thumbnail_padding_color' => $thumbnail_padding_color,
+                    'section'=>'exhibit-items',
                     'base_url'=>$base_url . '/item', 
                     'anchors'=>'permalink', 
                     'cards'=>$category['items']);

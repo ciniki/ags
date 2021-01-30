@@ -70,6 +70,7 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
         //
         $strsql = "SELECT tags.permalink AS tag_permalink, "
             . "tags.tag_name, "
+            . "IFNULL(image.detail_value, 0) AS tag_image_id, "
             . "eitems.id AS exhibit_item_id, "
             . "eitems.inventory, "
             . "items.id, "
@@ -99,6 +100,10 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
                 . "items.exhibitor_id = exhibitors.id "
                 . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_ags_settings AS image ON ("
+                . "image.detail_key = CONCAT('category-', tags.permalink, '-image') "
+                . "AND image.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "WHERE eitems.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $exhibit['id']) . "' "
             . "AND eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY tags.tag_name, eitems.date_added DESC " //, images.name "
@@ -106,7 +111,7 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'categories', 'fname'=>'tag_permalink', 
-                'fields'=>array('permalink'=>'tag_permalink', 'name'=>'tag_name')),
+                'fields'=>array('permalink'=>'tag_permalink', 'name'=>'tag_name', 'image_id'=>'tag_image_id')),
             array('container'=>'items', 'fname'=>'permalink', 
                 'fields'=>array('id', 'exhibit_item_id', 'name', 'permalink', 'inventory', 'status', 'flags',
                     'unit_amount', 'unit_discount_amount', 'unit_discount_percentage',

@@ -161,6 +161,7 @@ function ciniki_ags_main() {
                 'participants':{'label':'Participants', 'fn':'M.ciniki_ags_main.exhibit.switchTab("participants");'},
                 'inventory':{'label':'Inventory', 'fn':'M.ciniki_ags_main.exhibit.switchTab("inventory");'},
                 'sales':{'label':'Sales', 'fn':'M.ciniki_ags_main.exhibit.switchTab("sales");'},
+                'categories':{'label':'Categories', 'fn':'M.ciniki_ags_main.exhibit.switchTab("categories");'},
                 'inactive':{'label':'Inactive Participants', 'fn':'M.ciniki_ags_main.exhibit.switchTab("inactive");'},
             }},
 //        'participant_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':6,
@@ -224,6 +225,11 @@ function ciniki_ags_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'number', 'number', 'number'],
             'headerValues':['Exhibitor', 'Code', 'Item', 'Fees', 'Payout', 'Total'],
+            },
+        'categories':{'label':'Online Categories', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'categories' ? 'yes' : 'hidden'},
+            'cellClasses':['thumbnail', ''],
+            'noData':'No categories',
             },
         'inactive':{'label':'Inactive Participants', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'inactive' ? 'yes' : 'hidden'},
@@ -320,6 +326,16 @@ function ciniki_ags_main() {
                 case 6: return d.status_text;
             }
         }
+        if( s == 'categories' ) {
+            if( j == 0 ) {
+                if( d.image_id > 0 && d.image != null && d.image != '' ) {
+                    return '<img width="75px" height="75px" src=\'' + d.image + '\' />'; 
+                } else {
+                    return '<img width="75px" height="75px" src=\'/ciniki-mods/core/ui/themes/default/img/noimage_75.jpg\' />';
+                }
+            }
+            return d.tag_name;
+        }
     }
     this.exhibit.footerValue = function(s, i, d) {
         if( s == 'participants' ) {
@@ -374,6 +390,9 @@ function ciniki_ags_main() {
         if( s == 'inventory' || s == 'inventory_search' ) {
             return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibit.open();\',\'' + d.item_id + '\',0,0);';
         }
+        if( s == 'categories' ) {
+            return 'M.ciniki_ags_main.category.open(\'M.ciniki_ags_main.exhibit.open();\',\'' + d.permalink + '\',0,0);';
+        }
         return '';
     }
     this.exhibit.switchTab = function(t) {
@@ -387,6 +406,7 @@ function ciniki_ags_main() {
         this.showHideSection('pending_payouts');
         this.showHideSection('paid_sales');
         this.showHideSection('inactive');
+        this.showHideSection('categories');
     }
     this.exhibit.saleFeeUpdate = function(event,sid) {
         var i = prompt('Enter new fee: ');
@@ -571,6 +591,66 @@ function ciniki_ags_main() {
     }
     this.exhibitedit.addButton('save', 'Save', 'M.ciniki_ags_main.exhibitedit.save();');
     this.exhibitedit.addClose('Cancel');
+
+    //
+    // The panel to edit Exhibit category
+    //
+    this.category = new M.panel('Exhibit Category', 'ciniki_ags_main', 'category', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.ags.main.category');
+    this.category.data = null;
+    this.category.permalink = 0;
+    this.category.nplist = [];
+    this.category.sections = {
+        '_image_id':{'label':'', 'type':'imageform', 'aside':'yes', 'fields':{
+            'image':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_ags_main.category.setFieldValue('image', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+             },
+        }},
+        '_description':{'label':'Description', 'fields':{
+            'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_ags_main.category.save();'},
+            }},
+        };
+    this.category.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.category.open = function(cb, permalink, list) {
+        if( permalink != null ) { this.permalink = permalink; }
+        if( list != null ) { this.nplist = list; }
+        M.api.getJSONCb('ciniki.ags.categoryGet', {'tnid':M.curTenantID, 'permalink':this.permalink}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_ags_main.category;
+            p.data = rsp.category;
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.category.save = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_ags_main.category.close();'; }
+        if( !this.checkForm() ) { return false; }
+        var c = this.serializeForm('no');
+        if( c != '' ) {
+            M.api.postJSONCb('ciniki.ags.categoryUpdate', {'tnid':M.curTenantID, 'permalink':this.permalink}, c, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                eval(cb);
+            });
+        } else {
+            eval(cb);
+        }
+
+    }
+    this.category.addButton('save', 'Save', 'M.ciniki_ags_main.category.save();');
+    this.category.addClose('Cancel');
+
 
     //
     // The participant panel

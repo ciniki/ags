@@ -479,6 +479,47 @@ function ciniki_ags_exhibitGet($ciniki) {
         $rsp['pending_payouts'] = $pending_payouts;
         $rsp['paid_sales'] = $paid_sales;
         $rsp['totals'] = $totals;
+
+        //
+        // Get the list of categories and their thumbnails
+        //
+        $strsql = "SELECT DISTINCT tags.tag_name, "
+            . "tags.permalink, "
+            . "IFNULL(image.detail_value, 0) AS image_id, "
+            . "IFNULL(description.detail_value, '') AS description "
+            . "FROM ciniki_ags_item_tags AS tags "
+            . "LEFT JOIN ciniki_ags_settings AS image ON ("
+                . "image.detail_key = CONCAT('category-', tags.permalink, '-image') "
+                . "AND image.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_ags_settings AS description ON ("
+                . "tags.permalink = description.detail_key = CONCAT('category-', tags.permalink, '-description') "
+                . "AND description.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND tags.tag_type = 20 "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'categories', 'fname'=>'tag_name', 
+                'fields'=>array('tag_name', 'permalink', 'image_id', 'description')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.221', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+        }
+        $categories = isset($rc['categories']) ? $rc['categories'] : array();
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'loadThumbnail');
+        foreach($categories as $cid => $category) {
+            if( $category['image_id'] > 0 ) {
+                $rc = ciniki_images_hooks_loadThumbnail($ciniki, $args['tnid'], 
+                    array('image_id'=>$category['image_id'], 'maxlength'=>75));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $categories[$cid]['image'] = 'data:image/jpg;base64,' . base64_encode($rc['image']);
+            }
+        }
+        $rsp['categories'] = $categories;
     }
 
     return $rsp;
