@@ -648,10 +648,13 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         //
         elseif( isset($args['uri_split'][1]) && $args['uri_split'][1] == 'item' && isset($args['uri_split'][2]) && $args['uri_split'][2] != '' ) {
             $item_permalink = $args['uri_split'][2];
-
-            if( ($exhibit['flags']&0x02) == 0x02 ) {
+            
+            //
+            // If category buttons or thumbnails are enabled
+            //
+            if( ($exhibit['flags']&0x12) > 0 ) {
                 foreach($exhibit['categories'] as $category) {
-                    if( isset($category['items'][$args['uri_split'][2]]) ) {
+                    if( isset($category['items'][$item_permalink]) ) {
                         $item_list = $category['items'];
                         $item = $category['items'][$item_permalink];
                         $base_url .= '/item/' . $item_permalink;
