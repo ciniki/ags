@@ -462,7 +462,9 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         }
         $exhibit = $rc['exhibit'];
 
-        $page['breadcrumbs'][] = array('name'=>$exhibit['name'], 'url'=>$args['base_url'] . '/' . $exhibit['permalink']);
+        if( $exhibit['name'] != $args['page_title'] ) {
+            $page['breadcrumbs'][] = array('name'=>$exhibit['name'], 'url'=>$args['base_url'] . '/' . $exhibit['permalink']);
+        }
         if( isset($exhibit['synopsis']) && $exhibit['synopsis'] != '' ) {
             $ciniki['response']['head']['og']['description'] = strip_tags($exhibit['synopsis']);
         } elseif( isset($exhibit['description']) && $exhibit['description'] != '' ) {
@@ -745,7 +747,6 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             //
             // Add images if they exist
             //
-            error_log(print_r($exhibit, true));
             if( isset($exhibit['images']) && count($exhibit['images']) > 0 && ($exhibit['flags']&0x02) == 0 ) {
                 $page['blocks'][] = array('type'=>'gallery', 'section'=>'gallery', 'title'=>'Additional Images',
                     'base_url'=>$args['base_url'] . "/" . $exhibit_permalink . "/gallery",
@@ -778,6 +779,8 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 }
 
                 $page['blocks'][] = array('type'=>'tradingcards', 
+                    'section'=>'exhibit-items',
+                    'title'=>'',
                     'thumbnail_format'=>$thumbnail_format,
                     'thumbnail_padding_color' => $thumbnail_padding_color,
                     'base_url'=>$base_url . '/item', 
