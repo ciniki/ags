@@ -772,17 +772,17 @@ function ciniki_ags_main() {
             'hint':'Search sales',
             'noData':'No items found',
             }, */
-        'pending_payouts':{'label':'Pending Payouts', 'type':'simplegrid', 'num_cols':7,
+        'pending_payouts':{'label':'Pending Payouts', 'type':'simplegrid', 'num_cols':8,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'sales' ? 'yes' : 'hidden'},
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'number', 'date', 'number', 'number', 'number'],
-            'headerValues':['Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals', ''],
+            'sortTypes':['text', 'text', 'date', 'text', 'number', 'number', 'number'],
+            'headerValues':['Code', 'Item', 'Date', 'Customer', 'Fees', 'Payout', 'Totals', ''],
             },
-        'paid_sales':{'label':'Paid Sales', 'type':'simplegrid', 'num_cols':7,
+        'paid_sales':{'label':'Paid Sales', 'type':'simplegrid', 'num_cols':8,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'sales' ? 'yes' : 'hidden'},
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'number', 'date', 'number', 'number', 'number'],
-            'headerValues':['Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals'],
+            'sortTypes':['text', 'text', 'date', 'text', 'number', 'number', 'number'],
+            'headerValues':['Code', 'Item', 'Date', 'Customer', 'Fees', 'Payout', 'Totals'],
             },
         'logs':{'label':'History', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'history' ? 'yes' : 'hidden'},
@@ -942,14 +942,15 @@ function ciniki_ags_main() {
                 case 0: return d.code;
                 case 1: return d.name;
                 case 2: return d.sell_date;
-                case 3: 
+                case 3: return d.billing_name;
+                case 4: 
                     if( (M.userPerms&0x01) == 0x01 || M.curTenant.permissions.owners != null || M.curTenant.permissions.resellers != null ) {
                         return d.tenant_amount_display + '<span class="faicon edit">&#xf040;</span>';
                     }
                     return d.tenant_amount_display;
-                case 4: return d.exhibitor_amount_display;
-                case 5: return d.total_amount_display;
-                case 6: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
+                case 5: return d.exhibitor_amount_display;
+                case 6: return d.total_amount_display;
+                case 7: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
             }
         }
         if( s == 'paid_sales' ) {
@@ -957,10 +958,11 @@ function ciniki_ags_main() {
                 case 0: return d.code;
                 case 1: return d.name;
                 case 2: return d.sell_date;
-                case 3: return d.tenant_amount_display;
-                case 4: return d.exhibitor_amount_display;
-                case 5: return d.total_amount_display;
-                case 6: return '<button onclick="M.ciniki_ags_main.participant.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>';
+                case 3: return d.billing_name;
+                case 4: return d.tenant_amount_display;
+                case 5: return d.exhibitor_amount_display;
+                case 6: return d.total_amount_display;
+                case 7: return '<button onclick="M.ciniki_ags_main.participant.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>';
             }
         }
         if( s == 'online' ) {

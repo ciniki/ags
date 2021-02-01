@@ -115,7 +115,8 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
         . "DATE_FORMAT(sales.sell_date, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS sell_date, "
         . "sales.tenant_amount, "
         . "sales.exhibitor_amount, "
-        . "sales.total_amount "
+        . "sales.total_amount, "
+        . "IFNULL(invoices.billing_name, '') AS billing_name "
         . "FROM ciniki_ags_item_sales AS sales "
         . "INNER JOIN ciniki_ags_items AS items ON ("
             . "sales.item_id = items.id "
@@ -125,6 +126,10 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
         . "INNER JOIN ciniki_ags_exhibitors AS exhibitors ON ("
             . "items.exhibitor_id = exhibitors.id "
             . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+            . "sales.invoice_id = invoices.id "
+            . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE sales.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND (sales.flags&0x02) = 0 ";
@@ -144,7 +149,7 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
         array('container'=>'exhibitors', 'fname'=>'exhibitor_id', 
             'fields'=>array('display_name')),
         array('container'=>'items', 'fname'=>'sales_id', 
-            'fields'=>array('code', 'name', 'quantity', 'sell_date', 'tenant_amount', 'exhibitor_amount', 'total_amount')),
+            'fields'=>array('code', 'name', 'quantity', 'sell_date', 'tenant_amount', 'exhibitor_amount', 'total_amount', 'billing_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.141', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
