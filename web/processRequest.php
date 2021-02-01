@@ -940,7 +940,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             if( $item['inventory'] <= 0 ) {
                 $page['blocks'][] = array('type'=>'content', 'section'=>'sold-out', 'title'=>'', 'content'=>'<b>Sold Out</b>');
             }
-            elseif( ($item['flags']&0x01) == 0x01 ) {
+            elseif( ($item['flags']&0x09) == 0x01 ) {
                 $price = $item; 
                 $price['name'] = 'Price';
                 $price['limited_units'] = 'yes';
@@ -959,8 +959,9 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                     }
                 }
                 $page['blocks'][] = array('type'=>'prices', 'section'=>'price-list', 'prices'=>array($price));
-            } else {
-                $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>'</b>Not for sale</b>');
+            }
+            elseif( ($item['flags']&0x08) == 0 ) {
+                $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>'<b>Not for sale</b>');
             }
 
 
