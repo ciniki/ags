@@ -585,7 +585,7 @@ function ciniki_ags_main() {
                     M.api.err(rsp);
                     return false;
                 }
-                M.ciniki_ags_main.exhibitedit.close();
+                M.ciniki_ags_main.exhibit.close();
             });
         });
     }
