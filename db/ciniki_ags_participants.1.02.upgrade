@@ -1,0 +1,5 @@
+#
+# Add sales message field
+#
+ALTER TABLE ciniki_ags_participants ADD COLUMN message varchar(1000) not null AFTER flags;
+ALTER TABLE ciniki_ags_participants COMMENT='v1.02';

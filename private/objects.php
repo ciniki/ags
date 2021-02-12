@@ -218,6 +218,7 @@ function ciniki_ags_objects(&$ciniki) {
             'exhibitor_id' => array('name'=>'Exhibitor', 'ref'=>'ciniki.ags.exhibitor'),
             'status' => array('name'=>'Status', 'default'=>'10'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
+            'message' => array('name'=>'Message', 'default'=>''),
             'notes' => array('name'=>'Notes', 'default'=>''),
             ),
         'history_table' => 'ciniki_ags_history',

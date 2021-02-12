@@ -38,6 +38,7 @@ function ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $exhibit_id, $ite
         . "items.size, "
         . "items.current_condition, "
         . "items.notes, "
+        . "participants.message, "
         . "exhibitors.display_name, "
         . "exhibitors.flags AS exhibitor_flags, "
         . "customers.member_status, "
@@ -47,6 +48,11 @@ function ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $exhibit_id, $ite
         . "LEFT JOIN ciniki_ags_exhibitors AS exhibitors ON ( "
             . "items.exhibitor_id = exhibitors.id "
             . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_ags_participants AS participants ON ( "
+            . "exhibitors.id = participants.exhibitor_id "
+            . "AND participants.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $exhibit_id) . "' "
+            . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS customers ON ( "
             . "exhibitors.customer_id = customers.id "
@@ -64,7 +70,7 @@ function ciniki_ags_web_itemDetails($ciniki, $settings, $tnid, $exhibit_id, $ite
                 'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 'taxtype_id', 
                 'primary_image_id', 'synopsis', 'description', 'tag_info', 
                 'creation_year', 'medium', 'size', 'current_condition', 'notes',
-                'display_name', 'exhibitor_flags', 'member_status', 'webflags', 'customer_permalink',
+                'display_name', 'message', 'exhibitor_flags', 'member_status', 'webflags', 'customer_permalink',
                 ),
             ),
         ));

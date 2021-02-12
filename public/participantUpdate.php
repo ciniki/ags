@@ -21,6 +21,7 @@ function ciniki_ags_participantUpdate(&$ciniki) {
         'exhibitor_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Exhibitor'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Code'),
@@ -83,7 +84,7 @@ function ciniki_ags_participantUpdate(&$ciniki) {
     //
     // Update the Participant in the database
     //
-    if( isset($args['status']) ) {
+    if( isset($args['status']) || isset($args['message']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.participant', $args['participant_id'], $args, 0x04);
         if( $rc['stat'] != 'ok' ) {

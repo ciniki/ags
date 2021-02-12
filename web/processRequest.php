@@ -935,6 +935,15 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             }
 
             //
+            // Check if there is a standard message to display for this participant
+            //
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x40) 
+                && isset($item['message']) && $item['message'] != '' 
+                ) {
+                $page['blocks'][] = array('type'=>'content', 'section'=>'message', 'title'=>'', 'content'=>$item['message']);
+            }
+
+            //
             // Check if price should be shown
             //
             if( $item['inventory'] <= 0 ) {

@@ -1366,6 +1366,11 @@ function ciniki_ags_main() {
             'code':{'label':'Code', 'required':'yes', 'type':'text'},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'30':'Applied', '50':'Accepted', '70':'Inactive', '90':'Rejected'}},
             }},
+        '_message':{'label':'Sales Message', 
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x40); },
+            'fields':{
+                'message':{'label':'Messaga', 'type':'textarea', 'size':'medium'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'next':{'label':'Next', 
                 'visible':function() { return M.ciniki_ags_main.editparticipant.participant_id == 0 ? 'yes' : 'no'},
