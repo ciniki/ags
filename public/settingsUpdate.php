@@ -64,6 +64,8 @@ function ciniki_ags_settingsUpdate(&$ciniki) {
     $changelog_fields = array(
         'defaults-item-fee-percent',
         'defaults-item-taxtype-id', // **note** Not yet implemented
+        'sales-customer-name',
+        'sales-pdf-customer-name',
         );
     //
     // Check each valid setting and see if a new value was passed in the arguments for it.

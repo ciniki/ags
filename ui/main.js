@@ -937,7 +937,7 @@ function ciniki_ags_main() {
             }
             return '';
         }
-        if( s == 'pending_payouts' ) {
+        if( s == 'pending_payouts' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'yes' ) {
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
@@ -953,7 +953,22 @@ function ciniki_ags_main() {
                 case 7: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
             }
         }
-        if( s == 'paid_sales' ) {
+        if( s == 'pending_payouts' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'yes' ) {
+            switch(j) {
+                case 0: return d.code;
+                case 1: return d.name;
+                case 2: return d.sell_date;
+                case 3: 
+                    if( (M.userPerms&0x01) == 0x01 || M.curTenant.permissions.owners != null || M.curTenant.permissions.resellers != null ) {
+                        return d.tenant_amount_display + '<span class="faicon edit">&#xf040;</span>';
+                    }
+                    return d.tenant_amount_display;
+                case 4: return d.exhibitor_amount_display;
+                case 5: return d.total_amount_display;
+                case 6: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
+            }
+        }
+        if( s == 'paid_sales' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'yes' ) {
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
@@ -964,7 +979,19 @@ function ciniki_ags_main() {
                 case 6: return d.total_amount_display;
                 case 7: return '<button onclick="M.ciniki_ags_main.participant.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>';
             }
+        } 
+        if( s == 'paid_sales' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'no' ) {
+            switch(j) {
+                case 0: return d.code;
+                case 1: return d.name;
+                case 2: return d.sell_date;
+                case 3: return d.tenant_amount_display;
+                case 4: return d.exhibitor_amount_display;
+                case 5: return d.total_amount_display;
+                case 6: return '<button onclick="M.ciniki_ags_main.participant.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>';
+            }
         }
+
         if( s == 'online' ) {
             switch(j) {
                 case 0:
@@ -2696,6 +2723,22 @@ function ciniki_ags_main() {
             'exhibitors':{'label':'Exhibitors', 'fn':'M.ciniki_ags_main.switchTab("exhibitors");'},
 //            'reports':{'label':'Reports', 'fn':'M.ciniki_ags_main.switchTab("reports");'},
         };
+            
+        if( M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'yes' ) {
+            this.participant.sections.pending_payouts.num_cols = 8;
+            this.participant.sections.pending_payouts.headerValues = ['Code', 'Item', 'Date', 'Customer', 'Fees', 'Payout', 'Totals', ''];
+            this.participant.sections.pending_payouts.sortTypes = ['text', 'text', 'date', 'text', 'number', 'number', 'number', ''];
+            this.participant.sections.paid_sales.num_cols = 8;
+            this.participant.sections.paid_sales.headerValues = ['Code', 'Item', 'Date', 'Customer', 'Fees', 'Payout', 'Totals', ''];
+            this.participant.sections.paid_sales.sortTypes = ['text', 'text', 'date', 'text', 'number', 'number', 'number', ''];
+        } else {
+            this.participant.sections.pending_payouts.num_cols = 7;
+            this.participant.sections.pending_payouts.headerValues = ['Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals', ''];
+            this.participant.sections.pending_payouts.sortTypes = ['text', 'text', 'date', 'number', 'number', 'number', ''];
+            this.participant.sections.paid_sales.num_cols = 7;
+            this.participant.sections.paid_sales.headerValues = ['Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals', ''];
+            this.participant.sections.paid_sales.sortTypes = ['text', 'text', 'date', 'number', 'number', 'number', ''];
+        }
 
         if( M.curTenant.modules['ciniki.ags'].settings != null 
             && M.curTenant.modules['ciniki.ags'].settings.etypes != null 

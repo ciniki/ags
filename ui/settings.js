@@ -9,7 +9,11 @@ function ciniki_ags_settings() {
     this.main.sections = {
         'options':{'label':'Defaults', 'fields':{
             'defaults-item-fee-percent':{'label':'Fee Percent', 'type':'text', 'size':'small'},
-        }},
+            }},
+        'options2':{'label':'Sales Reporting', 'fields':{
+            'sales-customer-name':{'label':'Show Sales Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
+            'sales-pdf-customer-name':{'label':'PDF Include Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
+            }},
     };
     this.main.fieldValue = function(s, i, d) { 
         return this.data[i];

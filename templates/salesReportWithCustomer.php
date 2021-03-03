@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
+function ciniki_ags_templates_salesReportWithCustomer(&$ciniki, $tnid, $args) {
 
     //
     // Load the tenant intl settings
@@ -40,10 +40,10 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
             // Output the title
             //
             $this->SetFont('', 'B', 14);
-            $this->Cell(190, 12, $this->title, 0, false, 'C', 0);
+            $this->Cell(249, 12, $this->title, 0, false, 'C', 0);
             $this->Ln(8);
             $this->SetFont('', '', 14);
-            $this->Cell(190, 12, $this->subtitle, 0, false, 'C', 0);
+            $this->Cell(249, 12, $this->subtitle, 0, false, 'C', 0);
         }
 
         // Page footer
@@ -52,9 +52,9 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
             $this->SetY(-15);
             $this->SetFont('helvetica', 'I', 8);
             if( isset($this->footer_msg) && $this->footer_msg != '' ) {
-                $this->Cell(95, 10, $this->footer_msg,
+                $this->Cell(125, 10, $this->footer_msg,
                     0, false, 'L', 0, '', 0, false, 'T', 'M');
-                $this->Cell(95, 10, 'Page ' . $this->getPageNumGroupAlias().'/'.$this->getPageGroupAlias(), 
+                $this->Cell(124, 10, 'Page ' . $this->getPageNumGroupAlias().'/'.$this->getPageGroupAlias(), 
                     0, false, 'R', 0, '', 0, false, 'T', 'M');
             } else {
                 // Center the page number if no footer message.
@@ -67,7 +67,7 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
     //
     // Start a new document
     //
-    $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new MYPDF('L', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 
     //
     // Figure out the header tenant name and address information
@@ -92,7 +92,7 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
     $pdf->SetKeywords('');
 
     // set margins
-    $pdf->SetMargins(10, 30, 10);
+    $pdf->SetMargins(15, 30, 15);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
     $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
@@ -118,17 +118,18 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
         //
         // Add the items
         //
-        $w = array(24, 72, 25, 9, 20, 20, 20);
+        $w = array(25, 70, 25, 59, 10, 20, 20, 20);
         $pdf->SetFillColor(224);
         $pdf->SetFont('', 'B');
         $pdf->SetCellPaddings(1.5,2,1.5,2);
         $pdf->Cell($w[0], 6, 'Code', 1, 0, 'C', 1);
         $pdf->Cell($w[1], 6, 'Item', 1, 0, 'C', 1);
         $pdf->Cell($w[2], 6, 'Date', 1, 0, 'C', 1);
-        $pdf->Cell($w[3], 6, 'Qty', 1, 0, 'C', 1);
-        $pdf->Cell($w[4], 6, 'Total', 1, 0, 'C', 1);
-        $pdf->Cell($w[5], 6, 'Fees', 1, 0, 'C', 1);
-        $pdf->Cell($w[6], 6, 'Payout', 1, 0, 'C', 1);
+        $pdf->Cell($w[3], 6, 'Customer', 1, 0, 'C', 1);
+        $pdf->Cell($w[4], 6, 'Qty', 1, 0, 'C', 1);
+        $pdf->Cell($w[5], 6, 'Total', 1, 0, 'C', 1);
+        $pdf->Cell($w[6], 6, 'Fees', 1, 0, 'C', 1);
+        $pdf->Cell($w[7], 6, 'Payout', 1, 0, 'C', 1);
         $pdf->Ln();
         $pdf->SetFillColor(236);
         $pdf->SetTextColor(0);
@@ -166,10 +167,11 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
                 $pdf->Cell($w[0], 6, 'Code', 1, 0, 'C', 1);
                 $pdf->Cell($w[1], 6, 'Item', 1, 0, 'C', 1);
                 $pdf->Cell($w[2], 6, 'Date', 1, 0, 'C', 1);
-                $pdf->Cell($w[3], 6, 'Qty', 1, 0, 'C', 1);
-                $pdf->Cell($w[4], 6, 'Total', 1, 0, 'C', 1);
-                $pdf->Cell($w[5], 6, 'Fees', 1, 0, 'C', 1);
-                $pdf->Cell($w[6], 6, 'Payout', 1, 0, 'C', 1);
+                $pdf->Cell($w[3], 6, 'Customer', 1, 0, 'C', 1);
+                $pdf->Cell($w[4], 6, 'Qty', 1, 0, 'C', 1);
+                $pdf->Cell($w[5], 6, 'Total', 1, 0, 'C', 1);
+                $pdf->Cell($w[6], 6, 'Fees', 1, 0, 'C', 1);
+                $pdf->Cell($w[7], 6, 'Payout', 1, 0, 'C', 1);
                 $pdf->Ln();
                 $fill = 0;
                 $pdf->SetFillColor(236);
@@ -180,11 +182,12 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
                 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[1], $lh, $name, 1, 'L', $fill, 
                 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[2], $lh, $item['sell_date'], 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[3], $lh, (int)$item['quantity'], 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[4], $lh, '$' . number_format($item['total_amount'], 2), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[5], $lh, '$' . number_format($item['tenant_amount'], 2), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[6], $lh, '$' . number_format($item['exhibitor_amount'], 2), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[2], $lh, $item['sell_date'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[3], $lh, $item['billing_name'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[4], $lh, (int)$item['quantity'], 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[5], $lh, '$' . number_format($item['total_amount'], 2), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[6], $lh, '$' . number_format($item['tenant_amount'], 2), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[7], $lh, '$' . number_format($item['exhibitor_amount'], 2), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->Ln(); 
             $fill=!$fill;
             $num++;
@@ -196,11 +199,11 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
         $pdf->SetFillColor(224);
         $lh = 6;
         $pdf->SetFont('', 'B');
-        $pdf->Cell($w[0] + $w[1] + $w[2], $lh, 'Totals', 1, 0, 'L', 1);
-        $pdf->Cell($w[3], $lh, $num_items, 1, 0, 'R', 1);
-        $pdf->Cell($w[4], $lh, '$' . number_format($total_amount, 2), 1, 0, 'R', 1);
-        $pdf->Cell($w[5], $lh, '$' . number_format($total_tenant_amount, 2), 1, 0, 'R', 1);
-        $pdf->Cell($w[5], $lh, '$' . number_format($total_exhibitor_amount, 2), 1, 0, 'R', 1);
+        $pdf->Cell($w[0] + $w[1] + $w[2] + $w[3], $lh, 'Totals', 1, 0, 'L', 1);
+        $pdf->Cell($w[4], $lh, $num_items, 1, 0, 'R', 1);
+        $pdf->Cell($w[5], $lh, '$' . number_format($total_amount, 2), 1, 0, 'R', 1);
+        $pdf->Cell($w[6], $lh, '$' . number_format($total_tenant_amount, 2), 1, 0, 'R', 1);
+        $pdf->Cell($w[7], $lh, '$' . number_format($total_exhibitor_amount, 2), 1, 0, 'R', 1);
         $num_seller++;
     }
 

@@ -41,6 +41,16 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
     }   
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_ags_settings', 'tnid', $tnid, 'ciniki.ags', 'settings', '');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.225', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    $settings = isset($rc['settings']) ? $rc['settings'] : array();
+    
+    //
     // Load the tenant intl settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
@@ -162,17 +172,31 @@ function ciniki_ags_unpaidSalesPDF($ciniki) {
     
     $today = new DateTime('now', new DateTimezone($intl_timezone));
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'salesReport');
-    $rc = ciniki_ags_templates_salesReport($ciniki, $args['tnid'], array(
-        'title'=>$report_title,
-        'author'=>$tenant_details['name'],
-        'footer'=>$today->format('M d, Y'),
-        'exhibitors'=>$exhibitors,
-        ));
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
+    if( isset($settings['sales-pdf-customer-name']) && $settings['sales-pdf-customer-name'] == 'yes' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'salesReportWithCustomer');
+        $rc = ciniki_ags_templates_salesReportWithCustomer($ciniki, $args['tnid'], array(
+            'title'=>$report_title,
+            'author'=>$tenant_details['name'],
+            'footer'=>$today->format('M d, Y'),
+            'exhibitors'=>$exhibitors,
+            ));
+        if( $rc['stat'] != 'ok' ) { 
+            return $rc;
+        }
+        $pdf = $rc['pdf'];
+    } else {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'salesReport');
+        $rc = ciniki_ags_templates_salesReport($ciniki, $args['tnid'], array(
+            'title'=>$report_title,
+            'author'=>$tenant_details['name'],
+            'footer'=>$today->format('M d, Y'),
+            'exhibitors'=>$exhibitors,
+            ));
+        if( $rc['stat'] != 'ok' ) { 
+            return $rc;
+        }
+        $pdf = $rc['pdf'];
     }
-    $pdf = $rc['pdf'];
 
     //
     // Output the pdf
