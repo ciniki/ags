@@ -90,6 +90,8 @@ function ciniki_ags_exhibitInventory($ciniki) {
         . "exhibitors.display_name, "
         . "items.code, "
         . "items.name, "
+        . "items.medium, "
+        . "items.size, "
         . "items.unit_amount, "
         . "items.fee_percent, "
         . "IFNULL(sales.sell_date, '') AS sell_date, "
@@ -117,7 +119,7 @@ function ciniki_ags_exhibitInventory($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.marketplaces', array(
         array('container'=>'items', 'fname'=>'id',
-            'fields'=>array('id', 'display_name', 'code', 'name', 'unit_amount', 'fee_percent',
+            'fields'=>array('id', 'display_name', 'code', 'name', 'medium', 'size', 'unit_amount', 'fee_percent',
                 'sell_date', 'total_amount', 'tenant_amount', 'exhibitor_amount', 'notes')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -136,7 +138,7 @@ function ciniki_ags_exhibitInventory($ciniki) {
     require($ciniki['config']['core']['lib_dir'] . '/PHPExcel/PHPExcel.php');
     $objPHPExcel = new PHPExcel();
     $sheet = $objPHPExcel->setActiveSheetIndex(0);
-    $sheet->setTitle(substr($exhibit_name, 0, 31));
+    $sheet->setTitle(substr(str_replace(":", '-', $exhibit_name), 0, 31));
 
     //
     // Headers
@@ -144,6 +146,8 @@ function ciniki_ags_exhibitInventory($ciniki) {
     $i = 0;
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Code', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Name', false);
+    $sheet->setCellValueByColumnAndRow($i++, 1, 'Medium', false);
+    $sheet->setCellValueByColumnAndRow($i++, 1, 'Size', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Exhibitor', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Price', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Fee %', false);
@@ -164,12 +168,16 @@ function ciniki_ags_exhibitInventory($ciniki) {
     $sheet->getStyle('I1')->getFont()->setBold(true);
     $sheet->getStyle('J1')->getFont()->setBold(true);
     $sheet->getStyle('K1')->getFont()->setBold(true);
+    $sheet->getStyle('L1')->getFont()->setBold(true);
+    $sheet->getStyle('M1')->getFont()->setBold(true);
 
     $row = 2;
     foreach($items as $item) {
         $i = 0;
         $sheet->setCellValueByColumnAndRow($i++, $row, $item['code']);
         $sheet->setCellValueByColumnAndRow($i++, $row, $item['name']);
+        $sheet->setCellValueByColumnAndRow($i++, $row, $item['medium']);
+        $sheet->setCellValueByColumnAndRow($i++, $row, $item['size']);
         $sheet->setCellValueByColumnAndRow($i++, $row, $item['display_name']);
         $sheet->setCellValueByColumnAndRow($i++, $row, $item['unit_amount']);
         if( $item['fee_percent'] > 0 ) {
@@ -212,6 +220,8 @@ function ciniki_ags_exhibitInventory($ciniki) {
     $sheet->getColumnDimension('H')->setAutoSize(true);
     $sheet->getColumnDimension('I')->setAutoSize(true);
     $sheet->getColumnDimension('J')->setAutoSize(true);
+    $sheet->getColumnDimension('K')->setAutoSize(true);
+    $sheet->getColumnDimension('L')->setAutoSize(true);
 
     //
     // Output the excel
