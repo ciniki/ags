@@ -69,7 +69,7 @@ function ciniki_ags_exhibitInventory($ciniki) {
     //
     // Get the exhibit name
     //
-    $strsql = "SELECT name "
+    $strsql = "SELECT name, permalink "
         . "FROM ciniki_ags_exhibits "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -82,12 +82,59 @@ function ciniki_ags_exhibitInventory($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.13', 'msg'=>'Exhibit does not exist'));
     }
     $exhibit_name = $rc['exhibit']['name'];
+    $exhibit_permalink = $rc['exhibit']['permalink'];
+
+    //
+    // Get the working url
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'indexObjectBaseURL');
+    $rc = ciniki_web_indexObjectBaseURL($ciniki, $args['tnid'], 'ciniki.ags.exhibit');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.226', 'msg'=>'Unable to find exhibit URL', 'err'=>$rc['err']));
+    }
+    if( isset($rc['base_url']) ) {
+        $base_url = $rc['base_url'];
+    } else {
+        //
+        // Base URL not found, check for the exhibit type base url
+        //
+        $strsql = "SELECT permalink "
+            . "FROM ciniki_ags_exhibit_tags "
+            . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
+            . "AND tag_type = 20 "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'tag');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.227', 'msg'=>'Unable to load tag', 'err'=>$rc['err']));
+        }
+        $tags = isset($rc['rows']) ? $rc['rows'] : array();
+        foreach($tags as $tag) {
+            $rc = ciniki_web_indexObjectBaseURL($ciniki, $args['tnid'], 'ciniki.ags.' . $tag['permalink']);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.226', 'msg'=>'Unable to find exhibit URL', 'err'=>$rc['err']));
+            }
+            if( isset($rc['base_url']) ) {
+                $base_url = $rc['base_url'];
+                break;
+            }
+        }
+    }
+    if( isset($base_url) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'lookupTenantURL');
+        $rc = ciniki_web_lookupTenantURL($ciniki, $args['tnid']);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.228', 'msg'=>'Unable to get tenant URL', 'err'=>$rc['err']));
+        }
+        $base_url = $rc['secure_url'] . $base_url . '/' . $exhibit_permalink;
+    }
 
     //
     // Get the list of exhibits items 
     //
     $strsql = "SELECT items.id, "
         . "exhibitors.display_name, "
+        . "items.permalink, "
         . "items.code, "
         . "items.name, "
         . "items.medium, "
@@ -120,7 +167,7 @@ function ciniki_ags_exhibitInventory($ciniki) {
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.marketplaces', array(
         array('container'=>'items', 'fname'=>'id',
             'fields'=>array('id', 'display_name', 'code', 'name', 'medium', 'size', 'unit_amount', 'fee_percent',
-                'sell_date', 'total_amount', 'tenant_amount', 'exhibitor_amount', 'notes')),
+                'sell_date', 'total_amount', 'tenant_amount', 'exhibitor_amount', 'notes', 'permalink')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -156,6 +203,9 @@ function ciniki_ags_exhibitInventory($ciniki) {
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Fees', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Amount', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Notes', false);
+    if( isset($base_url) ) {
+        $sheet->setCellValueByColumnAndRow($i++, 1, 'URL', false);
+    }
 
     $sheet->getStyle('A1')->getFont()->setBold(true);
     $sheet->getStyle('B1')->getFont()->setBold(true);
@@ -170,6 +220,9 @@ function ciniki_ags_exhibitInventory($ciniki) {
     $sheet->getStyle('K1')->getFont()->setBold(true);
     $sheet->getStyle('L1')->getFont()->setBold(true);
     $sheet->getStyle('M1')->getFont()->setBold(true);
+    if( isset($base_url) ) {
+        $sheet->getStyle('N1')->getFont()->setBold(true);
+    }
 
     $row = 2;
     foreach($items as $item) {
@@ -200,6 +253,9 @@ function ciniki_ags_exhibitInventory($ciniki) {
             $sheet->setCellValueByColumnAndRow($i++, $row, '');
         }
         $sheet->setCellValueByColumnAndRow($i++, $row, $item['notes']);
+        if( isset($base_url) ) {
+            $sheet->setCellValueByColumnAndRow($i++, $row, $base_url . '/item/' . $item['permalink']);
+        }
 
         $row++;
     }
