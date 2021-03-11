@@ -66,6 +66,7 @@ function ciniki_ags_settingsUpdate(&$ciniki) {
         'defaults-item-taxtype-id', // **note** Not yet implemented
         'sales-customer-name',
         'sales-pdf-customer-name',
+        'namecards-image',
         );
     //
     // Check each valid setting and see if a new value was passed in the arguments for it.

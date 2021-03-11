@@ -154,6 +154,7 @@ function ciniki_ags_main() {
             'pricebookpdf':{'label':'Untagged Price Book (PDF)', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceBook();'},
             'inventorypdf':{'label':'Current Inventory (PDF)', 'fn':'M.ciniki_ags_main.exhibit.currentInventoryPDF();'},
             'salespdf':{'label':'Unpaid Sales (PDF)', 'fn':'M.ciniki_ags_main.exhibit.unpaidSalesPDF();'},
+//            'namecards':{'label':'Name Cards (PDF)', 'fn':'M.ciniki_ags_main.exhibit.nameCardsPDF();'},
             'riskpdf':{'label':'Risk Management Form', 'fn':'M.ciniki_ags_main.exhibit.riskManagementPDF();'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'participants', 
@@ -466,6 +467,9 @@ function ciniki_ags_main() {
     }
     this.exhibit.unpaidSalesPDF = function() {
         M.api.openPDF('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
+    }
+    this.exhibit.nameCardsPDF = function() {
+        M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'template':'namecards'});
     }
     this.exhibit.riskManagementPDF = function() {
         M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'template':'riskmanagement'});

@@ -78,6 +78,8 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
     //
     if( isset($args['template']) && $args['template'] == 'riskmanagement' ) {
         $report_title = 'Risk Management';
+    } elseif( isset($args['template']) && $args['template'] == 'namecards' ) {
+        $report_title = 'Name Cards';
     } else {
         $report_title = 'Inventory';
     }
@@ -115,9 +117,11 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
         . "items.size, "
         . "items.current_condition, "
         . "items.tag_info, "
+        . "items.flags, "
         . "items.flags AS flags_text, "
         . "items.exhibitor_code, "
         . "items.unit_amount, "
+        . "items.taxtype_id, "
         . "eitems.inventory "
         . "FROM ciniki_ags_exhibit_items AS eitems "
         . "INNER JOIN ciniki_ags_items AS items ON ("
@@ -141,7 +145,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
             'fields'=>array('display_name')),
         array('container'=>'items', 'fname'=>'exhibit_item_id', 
             'fields'=>array('code', 'name', 'exhibitor_code', 'creation_year', 'medium', 'size', 'current_condition', 
-                'tag_info', 'flags_text', 'inventory', 'unit_amount')),
+                'tag_info', 'flags', 'flags_text', 'inventory', 'unit_amount', 'taxtype_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.147', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
@@ -157,6 +161,21 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
     if( isset($args['template']) && $args['template'] == 'riskmanagement' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'riskManagementReport');
         $rc = ciniki_ags_templates_riskManagementReport($ciniki, $args['tnid'], array(
+            'title' => $report_title,
+            'start_date' => $exhibit['start_date'],
+            'end_date' => $exhibit['end_date'],
+            'author' => $tenant_details['name'],
+            'location' => $exhibit['location_name'],
+            'footer' => $today->format('M d, Y'),
+            'exhibitors' => $exhibitors,
+            ));
+        if( $rc['stat'] != 'ok' ) { 
+            return $rc;
+        }
+        $pdf = $rc['pdf'];
+    } elseif( isset($args['template']) && $args['template'] == 'namecards' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'nameCards');
+        $rc = ciniki_ags_templates_nameCards($ciniki, $args['tnid'], array(
             'title' => $report_title,
             'start_date' => $exhibit['start_date'],
             'end_date' => $exhibit['end_date'],

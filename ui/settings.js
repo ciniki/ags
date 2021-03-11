@@ -14,6 +14,9 @@ function ciniki_ags_settings() {
             'sales-customer-name':{'label':'Show Sales Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
             'sales-pdf-customer-name':{'label':'PDF Include Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
+        'image':{'label':'Name Cards Image', 'aside':'yes', 'fields':{
+            'namecards-image':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+            }},
     };
     this.main.fieldValue = function(s, i, d) { 
         return this.data[i];
@@ -21,6 +24,14 @@ function ciniki_ags_settings() {
     this.main.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.ags.settingsHistory', 'args':{'tnid':M.curTenantID, 'field':i}};
     };
+    this.main.addDropImage = function(iid) {
+        M.ciniki_ags_settings.main.setFieldValue('namecards-image', iid);
+        return true;
+    }
+    this.main.deleteImage = function(fid) {
+        this.setFieldValue(fid, 0);
+        return true;
+    }
     this.main.open = function(cb) {
         M.api.getJSONCb('ciniki.ags.settingsGet', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
