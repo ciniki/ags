@@ -184,7 +184,7 @@ function ciniki_ags_templates_riskManagementReport(&$ciniki, $tnid, $args) {
                 $pdf->SetTextColor(0);
                 $pdf->SetFont('');
             }
-            $pdf->MultiCell($w[0], $lh, $num, 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[0], $lh, ($num+1), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[1], $lh, $code, 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[2], $lh, $name, 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[3], $lh, $item['creation_year'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
