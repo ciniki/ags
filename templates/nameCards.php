@@ -131,8 +131,8 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
             }
 
             $pdf->SetY($y_offset + ($card_height-20) + ($y*$card_height));
+            $pdf->SetX($x_offset + ($x*$card_width));
             if( ($item['flags']&0x01) == 0x01 && $item['unit_amount'] != 0 ) {
-                $pdf->SetX($x_offset + ($x*$card_width));
                 $pdf->SetFont($font_other, '', 13);
                 if( is_int($item['unit_amount']) ) {
                     $pdf->Cell(75, 6, '$' . number_format($item['unit_amount'], 0), 0, 1, 'L', 0);
