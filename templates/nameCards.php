@@ -76,10 +76,10 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
     $pdf->SetLineWidth(0.15);
     $pdf->SetCellPaddings(1,1,1,1);
 
-    $x_offset = 10;
-    $y_offset = 10;
-    $card_width = 98;
-    $card_height = 55.5;
+    $x_offset = 12;
+    $y_offset = 12;
+    $card_width = 97;
+    $card_height = 53.5;
 
     if( isset($settings['namecards-image']) && $settings['namecards-image'] != '' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
