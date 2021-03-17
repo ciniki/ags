@@ -77,7 +77,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
     $pdf->SetCellPaddings(1,1,1,1);
 
     $x_offset = 22;
-    $y_offset = 15;
+    $y_offset = 17;
     $card_width = 89;
     $card_height = 51;
 
