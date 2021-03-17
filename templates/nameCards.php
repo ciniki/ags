@@ -51,7 +51,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
     //
     // Start a new document
     //
-    $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new MYPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 
     //
     // Setup the PDF basics
@@ -76,10 +76,10 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
     $pdf->SetLineWidth(0.15);
     $pdf->SetCellPaddings(1,1,1,1);
 
-    $x_offset = 12;
-    $y_offset = 12;
-    $card_width = 97;
-    $card_height = 53.5;
+    $x_offset = 22;
+    $y_offset = 15;
+    $card_width = 89;
+    $card_height = 51;
 
     if( isset($settings['namecards-image']) && $settings['namecards-image'] != '' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
@@ -150,8 +150,8 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
 
             if( isset($card_image) ) {
                 $pdf->Image('@'.$card_image->getImageBlob(), 
-                    $x_offset + ($x*$card_width) + ($card_width/2) - 5,
-                    $y_offset + ($y*$card_height) + ($card_height-$image_height-5),
+                    $x_offset + ($x*$card_width) + ($card_width - $image_width - 5),
+                    $y_offset + ($y*$card_height) + ($card_height - $image_height - 5),
                     $image_width,
                     $image_height,
                     'JPEG', '', '', true, 150, '', false, false, 0, 'B');
