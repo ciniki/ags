@@ -147,7 +147,7 @@ function ciniki_ags_exhibitPriceList($ciniki) {
     // Output the pdf
     //
     $filename = $exhibit_name . ' - Price List - ' . $today->format('M d, Y');
-    $filename = preg_replace('/[^A-Za-z0-9\-]/', '', $filename);
+    $filename = preg_replace('/[^A-Za-z0-9\-]/', '', $filename) . '.pdf';
     $pdf->Output($filename, 'D');
 
     return array('stat'=>'exit');
