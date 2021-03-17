@@ -150,8 +150,8 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
 
             if( isset($card_image) ) {
                 $pdf->Image('@'.$card_image->getImageBlob(), 
-                    $x_offset + ($x*$card_width) + ($card_width - $image_width - 5),
-                    $y_offset + ($y*$card_height) + ($card_height - $image_height - 5),
+                    $x_offset + ($x*$card_width) + ($card_width - $image_width - 6),
+                    $y_offset + ($y*$card_height) + ($card_height - $image_height - 6),
                     $image_width,
                     $image_height,
                     'JPEG', '', '', true, 150, '', false, false, 0, 'B');
