@@ -957,7 +957,7 @@ function ciniki_ags_main() {
                 case 7: return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>';
             }
         }
-        if( s == 'pending_payouts' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'yes' ) {
+        if( s == 'pending_payouts' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'no' ) {
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
