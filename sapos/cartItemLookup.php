@@ -55,9 +55,11 @@ function ciniki_ags_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.217', 'msg'=>'Unable to find item'));
         }
         $item = $rc['item'];
-        $item['quantity'] = 1;
         $item['status'] = 0;
         $item['flags'] = 0x42;
+        if( $item['inventory'] == 1 ) {
+            $item['flags'] |= 0x08;     // Single item, quantity always 1
+        }
         $item['price_id'] = 0;
         $item['object'] = 'ciniki.ags.exhibititem';
         $item['limited_units'] = 'yes';
