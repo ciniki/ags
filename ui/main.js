@@ -817,7 +817,6 @@ function ciniki_ags_main() {
     this.participant.liveSearchCb = function(s, i, v) {
         if( s == 'inventory_search' && v != '' ) {
             M.api.getJSONBgCb('ciniki.ags.exhibitorItemSearch', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id, 'start_needle':v, 'limit':'25'}, function(rsp) {
-                console.log(rsp.items);
                 M.ciniki_ags_main.participant.liveSearchShow('inventory_search',null,M.gE(M.ciniki_ags_main.participant.panelUID + '_' + s), rsp.items);
                 });
         }

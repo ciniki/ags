@@ -178,15 +178,15 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
                             if( $nlines > 1 ) {
                                 $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y'], true, 1);
                                 $pdf->SetFont('helvetica', '', 9);
-                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+7, true, 1);
+                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, $col['x'], $row['y']+7, true, 1);
                             } else {
                                 $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y']+1, true, 1);
                                 $pdf->SetFont('helvetica', '', 9);
-                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+6, true, 1);
+                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, $col['x'], $row['y']+6, true, 1);
                             }
                         } else {
                             $pdf->SetFont('helvetica', '', 12);
-                            $pdf->MultiCell($label['cell']['width'], $label['cell']['height'], '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, $col['x'], $row['y']+4, true, 1, false, true, 0, 'M');
+                            $pdf->MultiCell($label['cell']['width'], $label['cell']['height'], '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, $col['x'], $row['y']+4, true, 1, false, true, 0, 'M');
                         }
                     } elseif( isset($item['label_type']) && $item['label_type'] == 'halfsize' ) {
                         if( $item['exhibitor_code'] != '' ) {
@@ -199,7 +199,7 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
                             $pdf->write1DBarcode($item['code'], 'C39', $col['x'], $row['y']+2, (($label['cell']['width']/2)+1), 16, 0.3, $style, 'N');
                         }
                         $pdf->SetFont('helvetica', '', 12);
-                        $pdf->MultiCell((($label['cell']['width']/2)-1), $label['cell']['height'], '$' . number_format($item['unit_amount'], 2), 0, 'C', false, 0, ($col['x'] + ($label['cell']['width']/2)+1), $row['y']+4, true, 1, false, true, 0, 'M');
+                        $pdf->MultiCell((($label['cell']['width']/2)-1), $label['cell']['height'], '$' . number_format($item['unit_amount'], 2) + ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, ($col['x'] + ($label['cell']['width']/2)+1), $row['y']+4, true, 1, false, true, 0, 'M');
 
                     } else {
                         if( $item['exhibitor_code'] != '' ) {

@@ -114,6 +114,9 @@ function ciniki_ags_templates_pricelist(&$ciniki, $tnid, $args) {
             $price = 'NFS';
         } else {
             $price = '$' . number_format($item['unit_amount'], 2);
+            if( $item['taxtype_id'] > 0 ) {
+                $price .= ' + HST';
+            }
         }
         $nlines = $pdf->getNumLines($name, $w[1]);
         if( $nlines == 2 ) {

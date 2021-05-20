@@ -90,7 +90,8 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
         . "items.flags, "
         . "items.tag_info, "
         . "items.unit_amount, "
-        . "items.fee_percent "
+        . "items.fee_percent, "
+        . "items.taxtype_id "
         . "";
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
         $strsql .= ", exhibit.inventory AS quantity "
@@ -128,7 +129,7 @@ function ciniki_ags_exhibitorBarcodes($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'items', 'fname'=>'id', 
-            'fields'=>array('id', 'code', 'name', 'exhibitor_code', 'status', 'flags', 'tag_info', 'unit_amount', 'fee_percent', 'quantity'),
+            'fields'=>array('id', 'code', 'name', 'exhibitor_code', 'status', 'flags', 'tag_info', 'unit_amount', 'fee_percent', 'quantity', 'taxtype_id'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

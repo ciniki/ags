@@ -97,7 +97,8 @@ function ciniki_ags_exhibitPriceList($ciniki) {
         . "IFNULL(ciniki_ags_exhibitors.display_name, '') AS display_name, "
         . "items.name, "
         . "items.flags, "
-        . "items.unit_amount "
+        . "items.unit_amount, "
+        . "items.taxtype_id "
         . "FROM ciniki_ags_exhibit_items "
         . "INNER JOIN ciniki_ags_items AS items ON ("
             . "ciniki_ags_exhibit_items.item_id = items.id "
@@ -118,7 +119,7 @@ function ciniki_ags_exhibitPriceList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'items', 'fname'=>'id',
-            'fields'=>array('id', 'display_name', 'code', 'name', 'flags', 'unit_amount')),
+            'fields'=>array('id', 'display_name', 'code', 'name', 'flags', 'unit_amount', 'taxtype_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

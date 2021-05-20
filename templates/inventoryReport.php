@@ -110,7 +110,7 @@ function ciniki_ags_templates_inventoryReport(&$ciniki, $tnid, $args) {
         //
         // Add the items
         //
-        $w = array(25, 65, 45, 20, 20, 15);
+        $w = array(24, 64, 43, 20, 24, 15);
         $pdf->SetFillColor(224);
         $pdf->SetFont('', 'B');
         $pdf->SetCellPaddings(1.5,2,1.5,2);
@@ -173,7 +173,7 @@ function ciniki_ags_templates_inventoryReport(&$ciniki, $tnid, $args) {
             $pdf->MultiCell($w[1], $lh, $name, 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[2], $lh, $item['tag_info'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[3], $lh, $item['exhibitor_code'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[4], $lh, '$' . number_format($item['unit_amount'], 2), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            $pdf->MultiCell($w[4], $lh, '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[5], $lh, (int)$item['inventory'], 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->Ln(); 
             $fill=!$fill;
