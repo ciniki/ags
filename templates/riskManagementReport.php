@@ -39,7 +39,7 @@ function ciniki_ags_templates_riskManagementReport(&$ciniki, $tnid, $args) {
             // Output the title
             //
             $this->SetFont('', 'B', 12);
-            $this->Cell(278, 12, $this->title, 0, false, 'C', 0);
+            $this->Cell(260, 12, $this->title, 0, false, 'C', 0);
         }
 
         // Page footer
@@ -48,9 +48,9 @@ function ciniki_ags_templates_riskManagementReport(&$ciniki, $tnid, $args) {
             $this->SetY(-15);
             $this->SetFont('helvetica', 'I', 8);
             if( isset($this->footer_msg) && $this->footer_msg != '' ) {
-                $this->Cell(144, 10, $this->footer_msg,
+                $this->Cell(135, 10, $this->footer_msg,
                     0, false, 'L', 0, '', 0, false, 'T', 'M');
-                $this->Cell(144, 10, 'Page ' . $this->getPageNumGroupAlias().'/'.$this->getPageGroupAlias(), 
+                $this->Cell(135, 10, 'Page ' . $this->getPageNumGroupAlias().'/'.$this->getPageGroupAlias(), 
                     0, false, 'R', 0, '', 0, false, 'T', 'M');
             } else {
                 // Center the page number if no footer message.
@@ -63,7 +63,7 @@ function ciniki_ags_templates_riskManagementReport(&$ciniki, $tnid, $args) {
     //
     // Start a new document
     //
-    $pdf = new MYPDF('L', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    $pdf = new MYPDF('L', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 
     //
     // Figure out the header tenant name and address information
@@ -115,7 +115,7 @@ function ciniki_ags_templates_riskManagementReport(&$ciniki, $tnid, $args) {
         //
         // Add the items
         //
-        $w = array(10, 25, 88, 15, 40, 20, 20, 45, 15);
+        $w = array(10, 23, 75, 15, 30, 30, 20, 45, 12);
         $pdf->SetFillColor(224);
         $pdf->SetFont('', 'B');
         $pdf->SetCellPaddings(1.5,2,1.5,2);
@@ -151,6 +151,9 @@ function ciniki_ags_templates_riskManagementReport(&$ciniki, $tnid, $args) {
             $nlines = $pdf->getNumLines($name, $w[2]);
             if( $pdf->getNumLines($item['medium'], $w[4]) > $nlines ) {
                 $nlines = $pdf->getNumLines($item['medium'], $w[4]);
+            }
+            if( $pdf->getNumLines($item['size'], $w[5]) > $nlines ) {
+                $nlines = $pdf->getNumLines($item['size'], $w[5]);
             }
             if( $pdf->getNumLines($item['current_condition'], $w[7]) > $nlines ) {
                 $nlines = $pdf->getNumLines($item['current_condition'], $w[7]);
@@ -201,21 +204,38 @@ function ciniki_ags_templates_riskManagementReport(&$ciniki, $tnid, $args) {
         //
         // Add signature lines
         //
+        $pdf->Ln(15);
+        if( $pdf->getY() > ($pdf->getPageHeight() - 45) ) {
+            $pdf->AddPage();
+        }
         $fill = 0;
-        $pdf->Ln(15);
         $lh = 6;
+        $cury = $pdf->GetY();
         $pdf->SetCellPaddings(1.5,0.5,1.5,2);
-        $pdf->MultiCell(100, $lh, 'Artists Signature', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+        $pdf->MultiCell(95, $lh, 'Artists Signature', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(5, $lh, '', 0, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(50, $lh, 'Date', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+
         $pdf->Ln(15);
-        $pdf->MultiCell(100, $lh, 'Establishment Signing Authority (' . $args['author'] . ')', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+        $pdf->MultiCell(95, $lh, 'Establishment Signing Authority (' . $args['author'] . ')', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(5, $lh, '', 0, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(50, $lh, 'Date', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+
         $pdf->Ln(15);
-        $pdf->MultiCell(100, $lh, 'Establishment Signing Authority (' . $args['location'] . ')', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+        $pdf->MultiCell(95, $lh, 'Establishment Signing Authority (' . $args['location'] . ')', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(5, $lh, '', 0, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(50, $lh, 'Date', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+
+        //
+        // Add pickup signature
+        //
+        $pdf->SetY($cury);
+        $pdf->SetX(190);
+        $pdf->MultiCell(80, $lh, 'Pickup Date', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+        $pdf->Ln(15);
+        $pdf->SetX(190);
+        $pdf->MultiCell(80, $lh, 'Artists Signature', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+
         $pdf->SetCellPaddings(1.5,2,1.5,2);
     }
 
