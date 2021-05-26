@@ -41,7 +41,7 @@ function ciniki_ags_sapos_itemSearch($ciniki, $tnid, $args) {
         . "INNER JOIN ciniki_ags_exhibits AS exhibits ON ("
             . "eitems.exhibit_id = exhibits.id "
             . "AND exhibits.status < 90 "
-            . "AND (exhibits.end_date = '0000-00-00' OR exhibits.end_date > NOW()) "
+//            . "AND (exhibits.end_date = '0000-00-00' OR exhibits.end_date > NOW()) "
             . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_ags_exhibitors AS exhibitors ON ("
