@@ -212,17 +212,17 @@ function ciniki_ags_templates_riskManagementReport(&$ciniki, $tnid, $args) {
         $lh = 6;
         $cury = $pdf->GetY();
         $pdf->SetCellPaddings(1.5,0.5,1.5,2);
-        $pdf->MultiCell(95, $lh, 'Artists Signature', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+        $pdf->MultiCell(100, $lh, 'Artists Signature', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(5, $lh, '', 0, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(50, $lh, 'Date', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
 
         $pdf->Ln(15);
-        $pdf->MultiCell(95, $lh, 'Establishment Signing Authority (' . $args['author'] . ')', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+        $pdf->MultiCell(100, $lh, 'Establishment Signing Authority (' . $args['author'] . ')', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(5, $lh, '', 0, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(50, $lh, 'Date', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
 
         $pdf->Ln(15);
-        $pdf->MultiCell(95, $lh, 'Establishment Signing Authority (' . $args['location'] . ')', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+        $pdf->MultiCell(100, $lh, 'Establishment Signing Authority (' . $args['location'] . ')', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(5, $lh, '', 0, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
         $pdf->MultiCell(50, $lh, 'Date', 'T', 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
 
