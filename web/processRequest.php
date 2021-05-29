@@ -747,7 +747,26 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             } else {
                 $content = $exhibit['synopsis'];
             }
+
             $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>$content);
+
+            //
+            // Check if participant bios should be visible
+            //
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x80) && ($exhibit['flags']&0x80) == 0x80 
+                && isset($exhibit['exhibitors']) && count($exhibit['exhibitors']) > 0 
+                ) {
+                foreach($exhibit['exhibitors'] as $exhibitor) {
+                    if( $exhibitor['synopsis'] != '' ) {
+                        $page['blocks'][] = array(
+                            'type' => 'content', 
+                            'section' => 'bio', 
+                            'title' => (count($exhibit['exhibitors']) > 1 ? $exhibitor['display_name'] : ''), 
+                            'content' => $exhibitor['synopsis'],
+                            );
+                    } 
+                }
+            }
 
             //
             // Check if map is address is supplied

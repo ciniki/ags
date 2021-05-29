@@ -1,0 +1,5 @@
+#
+# Add synopsis/brief bio field
+#
+ALTER TABLE ciniki_ags_exhibitors ADD COLUMN synopsis text not null AFTER flags;
+ALTER TABLE ciniki_ags_exhibitors COMMENT='v1.02';

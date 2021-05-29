@@ -500,10 +500,14 @@ function ciniki_ags_main() {
             'flags1':{'label':'Visible', 'type':'flagtoggle', 'field':'flags', 'bit':0x01, 'default':'off'},
             //'flags2':{'label':'Category Buttons', 'type':'flagtoggle', 'field':'flags', 'bit':0x02, 'default':'off'},
             'flags2':{'label':'Category Display', 'type':'flagspiece', 'field':'flags', 'mask':0x12, 'toggle':'yes', 'join':'yes', 
-                'flags':{'0':{'name':'Off'}, '2':{'name':'Buttons'}, '5':{'name':'Thumbnails'}}},
+                'flags':{'0':{'name':'Off'}, '2':{'name':'Buttons'}, '5':{'name':'Thumbnails'}},
+                },
             'flags3':{'label':'Items Visible', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'off'},
             'flags4':{'label':'Show Location', 'type':'flagtoggle', 'field':'flags', 'bit':0x08, 'default':'on'},
 //            'flags3':{'label':'Link Members', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'on'},
+            'flags8':{'label':'Show Participant Bios', 'type':'flagtoggle', 'field':'flags', 'bit':0x80, 'default':'on',
+                'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
+                },
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},
             }},
@@ -1399,7 +1403,12 @@ function ciniki_ags_main() {
         '_message':{'label':'Sales Message', 
             'visible':function() { return M.modFlagSet('ciniki.ags', 0x40); },
             'fields':{
-                'message':{'label':'Messaga', 'type':'textarea', 'size':'medium'},
+                'message':{'label':'Message', 'type':'textarea', 'size':'medium'},
+            }},
+        '_synopsis':{'label':'Exhibitor Bio', 
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
+            'fields':{
+                'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'next':{'label':'Next', 
@@ -2143,6 +2152,11 @@ function ciniki_ags_main() {
         'general':{'label':'', 'fields':{
             'display_name_override':{'label':'Exhibitor Name', 'type':'text'},
             'code':{'label':'Code', 'required':'yes', 'type':'text'},
+            }},
+        '_synopsis':{'label':'Exhibitor Bio', 
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
+            'fields':{
+                'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'next':{'label':'Next', 

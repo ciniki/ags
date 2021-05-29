@@ -27,6 +27,9 @@
 #                               0x04 - Show items
 #                               0x08 - Show Location on Website
 #                               0x10 - Show categories as thumbnail list
+#                               0x20 - 
+#                               0x40 - 
+#                               0x80 - Show Artist Synopsis
 #
 # start_date:               The first date of the marketplace or exhibition.
 # end_date:                 (optional) The last date of the marketplace or exhibition. 

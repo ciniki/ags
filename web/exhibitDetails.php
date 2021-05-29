@@ -235,6 +235,32 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
     }
 
     //
+    // Check if participant synopsis should be loaded
+    //
+    if( ($exhibit['flags']&0x80) == 0x80 ) {
+        $strsql = "SELECT exhibitors.id, "
+            . "exhibitors.display_name, "
+            . "exhibitors.synopsis "
+            . "FROM ciniki_ags_participants AS participants "
+            . "LEFT JOIN ciniki_ags_exhibitors AS exhibitors ON ("
+                . "participants.exhibitor_id = exhibitors.id "
+                . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE participants.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $exhibit['id']) . "' "
+            . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY exhibitors.display_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'exhibitors', 'fname'=>'id', 'fields'=>array('id', 'display_name', 'synopsis')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.230', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
+        }
+        $exhibit['exhibitors'] = isset($rc['exhibitors']) ? $rc['exhibitors'] : array();
+    }
+
+    //
     // Get the location for the exhibit
     //
     if( ($exhibit['flags']&0x08) == 0x08 ) {

@@ -103,6 +103,7 @@ function ciniki_ags_objects(&$ciniki) {
             'code' => array('name'=>'Code'),
             'status' => array('name'=>'Status', 'default'=>'30'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
+            'synopsis' => array('name'=>'Synopsis', 'default'=>''),
             ),
         'history_table' => 'ciniki_ags_history',
         );

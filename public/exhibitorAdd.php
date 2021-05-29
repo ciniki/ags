@@ -27,6 +27,7 @@ function ciniki_ags_exhibitorAdd(&$ciniki) {
         'code'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Code'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

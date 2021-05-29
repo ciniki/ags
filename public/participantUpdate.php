@@ -23,6 +23,7 @@ function ciniki_ags_participantUpdate(&$ciniki) {
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
+        'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Code'),
         ));
@@ -56,7 +57,7 @@ function ciniki_ags_participantUpdate(&$ciniki) {
     //
     // Check if updating exhibitor name or code
     //
-    if( isset($args['display_name_override']) || isset($args['code']) ) {
+    if( isset($args['display_name_override']) || isset($args['code']) || isset($args['synopsis']) ) {
         $strsql = "SELECT participants.id, "
             . "participants.exhibitor_id "
             . "FROM ciniki_ags_participants AS participants "

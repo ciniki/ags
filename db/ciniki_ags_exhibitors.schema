@@ -32,6 +32,8 @@
 #                               0x04 - 
 #                               0x08 - 
 #
+# synopsis:                 The brief bio for the exhibitor which can be used in the website.
+#
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
 #
@@ -46,6 +48,7 @@ create table ciniki_ags_exhibitors (
     code varchar(50) not null,
     status tinyint unsigned not null,
     flags tinyint unsigned not null,
+    synopsis text not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
@@ -54,4 +57,4 @@ create table ciniki_ags_exhibitors (
     unique index (tnid, permalink),
     unique index (tnid, code),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

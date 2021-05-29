@@ -26,6 +26,7 @@ function ciniki_ags_participantAdd(&$ciniki) {
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
+        'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         // Fields for adding exhibitor
         'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
         'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Override Name'),
