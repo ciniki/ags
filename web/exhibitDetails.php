@@ -200,6 +200,9 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
             . "items.primary_image_id, "
             . "items.synopsis, "
             . "items.description, "
+            . "items.unit_amount, "
+            . "items.unit_discount_amount, "
+            . "items.unit_discount_percentage, "
             . "items.last_updated "
             . "FROM ciniki_ags_exhibit_items AS eitems "
             . "INNER JOIN ciniki_ags_items AS items ON ("
@@ -214,7 +217,8 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'items', 'fname'=>'id', 
                 'fields'=>array('id', 'name', 'permalink', 'status', 'flags',
-                    'image_id'=>'primary_image_id', 'synopsis', 'description', 'last_updated')),
+                    'image_id'=>'primary_image_id', 'synopsis', 'description', 
+                        'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'last_updated')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
