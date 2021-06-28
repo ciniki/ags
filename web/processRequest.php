@@ -934,10 +934,14 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.190', 'msg'=>'Unable to get members base URL', 'err'=>$rc['err']));
                 }
                 $members_base_url = $ciniki['request']['domain_base_url'] . (isset($rc['base_url']) ? $rc['base_url'] : '');
-                $content = $exhibitor_label . ': '
-                    . "<a href='{$members_base_url}/{$item['customer_permalink']}'>"
-                    . $item['display_name'] 
-                    . '</a>';
+                if( $item['customer_permalink'] != '' ) {
+                    $content = $exhibitor_label . ': '
+                        . "<a href='{$members_base_url}/{$item['customer_permalink']}'>"
+                        . $item['display_name'] 
+                        . '</a>';
+                } else {
+                    $content = $exhibitor_label . ': ' . $item['display_name'];
+                }
                 if( $item['medium'] != '' ) {
                     $content .= '<br/>Medium: ' . $item['medium'];
                 }
