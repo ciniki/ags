@@ -32,7 +32,8 @@ function ciniki_ags_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
             . "items.unit_discount_percentage, "
             . "items.taxtype_id, "
             . "eitems.inventory AS inventory_current_num, "
-            . "exhibits.name AS exhibit_name "
+            . "exhibits.name AS exhibit_name, "
+            . "exhibitors.display_name "
             . "FROM ciniki_ags_exhibit_items AS eitems "
             . "INNER JOIN ciniki_ags_items AS items ON ("
                 . "eitems.item_id = items.id "
@@ -41,6 +42,10 @@ function ciniki_ags_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
             . "INNER JOIN ciniki_ags_exhibits AS exhibits ON ("
                 . "eitems.exhibit_id = exhibits.id "
                 . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_ags_exhibitors AS exhibitors ON ("
+                . "items.exhibitor_id = exhibitors.id "
+                . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND eitems.id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
@@ -65,6 +70,9 @@ function ciniki_ags_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
         $item['limited_units'] = 'yes';
         $item['units_available'] = $item['inventory'];
         $item['notes'] = '';
+        if( $item['display_name'] != '' && stristr($item['description'], $item['display_name']) === false ) {
+            $item['description'] .= ', by ' . $item['display_name']; 
+        }
 
         return array('stat'=>'ok', 'item'=>$item);
     }
