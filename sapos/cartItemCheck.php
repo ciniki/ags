@@ -51,7 +51,7 @@ function ciniki_ags_sapos_cartItemCheck($ciniki, $tnid, $customer, $args) {
             return $rc;
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.217', 'msg'=>'Unable to find item'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.235', 'msg'=>'Unable to find item'));
         }
         $item = $rc['item'];
         if( $item['inventory'] <= 0 ) {
@@ -61,6 +61,6 @@ function ciniki_ags_sapos_cartItemCheck($ciniki, $tnid, $customer, $args) {
         return array('stat'=>'ok');
     }
 
-    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.events.87', 'msg'=>'No event specified.'));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.231', 'msg'=>'No event specified.'));
 }
 ?>

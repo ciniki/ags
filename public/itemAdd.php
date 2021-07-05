@@ -164,7 +164,7 @@ function ciniki_ags_itemAdd(&$ciniki) {
             'notes' => '',
             ), 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.178', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.232', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
         }
     }
 

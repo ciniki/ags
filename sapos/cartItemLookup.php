@@ -15,7 +15,7 @@ function ciniki_ags_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
     if( !isset($args['object']) || $args['object'] == ''
         || !isset($args['object_id']) || $args['object_id'] == '' 
         ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.216', 'msg'=>'No item specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.234', 'msg'=>'No item specified.'));
     }
 
     //

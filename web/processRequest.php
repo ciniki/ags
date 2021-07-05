@@ -628,7 +628,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'formatPrice');
                     $rc = ciniki_ags_web_formatPrice($ciniki, $tnid, $item);
                     if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.199', 'msg'=>'Unable to format price', 'err'=>$rc['err']));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.233', 'msg'=>'Unable to format price', 'err'=>$rc['err']));
                     }
                     $category['items'][$iid]['display_price'] = $rc['display_price'];
                 }

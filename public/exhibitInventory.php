@@ -90,7 +90,7 @@ function ciniki_ags_exhibitInventory($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'indexObjectBaseURL');
     $rc = ciniki_web_indexObjectBaseURL($ciniki, $args['tnid'], 'ciniki.ags.exhibit');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.226', 'msg'=>'Unable to find exhibit URL', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.238', 'msg'=>'Unable to find exhibit URL', 'err'=>$rc['err']));
     }
     if( isset($rc['base_url']) ) {
         $base_url = $rc['base_url'];

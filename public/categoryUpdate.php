@@ -42,7 +42,7 @@ function ciniki_ags_categoryUpdate(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.222', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.236', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
     $category = array(
         'image_id' => 0,
