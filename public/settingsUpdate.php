@@ -67,6 +67,9 @@ function ciniki_ags_settingsUpdate(&$ciniki) {
         'sales-customer-name',
         'sales-pdf-customer-name',
         'namecards-image',
+        'namecards-template',
+        'namecards-artist-prefix',
+        'namecards-include-size',
         );
     //
     // Check each valid setting and see if a new value was passed in the arguments for it.

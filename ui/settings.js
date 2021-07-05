@@ -14,8 +14,20 @@ function ciniki_ags_settings() {
             'sales-customer-name':{'label':'Show Sales Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
             'sales-pdf-customer-name':{'label':'PDF Include Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
-        'image':{'label':'Name Cards Image', 'aside':'yes', 'fields':{
-            'namecards-image':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
+        'image':{'label':'Name Cards', 'aside':'yes', 'fields':{
+            'namecards-image':{'label':'Logo', 'type':'image_id', 'controls':'all', 'history':'no', 'size':'small'},
+            'namecards-template':{'label':'Format', 'type':'select', 'default':'businesscards', 'options':{
+                'businesscards':'Business Cards',
+                'fourbythree':'4 x 3 Cards',
+                }},
+            'namecards-artist-prefix':{'label':'Artist Prefix', 'type':'toggle', 'default':'none', 'toggles':{
+                'none':'None',
+                'by':'By',
+                }},
+            'namecards-include-size':{'label':'Include Size', 'type':'toggle', 'default':'yes', 'toggles':{
+                'no':'No',
+                'yes':'Yes',
+                }},
             }},
     };
     this.main.fieldValue = function(s, i, d) { 
