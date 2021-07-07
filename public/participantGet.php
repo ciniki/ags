@@ -74,7 +74,7 @@ function ciniki_ags_participantGet($ciniki) {
     if( isset($args['action']) && ($args['action'] == 'itempaid' || $args['action'] == 'itemnotpaid') 
         && isset($args['sale_id']) && $args['sale_id'] > 0 
         ) {
-        $strsql = "SELECT id, flags "
+        $strsql = "SELECT id, exhibit_id, item_id, flags "
             . "FROM ciniki_ags_item_sales "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['sale_id']) . "' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -89,6 +89,30 @@ function ciniki_ags_participantGet($ciniki) {
         $sale = $rc['item'];
 
         //
+        // Load the exhibit
+        //
+        $strsql = "SELECT exhibits.id, "
+            . "exhibits.flags, "
+            . "IFNULL(eitems.inventory, '') AS inventory "
+            . "FROM ciniki_ags_exhibits AS exhibits "
+            . "LEFT JOIN ciniki_ags_exhibit_items AS eitems ON ("
+                . "exhibits.id = eitems.exhibit_id "
+                . "AND eitems.item_id = '" . ciniki_core_dbQuote($ciniki, $sale['item_id']) . "' "
+                . "AND eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE exhibits.id = '" . ciniki_core_dbQuote($ciniki, $sale['exhibit_id']) . "' "
+            . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'exhibit');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.239', 'msg'=>'Unable to load exhibit', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['exhibit']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.240', 'msg'=>'Unable to find requested exhibit'));
+        }
+        $exhibit = $rc['exhibit'];
+
+        //
         // Mark sale as paid
         //
         if( $args['action'] == 'itempaid' && ($sale['flags']&0x02) == 0 ) {
@@ -96,6 +120,16 @@ function ciniki_ags_participantGet($ciniki) {
             $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.itemsale', $sale['id'], array('flags'=>($sale['flags']|0x02)), 0x07);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.173', 'msg'=>'', 'err'=>$rc['err']));
+            }
+            //
+            // Check if should be removed from inventory
+            //
+            if( ($exhibit['flags']&0x1000) == 0x1000 && $exhibit['inventory'] != '' && $exhibit['inventory'] <= 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'exhibitItemRemove');
+                $rc = ciniki_ags_exhibitItemRemove($ciniki, $args['tnid'], $sale['exhibit_id'], $sale['item_id']);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.241', 'msg'=>'Unable to remove item', 'err'=>$rc['err']));
+                }
             }
         }
         elseif( $args['action'] == 'itemnotpaid' && ($sale['flags']&0x02) == 0x02 ) {

@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This method will add a new exhibit for the tenant.
+// This function will remove an item from an exhibit
 //
 // Arguments
 // ---------
@@ -13,44 +13,16 @@
 // Returns
 // -------
 //
-function ciniki_ags_exhibitItemDelete(&$ciniki) {
-    //
-    // Find all the required and optional arguments
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
-    $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
-        'exhibit_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Exhibit'),
-        'item_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Item'),
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    $args = $rc['args'];
+function ciniki_ags_exhibitItemRemove(&$ciniki, $tnid, $exhibit_id, $item_id) {
 
     //
-    // Check access to tnid as owner
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'checkAccess');
-    $rc = ciniki_ags_checkAccess($ciniki, $args['tnid'], 'ciniki.ags.exhibitItemDelete');
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-
-    //
-    // Remove the item from the exhibit
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'exhibitItemRemove');
-    return ciniki_ags_exhibitItemRemove($ciniki, $args['tnid'], $args['exhibit_id'], $args['item_id']);
-
-/*    //
     // Check if the item is already a part of the exhibit
     //
     $strsql = "SELECT id, exhibit_id, item_id, inventory "
         . "FROM ciniki_ags_exhibit_items "
-        . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
-        . "AND item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
-        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $exhibit_id) . "' "
+        . "AND item_id = '" . ciniki_core_dbQuote($ciniki, $item_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
     if( $rc['stat'] != 'ok' ) {
@@ -65,11 +37,11 @@ function ciniki_ags_exhibitItemDelete(&$ciniki) {
         . "FROM ciniki_sapos_invoice_items AS items "
         . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
             . "items.invoice_id = invoices.id "
-            . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE items.object = 'ciniki.ags.exhibititem' "
         . "AND items.object_id = '" . ciniki_core_dbQuote($ciniki, $exhibititem['id']) . "' "
-        . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND invoices.invoice_type IN (10, 20, 30, 40) "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -94,8 +66,8 @@ function ciniki_ags_exhibitItemDelete(&$ciniki) {
     //
     $strsql = "SELECT id AS item_id, code, name, unit_amount, fee_percent "
         . "FROM ciniki_ags_items "
-        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
-        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $item_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
     if( $rc['stat'] != 'ok' ) {
@@ -107,20 +79,8 @@ function ciniki_ags_exhibitItemDelete(&$ciniki) {
     $item = $rc['item'];
     $item['unit_amount_display'] = '$' . number_format($item['unit_amount'], 2);
     
-    //
-    // Start transaction
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
-    $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.ags');
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.ags.exhibititem', $exhibititem['id'], 0x04);
+    $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.ags.exhibititem', $exhibititem['id'], 0x04);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.26', 'msg'=>'Unable to remove item', 'err'=>$rc['err']));
     }
@@ -130,7 +90,7 @@ function ciniki_ags_exhibitItemDelete(&$ciniki) {
     //
     $dt = new DateTime('now', new DateTimezone('UTC'));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.ags.itemlog', array(
+    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.ags.itemlog', array(
         'item_id' => $exhibititem['item_id'],
         'action' => 90,
         'actioned_id' => $exhibititem['exhibit_id'],
@@ -143,21 +103,9 @@ function ciniki_ags_exhibitItemDelete(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.177', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
     }
 
-    //
-    // Commit the transaction
-    //
-    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.ags');
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-
-    //
-    // Update the last_change date in the tenant modules
-    // Ignore the result, as we don't want to stop user updates if this fails.
-    //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
-    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'ags');
-*/
-//    return array('stat'=>'ok', 'item'=>$item);
+    ciniki_tenants_updateModuleChangeDate($ciniki, $tnid, 'ciniki', 'ags');
+
+    return array('stat'=>'ok', 'item'=>$item);
 }
 ?>

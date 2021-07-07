@@ -508,6 +508,7 @@ function ciniki_ags_main() {
             'flags8':{'label':'Show Participant Bios', 'type':'flagtoggle', 'field':'flags', 'bit':0x80, 'default':'on',
                 'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
                 },
+            'flags13':{'label':'Remove on Payout', 'type':'flagtoggle', 'field':'flags', 'bit':0x1000, 'default':'off'},
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},
             }},
