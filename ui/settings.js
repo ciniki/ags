@@ -28,6 +28,7 @@ function ciniki_ags_settings() {
                 'no':'No',
                 'yes':'Yes',
                 }},
+            'namecards-last-line':{'label':'Last Line', 'type':'text'},
             }},
     };
     this.main.fieldValue = function(s, i, d) { 

@@ -104,7 +104,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
 
     $cards_per_page = 10;
     if( $template == 'fourbythree' ) {
-        $y_offset = 15;
+        $y_offset = 12;
         $cards_per_page = 6;
         $x_offset = 12;
         $card_width = 84;
@@ -173,39 +173,43 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
             }
 
             $pdf->SetFont($font_title, 'BI', 14);
-            $pdf->Cell(75, 8, $item['name'], 0, 1, 'L', 0);
+            $pdf->Cell($card_width, 8, $item['name'], 0, 1, 'L', 0, '', 1);
 
             $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
             $pdf->SetFont($font_other, '', 13);
-            $pdf->Cell(75, 6, $artist_prefix . $exhibitor['display_name'], 0, 1, 'L', 0);
+            $pdf->Cell($card_width, 6, $artist_prefix . $exhibitor['display_name'], 0, 1, 'L', 0, '', 1);
 
             if( $item['size'] != '' && $include_size == 'yes' ) {
                 $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
                 $pdf->SetFont($font_other, '', 13);
-                $pdf->Cell(75, 6, $item['size'], 0, 1, 'L', 0);
+                $pdf->Cell($card_width, 6, $item['size'], 0, 1, 'L', 0, '', 1);
             }
 
             if( $item['medium'] != '' ) {
                 $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
                 $pdf->SetFont($font_other, '', 13);
-                $pdf->Cell(75, 6, $item['medium'], 0, 1, 'L', 0);
+                $pdf->Cell($card_width, 6, $item['medium'], 0, 1, 'L', 0);
             }
 
             if( $template == 'fourbythree' && isset($card_image) ) {
-                $pdf->SetY($y_offset + ($card_height-8) + ($y*$card_height) + ($y*$y_margin));
+                $pdf->SetY($y_offset + ($card_height-10) + ($y*$card_height) + ($y*$y_margin));
                 $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
                 if( ($item['flags']&0x01) == 0x01 && $item['unit_amount'] != 0 ) {
                     $pdf->SetFont($font_other, '', 13);
                     if( is_int($item['unit_amount']) ) {
-                        $pdf->Cell(50, 6, '$' . number_format($item['unit_amount'], 0), 0, 0, 'L', 0);
+                        $pdf->Cell(50, 6, '$' . number_format($item['unit_amount'], 0), 0, 1, 'L', 0);
                     } else {
-                        $pdf->Cell(50, 6, '$' . number_format($item['unit_amount'], 2), 0, 0, 'L', 0);
+                        $pdf->Cell(50, 6, '$' . number_format($item['unit_amount'], 2), 0, 1, 'L', 0);
                     }
                 } else {
-                    $pdf->Cell(50, 6, 'NFS', 0, 0, 'L', 0);
+                    $pdf->Cell(50, 6, 'NFS', 0, 1, 'L', 0);
+                }
+                if( isset($settings['namecards-last-line']) && $settings['namecards-last-line'] != '' ) {
+                    $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
+                    $pdf->Cell($card_width-20, 6, $settings['namecards-last-line'], 0, 0, 'L', 0, '', 1);
                 }
                 if( $item['code'] != '' ) {
-                    $pdf->SetY($y_offset + ($card_height-5) + ($y*$card_height) + ($y*$y_margin));
+                    $pdf->SetY($y_offset + ($card_height-1) + ($y*$card_height) + ($y*$y_margin));
                     $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin) + $card_width - 25);
                     $pdf->SetFont($font_other, '', 9);
                     $pdf->Cell(25, 6, $item['code'], 0, 1, 'R', 0);
