@@ -55,6 +55,7 @@ function ciniki_ags_objects(&$ciniki) {
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'start_date' => array('name'=>'', 'default'=>''),
             'end_date' => array('name'=>'', 'default'=>''),
+            'reception_info' => array('name'=>'Reception Info', 'default'=>''),
             'primary_image_id' => array('name'=>'', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis' => array('name'=>'', 'default'=>''),
             'description' => array('name'=>'', 'default'=>''),

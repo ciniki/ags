@@ -1,0 +1,5 @@
+#
+# Add field for opening reception
+#
+ALTER TABLE ciniki_ags_exhibits ADD COLUMN reception_info varchar(150) not null AFTER end_date;
+ALTER TABLE ciniki_ags_exhibits COMMENT='v1.02';

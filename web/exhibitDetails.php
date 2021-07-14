@@ -24,6 +24,7 @@ function ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $permalink) {
         . "IF(exhibits.end_date = '0000-00-00', '', DATE_FORMAT(end_date, '%M')) AS end_month, "
         . "IF(exhibits.end_date = '0000-00-00', '', DATE_FORMAT(end_date, '%D')) AS end_day, "
         . "IF(exhibits.end_date = '0000-00-00', '', DATE_FORMAT(end_date, '%Y')) AS end_year, "
+        . "exhibits.reception_info, "
         . "exhibits.synopsis, "
         . "exhibits.description, "
         . "exhibits.primary_image_id, "

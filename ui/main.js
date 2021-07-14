@@ -511,6 +511,7 @@ function ciniki_ags_main() {
             'flags13':{'label':'Remove on Payout', 'type':'flagtoggle', 'field':'flags', 'bit':0x1000, 'default':'off'},
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},
+            'reception_info':{'label':'Opening Reception', 'type':'text'},
             }},
         '_types':{'label':'Type', 'aside':'yes', 'fields':{
             'types':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new exhibit type: '},
