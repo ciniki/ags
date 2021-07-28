@@ -80,6 +80,7 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
     //
     // Start transaction
     //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
@@ -108,7 +109,6 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
     } else {
         $args['fee_percent'] = $item['fee_percent'];
         $args['inventory'] = $args['quantity'];
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.ags.exhibititem', $args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.179', 'msg'=>'Unable to add item', 'err'=>$rc['err']));
