@@ -173,7 +173,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
             }
 
             $pdf->SetFont($font_title, 'BI', 14);
-            $pdf->Cell($card_width, 8, $item['name'], 0, 1, 'L', 0, '', 1);
+            $pdf->Cell($card_width-5, 8, $item['name'], 0, 1, 'L', 0, '', 1);
 
             $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
             $pdf->SetFont($font_other, '', 13);
