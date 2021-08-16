@@ -34,7 +34,7 @@
 #                               0x04 - Sell Online
 #                               0x08 - Hide Price
 #                               0x10 - Tagged Item (print barcode sticker for tag)
-#                               0x20 -
+#                               0x20 - Donated Item (Generate donation receipt)
 #                               0x40 -
 #                               0x80 -
 #
@@ -49,6 +49,8 @@
 # taxtype_id:               The ID of the tax type this item. Only used when ciniki.taxes module is enabled. **future**
 #
 # shipping_profile_id:      The ID of the shipping profile for this item. The shipping profiles come from ciniki.sapos.
+#
+# donor_customer_id:        The ID of the customer in ciniki.customers who donated the item.
 #
 # primary_image_id:         The ID of the primary image for the item.
 # synopsis:                 The synopsis of the item.
@@ -99,4 +101,4 @@ create table ciniki_ags_items (
     unique index (code, tnid),
     unique index (permalink, tnid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

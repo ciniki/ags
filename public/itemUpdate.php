@@ -30,6 +30,7 @@ function ciniki_ags_itemUpdate(&$ciniki) {
         'fee_percent'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'percent', 'name'=>'Fee Percent'),
         'taxtype_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Tax'),
         'shipping_profile_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Shipping Profile'),
+        'donor_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Donor'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),

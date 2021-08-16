@@ -26,6 +26,7 @@ function ciniki_ags_maps(&$ciniki) {
             0x02=>'Visible',
             0x04=>'Sold Online',
             0x10=>'Tagged',
+            0x20=>'Donated',
         ),
     );
     $maps['participant'] = array(

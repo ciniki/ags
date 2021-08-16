@@ -403,6 +403,7 @@ function ciniki_ags_participantGet($ciniki) {
             . "sales.tenant_amount, "
             . "sales.exhibitor_amount, "
             . "sales.total_amount, "
+            . "sales.receipt_number, "
             . "IFNULL(invoices.billing_name, '') AS billing_name "
             . "FROM ciniki_ags_items AS items "
             . "INNER JOIN ciniki_ags_item_sales AS sales ON ("
@@ -420,7 +421,7 @@ function ciniki_ags_participantGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'sales', 'fname'=>'id', 'fields'=>array('id', 'exhibit_id', 'sell_date', 'code', 'name', 'quantity',
-                'flags', 'tenant_amount', 'exhibitor_amount', 'total_amount', 'billing_name'),
+                'flags', 'tenant_amount', 'exhibitor_amount', 'total_amount', 'receipt_number', 'billing_name'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

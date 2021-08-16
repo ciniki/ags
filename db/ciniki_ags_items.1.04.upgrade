@@ -1,0 +1,5 @@
+#
+# Add field to store donor customer id if "Donation Receipts" is enabled in flags
+#
+ALTER TABLE ciniki_ags_items ADD COLUMN donor_customer_id int not null AFTER shipping_profile_id;
+ALTER TABLE ciniki_ags_items COMMENT='v1.04';

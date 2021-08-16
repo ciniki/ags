@@ -128,6 +128,7 @@ function ciniki_ags_objects(&$ciniki) {
             'fee_percent' => array('name'=>'Fee Percent', 'default'=>'0'),
             'taxtype_id' => array('name'=>'Tax', 'ref'=>'ciniki.taxes.type', 'default'=>'0'),
             'shipping_profile_id' => array('name'=>'Shipping Profile', 'ref'=>'ciniki.sapos.shippingprofile', 'default'=>'0'),
+            'donor_customer_id' => array('name'=>'Donor', 'ref'=>'ciniki.customers.customer', 'default'=>'0'),
             'primary_image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis' => array('name'=>'Synopsis', 'default'=>''),
             'description' => array('name'=>'Description', 'default'=>''),
@@ -158,6 +159,7 @@ function ciniki_ags_objects(&$ciniki) {
             'exhibitor_amount' => array('name'=>'Exhibitor Amount', 'default'=>'0'),
             'exhibitor_tax_amount' => array('name'=>'Exhibitor Tax Amount', 'default'=>'0'),
             'total_amount' => array('name'=>'Total Sale Amount', 'default'=>'0'),
+            'receipt_number' => array('name'=>'Donation Receipt Number', 'default'=>'0'),
             ),
         'history_table' => 'ciniki_ags_history',
         );

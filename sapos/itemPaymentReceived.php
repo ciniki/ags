@@ -62,6 +62,7 @@ function ciniki_ags_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
             . "items.unit_discount_percentage, "
             . "items.taxtype_id, "
             . "items.fee_percent, "
+            . "items.flags, "
             . "eitems.inventory AS quantity, "
             . "exhibits.name AS exhibit_name "
             . "FROM ciniki_ags_exhibit_items AS eitems "
@@ -86,6 +87,18 @@ function ciniki_ags_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.134', 'msg'=>'Unable to find item'));
         }
         $item = $rc['item'];
+
+        //
+        // Check if a donation receipt number should be generated
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0100) && ($item['flags']&0x20) == 0x20 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'donationReceiptNumber');
+            $rc = ciniki_sapos_hooks_donationReceiptNumber($ciniki, $tnid, array());
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.243', 'msg'=>'Unable to get receipt number', 'err'=>$rc['err']));
+            }
+            $receipt_number = $rc['receipt_number'];
+        }
 
         //
         // Create the sales entry
@@ -127,6 +140,7 @@ function ciniki_ags_sapos_itemPaymentReceived($ciniki, $tnid, $args) {
             'exhibitor_amount' => bcsub($args['total_amount'], $tenant_amount, 6),
             'exhibitor_tax_amount' => $exhibitor_tax_amount,
             'total_amount' => $args['total_amount'],
+            'receipt_number' => isset($receipt_number) ? $receipt_number : '',
             );
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.ags.itemsale', $sales_item, 0x04);

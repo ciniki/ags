@@ -78,7 +78,7 @@ function ciniki_ags_itemGet($ciniki) {
             //
             // Get the exhibitor code
             //
-            $strsql = "SELECT id, code, display_name "
+            $strsql = "SELECT id, customer_id, code, display_name "
                 . "FROM ciniki_ags_exhibitors "
                 . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -91,6 +91,7 @@ function ciniki_ags_itemGet($ciniki) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.157', 'msg'=>'Unable to find requested exhibitor'));
             }
             $exhibitor = $rc['exhibitor'];
+            $donor_customer_id = $rc['exhibitor']['customer_id'];
 
             //
             // Get the next number
@@ -110,27 +111,57 @@ function ciniki_ags_itemGet($ciniki) {
             } else {
                 $code = $exhibitor['code'] . '-0001';
             }
+
         }
-        $item = array('id'=>0,
-            'exhibitor_id'=>(isset($args['exhibitor_id']) ? $args['exhibitor_id'] : ''),
-            'exhibitor_code'=>'',
-            'code'=>$code,
-            'name'=>'',
-            'permalink'=>'',
-            'status'=>'50',
-            'flags'=>0x10,
-            'unit_amount'=>'',
-            'unit_discount_amount'=>'0',
-            'unit_discount_percentage'=>'0',
-            'fee_percent'=>(isset($settings['defaults-item-fee-percent']) ? $settings['defaults-item-fee-percent'] : ''),
-            'taxtype_id'=>'',
-            'shipping_profile_id'=>0,
-            'primary_image_id'=>'0',
-            'synopsis'=>'',
-            'description'=>'',
-            'quantity'=>1,
-            'notes'=>'',
+        $item = array(
+            'id' => 0,
+            'exhibitor_id' => (isset($args['exhibitor_id']) ? $args['exhibitor_id'] : ''),
+            'exhibitor_code' => '',
+            'code' => $code,
+            'name' => '',
+            'permalink' => '',
+            'status' => '50',
+            'flags' => 0x10,
+            'unit_amount' => '',
+            'unit_discount_amount' => '0',
+            'unit_discount_percentage' => '0',
+            'fee_percent' => (isset($settings['defaults-item-fee-percent']) ? $settings['defaults-item-fee-percent'] : ''),
+            'taxtype_id' => '',
+            'shipping_profile_id' => 0,
+            'primary_image_id' => '0',
+            'synopsis' => '',
+            'description' => '',
+            'quantity' => 1,
+            'notes' => '',
+            'donor_customer_id' => (isset($donor_customer_id) ? $donor_customer_id : 0),
         );
+
+        //
+        // Check if donor info should be loaded
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0100) && isset($donor_customer_id) && $donor_customer_id > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], array(
+                'customer_id' => $donor_customer_id, 
+                'name' => 'yes', 
+                'addresses' => 'billing',
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['customer']) ) {
+                $item['donor_details'][0] = array(
+                    'label' => 'Name',
+                    'value' => $rc['customer']['display_name'],
+                    );
+                if( isset($rc['customer']['addresses'][0]['joined']) ) {
+                    $item['donor_details'][1] = array(
+                        'label' => 'Address',
+                        'value' => $rc['customer']['addresses'][0]['joined'],
+                        );
+                }
+            }
+        }
     }
 
     //
@@ -151,6 +182,7 @@ function ciniki_ags_itemGet($ciniki) {
             . "ciniki_ags_items.fee_percent, "
             . "ciniki_ags_items.taxtype_id, "
             . "ciniki_ags_items.shipping_profile_id, "
+            . "ciniki_ags_items.donor_customer_id, "
             . "ciniki_ags_items.primary_image_id, "
             . "ciniki_ags_items.synopsis, "
             . "ciniki_ags_items.description, "
@@ -169,7 +201,7 @@ function ciniki_ags_itemGet($ciniki) {
             array('container'=>'items', 'fname'=>'id', 
                 'fields'=>array('exhibitor_id', 'exhibitor_code', 'code', 'name', 'permalink', 'status', 'flags', 
                     'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 
-                    'taxtype_id', 'shipping_profile_id',
+                    'taxtype_id', 'shipping_profile_id', 'donor_customer_id',
                     'primary_image_id', 'synopsis', 'description', 'tag_info', 
                     'creation_year', 'medium', 'size', 'current_condition', 'notes'),
                 ),
@@ -183,6 +215,54 @@ function ciniki_ags_itemGet($ciniki) {
         $item = $rc['items'][0];
         $item['unit_amount'] = '$' . number_format($item['unit_amount'], 2);
         $item['fee_percent'] = (float)($item['fee_percent']*100) . '%';
+
+        //
+        // if the donor is not zero, load the details
+        //
+        $item['donor_details'] = array();
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0100) ) {
+            $donor_customer_id = $item['donor_customer_id'];
+            if( $donor_customer_id == 0 ) {
+                $strsql = "SELECT customer_id "
+                    . "FROM ciniki_ags_exhibitors "
+                    . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['exhibitor_id']) . "' "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'customer');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.242', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+                }
+                if( isset($rc['customer']['customer_id']) ) {
+                    $donor_customer_id = $rc['customer']['customer_id'];
+                }
+            }
+            //
+            // Load the customer details
+            //
+            if( $donor_customer_id > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+                $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], array(
+                    'customer_id' => $donor_customer_id, 
+                    'name' => 'yes', 
+                    'addresses' => 'billing',
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['customer']) ) {
+                    $item['donor_details'][0] = array(
+                        'label' => 'Name',
+                        'value' => $rc['customer']['display_name'],
+                        );
+                    if( isset($rc['customer']['addresses'][0]['joined']) ) {
+                        $item['donor_details'][1] = array(
+                            'label' => 'Address',
+                            'value' => $rc['customer']['addresses'][0]['joined'],
+                            );
+                    }
+                }
+            }
+        }
 
         //
         // Get the categories

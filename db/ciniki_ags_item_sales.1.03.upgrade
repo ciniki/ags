@@ -1,0 +1,5 @@
+#
+# Adding extra fields for donations
+#
+ALTER TABLE ciniki_ags_item_sales ADD COLUMN receipt_number varchar(50) not null AFTER total_amount;
+ALTER TABLE ciniki_ags_item_sales COMMENT='v1.03';

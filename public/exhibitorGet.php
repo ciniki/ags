@@ -202,8 +202,13 @@ function ciniki_ags_exhibitorGet($ciniki) {
     // Lookup the details of the customer
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
-    $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
-        array('customer_id'=>$exhibitor['customer_id'], 'name'=>'no', 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
+    $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], array(
+        'customer_id' => $exhibitor['customer_id'], 
+        'name' => 'no', 
+        'phones' => 'yes', 
+        'emails' => 'yes', 
+        'addresses' => 'yes',
+        ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -290,7 +295,8 @@ function ciniki_ags_exhibitorGet($ciniki) {
         . "DATE_FORMAT(sales.sell_date, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS sell_date, "
         . "sales.tenant_amount, "
         . "sales.exhibitor_amount, "
-        . "sales.total_amount "
+        . "sales.total_amount, "
+        . "sales.receipt_number "
         . "FROM ciniki_ags_items AS items "
         . "INNER JOIN ciniki_ags_item_sales AS sales ON ("
             . "items.id = sales.item_id "
@@ -304,7 +310,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'sales', 'fname'=>'id', 'fields'=>array('id', 'exhibit_id', 'item_id', 'sell_date', 
             'code', 'name', 
-            'flags', 'tenant_amount', 'exhibitor_amount', 'total_amount'),
+            'flags', 'tenant_amount', 'exhibitor_amount', 'total_amount', 'receipt_number'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

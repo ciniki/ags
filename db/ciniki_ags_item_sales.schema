@@ -32,6 +32,9 @@
 # exhibitor_tax_amount:     The tax portion of the total amount that goes to the exhibitor.
 # total_amount:             The total amount of the sale, this may be multiple quantity when selling books or cards.
 #
+# receipt_number:           The donation receipt number. This must be requested from ciniki.sapos so the receipt
+#                           numbers stay in sequence.
+#
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
 #
@@ -50,10 +53,11 @@ create table ciniki_ags_item_sales (
     exhibitor_amount decimal(19,4) not null,
     exhibitor_tax_amount decimal(19,4) not null,
     total_amount decimal(19,4) not null,
+    receipt_number varchar(50) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     unique index (item_id, exhibit_id, invoice_id),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.02';
+) ENGINE='InnoDB', COMMENT='v1.03';

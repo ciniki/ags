@@ -389,7 +389,7 @@ function ciniki_ags_main() {
             return 'M.ciniki_ags_main.participant.open(\'M.ciniki_ags_main.exhibit.open();\',\'' + d.id + '\');';
         }
         if( s == 'inventory' || s == 'inventory_search' ) {
-            return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibit.open();\',\'' + d.item_id + '\',0,0);';
+            return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibit.open();\',\'' + d.item_id + '\',0,M.ciniki_ags_main.exhibit.exhibit_id);';
         }
         if( s == 'categories' ) {
             return 'M.ciniki_ags_main.category.open(\'M.ciniki_ags_main.exhibit.open();\',\'' + d.permalink + '\',0,0);';
@@ -454,7 +454,7 @@ function ciniki_ags_main() {
         });
     }
     this.exhibit.exhibitInventory = function() {
-        M.api.openFile('ciniki.ags.exhibitInventory', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
+        M.api.openPDF('ciniki.ags.exhibitInventory', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
     }
     this.exhibit.exhibitPriceList = function() {
         M.api.openPDF('ciniki.ags.exhibitPriceList', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id});
@@ -947,6 +947,11 @@ function ciniki_ags_main() {
             return '';
         }
         if( s == 'pending_payouts' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'yes' ) {
+            if( j == 7 && d.receipt_number != '' ) {
+                return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>'
+                    + ' <button onclick="M.ciniki_ags_main.participant.donationReceipt(event,' + d.id + ');">Donation Receipt</button>'
+                    + '';
+            }
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
@@ -963,6 +968,11 @@ function ciniki_ags_main() {
             }
         }
         if( s == 'pending_payouts' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'no' ) {
+            if( j == 6 && d.receipt_number != '' ) {
+                return '<button onclick="M.ciniki_ags_main.participant.itemPaid(event,' + d.id + ');">Paid</button>'
+                    + ' <button onclick="M.ciniki_ags_main.participant.donationReceipt(event,' + d.id + ');">Donation Receipt</button>'
+                    + '';
+            }
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
@@ -978,6 +988,11 @@ function ciniki_ags_main() {
             }
         }
         if( s == 'paid_sales' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'yes' ) {
+            if( j == 7 && d.receipt_number != '' ) {
+                return '<button onclick="M.ciniki_ags_main.participant.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>'
+                    + ' <button onclick="M.ciniki_ags_main.participant.donationReceipt(event,' + d.id + ');">Donation Receipt</button>'
+                    + '';
+            }
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
@@ -990,6 +1005,11 @@ function ciniki_ags_main() {
             }
         } 
         if( s == 'paid_sales' && M.modSettingSet('ciniki.ags', 'sales-customer-name') == 'no' ) {
+            if( j == 6 && d.receipt_number != '' ) {
+                return '<button onclick="M.ciniki_ags_main.participant.itemNotPaid(event,' + d.id + ');">Not&nbsp;Paid</button>'
+                    + ' <button onclick="M.ciniki_ags_main.participant.donationReceipt(event,' + d.id + ');">Donation Receipt</button>'
+                    + '';
+            }
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
@@ -1252,6 +1272,10 @@ function ciniki_ags_main() {
         this.savePos();
         M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id, 'action':'itemnotpaid', 'sale_id':i}, this.openFinish);
     }
+    this.participant.donationReceipt = function(e, i) {
+        e.stopPropagation();
+        M.api.openPDF('ciniki.ags.saleDonationPDF', {'tnid':M.curTenantID, 'sale_id':i});
+    }
     this.participant.printBarcodes = function() {
         var row = this.formValue('start_row');
         var col = this.formValue('start_col');
@@ -1265,16 +1289,16 @@ function ciniki_ags_main() {
                 codes += (codes != '' ? ',' : '') + this.data.inventory[i].code;
             }
         }
-        M.api.openFile('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip, 'halfsize':hs, 'codes':codes});
+        M.api.openPDF('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip, 'halfsize':hs, 'codes':codes});
     }
     this.participant.exhibitInventoryPDF = function() {
-        M.api.openFile('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
+        M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
     }
     this.participant.riskManagementPDF = function() {
-        M.api.openFile('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id, 'template':'riskmanagement'});
+        M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id, 'template':'riskmanagement'});
     }
     this.participant.unpaidSalesPDF = function() {
-        M.api.openFile('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
+        M.api.openPDF('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
     }
     this.participant.addCustomer = function(cb, eid) {
         if( cb != null ) { this.cb = cb; }
@@ -2072,10 +2096,10 @@ function ciniki_ags_main() {
         var row = this.formValue('start_row');
         var col = this.formValue('start_col');
         var tip = this.formValue('tag_info_price');
-        M.api.openFile('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip});
+        M.api.openPDF('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip});
     }
     this.exhibitor.unpaidSalesPDF = function() {
-        M.api.openFile('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id});
+        M.api.openPDF('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id});
     }
     this.exhibitor.itemPaid = function(e, i) {
         e.stopPropagation();
@@ -2285,7 +2309,16 @@ function ciniki_ags_main() {
                 'complex_options':{'value':'id', 'name':'name'},
                 'visible':function() {return (M.modOn('ciniki.taxes') ? 'yes' :'no'); },
                 },
+            'flags6':{'label':'Donated', 'type':'flagtoggle', 'default':'off', 'field':'flags', 'bit':0x20,
+                'visible':function() { return M.modFlagSet('ciniki.ags', 0x0100); },
+                'on_sections':['donor_details'],
+                },
             }},
+        'donor_details':{'label':'Donor', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 'visible':'hidden',
+            'cellClasses':['label', ''],
+            'changeTxt':'Change Donor',
+            'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_ags_main.item.show();\',\'mc\',{\'customer_id\':M.ciniki_ags_main.item.data.donor_customer_id, \'next\':\'M.ciniki_ags_main.item.updateDonor\'});',
+            },
         'exhibit':{'label':'Inventory', 'aside':'yes', 
             'visible':function() { return M.ciniki_ags_main.item.item_id == 0 && M.ciniki_ags_main.item.exhibit_id > 0 ? 'yes' : 'no'; },
             'fields':{
@@ -2349,6 +2382,12 @@ function ciniki_ags_main() {
         return 'M.ciniki_ags_main.item.save("M.ciniki_ags_main.itemimage.open(\'M.ciniki_ags_main.item.open();\',' + d.id + ',M.ciniki_ags_main.item.item_id);");';
     }
     this.item.cellValue = function(s, i, j, d) {
+        if( s == 'donor_details' ) {
+            switch(j) {
+                case 0: return d.label;
+                case 1: return d.value;
+            }
+        }
         if( s == 'inventory' ) {
             switch(j) {
                 case 0: return d.exhibit_name;
@@ -2372,6 +2411,46 @@ function ciniki_ags_main() {
 //            return 'event.stopPropagation(); M.ciniki_ags_main.item.toggleFormFieldHistory(event, \'price\',\'flags\');';
 //        }
         return '';
+    }
+    this.item.rowFn = function(s, i, d) {
+        return '';
+    }
+    this.item.updateDonor = function(cid) {
+        if( cid != null ) {
+            if( this.item_id > 0 ) {
+                M.api.getJSONCb('ciniki.ags.itemUpdate', {'tnid':M.curTenantID, 'item_id':this.item_id, 'donor_customer_id':cid}, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_ags_main.item.refreshDonor();
+                });
+            } else {
+                var c = this.serializeForm('yes');
+                M.api.postJSONCb('ciniki.ags.itemAdd', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'exhibit_id':this.exhibit_id, 'donor_customer_id':cid}, c, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_ags_main.item.item_id = rsp.id;
+                    M.ciniki_ags_main.item.open();
+                });
+            }
+        } else {
+            this.show();
+        }
+    }
+    this.item.refreshDonor = function() {
+        M.api.getJSONCb('ciniki.ags.itemGet', {'tnid':M.curTenantID, 'item_id':this.item_id, 'exhibitor_id':this.exhibitor_id, 'exhibit_id':this.exhibit_id, 'images':'yes'}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_ags_main.item;
+            p.data.donor_details = rsp.item.donor_details;
+            p.refreshSection('donor_details');
+            p.show();
+        });
     }
     this.item.inventoryUpdate = function(event,ei_id) {
         var i = prompt('Enter new inventory quantity: ');
@@ -2723,6 +2802,106 @@ function ciniki_ags_main() {
     }
     this.sales.addClose('Back');
 
+    //
+    // The panel to list the donations
+    //
+    this.donations = new M.panel('Donations Report', 'ciniki_ags_main', 'donations', 'mc', 'xlarge narrowaside', 'sectioned', 'ciniki.ags.main.donations');
+    this.donations.data = {
+        'start_date':'',
+        'end_date':'',
+        'paid_status':2,
+        'exhibitor_id':0,
+        };
+    this.donations.nplist = [];
+    this.donations.etype = '';
+    this.donations.sections = {
+        '_tabs':this.menutabs,
+        '_filter':{'label':'Filter', 'aside':'yes', 'fields':{
+            'start_date':{'label':'Start', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.open'},
+            'end_date':{'label':'End', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.open'},
+            'exhibitor_id':{'label':'Exhibitor', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_ags_main.sales.open'},
+            }},
+        '_buttons':{'label':'', 'aside':'yes', 'buttons':{
+            'receiptspdf':{'label':'Donation Receipts (PDF)', 'fn':'M.ciniki_ags_main.donations.receiptsPDF();'},
+            }},
+        'sales':{'label':'Sales', 'type':'simplegrid', 'num_cols':8,
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'text', 'date', 'number', 'number', 'number'],
+            'headerValues':['Exhibitor', 'Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals', ''],
+            },
+    }
+    this.donations.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.donations.cellValue = function(s, i, j, d) {
+        if( s == 'sales' ) {
+            switch(j) {
+                case 0: return d.display_name;
+                case 1: return d.code;
+                case 2: return d.name;
+                case 3: return d.sell_date_display;
+                case 4: 
+                    if( (M.userPerms&0x01) == 0x01 || M.curTenant.permissions.owners != null || M.curTenant.permissions.resellers != null ) {
+                        return d.tenant_amount_display + '<span class="faicon edit">&#xf040;</span>';
+                    }
+                    return d.tenant_amount_display;
+                case 5: return d.exhibitor_amount_display;
+                case 6: return d.total_amount_display;
+                case 7: 
+                    return '<button onclick="M.ciniki_ags_main.donations.receiptPDF(event,' + d.id + ');">Receipt&nbsp;#' + d.receipt_number + '</button>';
+            }
+        }
+    }
+    this.donations.footerValue = function(s, i, d) {
+        if( s == 'sales' ) {
+            switch(i) {
+                case 0: return '';
+                case 1: return '';
+                case 2: return '';
+                case 3: return '';
+                case 4: return this.data.totals.tenant_amount_display;
+                case 5: return this.data.totals.exhibitor_amount_display;
+                case 6: return this.data.totals.total_amount_display;
+            }
+            return '';
+        }
+        return null;
+    }
+    this.donations.rowFn = function(s, i, d) {
+        return '';
+    }
+    this.donations.receiptPDF = function(e, i) {
+        e.stopPropagation();
+        this.savePos();
+        M.api.openPDF('ciniki.ags.saleDonationPDF', {'tnid':M.curTenantID, 'sale_id':i});
+    }
+    this.donations.receiptsPDF = function(e, i) {
+        var args = {'tnid':M.curTenantID};
+        args['start_date'] = this.formValue('start_date');
+        args['end_date'] = this.formValue('end_date');
+        args['exhibitor_id'] = this.formValue('exhibitor_id');
+        args['action'] = 'receiptspdf';
+        M.api.openPDF('ciniki.ags.donations', args);
+    }
+    this.donations.openFinish = function(rsp) {
+        if( rsp.stat != 'ok' ) {
+            M.api.err(rsp);
+            return false;
+        }
+        var p = M.ciniki_ags_main.donations;
+        p.data = rsp;
+        p.sections._filter.fields.exhibitor_id.options = rsp.exhibitors;
+        p.refresh();
+        p.show();
+    }
+    this.donations.open = function(cb) {
+        if( cb != null ) { this.cb = cb; }
+        var c = {'start_date':'', 'end_date':''};
+        if( M.gE(this.panelUID + '_start_date') != null ) {
+            c = this.serializeForm('yes');
+        }
+        M.api.postJSONCb('ciniki.ags.donations', {'tnid':M.curTenantID}, c, this.openFinish);
+    }
+    this.donations.addClose('Back');
+
 
     //
     // Start the app
@@ -2780,6 +2959,9 @@ function ciniki_ags_main() {
             this.menutabs.tabs.locations = {'label':'Locations', 'fn':'M.ciniki_ags_main.switchTab("locations");'};
             this.menutabs.tabs.exhibitors = {'label':'Exhibitors', 'fn':'M.ciniki_ags_main.switchTab("exhibitors");'};
             this.menutabs.tabs.sales = {'label':'Sales', 'fn':'M.ciniki_ags_main.switchTab("sales");'};
+            if( M.modFlagOn('ciniki.ags', 0x0100) ) {
+                this.menutabs.tabs.donations = {'label':'Donations', 'fn':'M.ciniki_ags_main.switchTab("donations");'};
+            }
             if( this.menutabs.tabs[this.menutabs.selected] == null ) {
                 this.menutabs.selected = first_tab;
             }
@@ -2813,6 +2995,8 @@ function ciniki_ags_main() {
         this.exhibits.cb = cb;
         this.locations.cb = cb;
         this.exhibitors.cb = cb;
+        this.sales.cb = cb;
+        this.donations.cb = cb;
         if( this[this.menutabs.selected] == null ) {
             this.exhibits.open(null,this.menutabs.selected);
         } else {
