@@ -1929,6 +1929,10 @@ function ciniki_ags_main() {
                 'visible':function() {return M.ciniki_ags_main.exhibitor.exhibitor_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_ags_main.exhibitor.unpaidSalesPDF();',
                 },
+            'inventorypdf':{'label':'Exhibits Inventory (PDF)', 
+                'visible':function() {return M.ciniki_ags_main.exhibitor.exhibitor_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_ags_main.exhibitor.currentInventoryPDF();',
+                },
             'delete':{'label':'Delete Exhibitor', 
                 'visible':function() {return M.ciniki_ags_main.exhibitor.exhibitor_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_ags_main.exhibitor.remove();',
@@ -1959,6 +1963,8 @@ function ciniki_ags_main() {
         'items':{'label':'Catalog', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return M.ciniki_ags_main.exhibitor.sections._tabs.selected == 'items' ? 'yes' : 'hidden'},
             'headerValues':['Code', 'Name', 'Price', 'Fee', 'Status'],
+            'sortable':'yes',
+            'sortTypes':['number', 'text', 'number', 'number', 'text'],
             'noData':'No Items',
             'addTxt':'Add Item',
             'addFn':'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibitor.open();\',0,M.ciniki_ags_main.exhibitor.exhibitor_id,0);',
@@ -2091,6 +2097,9 @@ function ciniki_ags_main() {
     }
     this.exhibitor.addExhibitor = function(customer_id) {
         M.ciniki_ags_main.editexhibitor.addCustomer(this.cb, customer_id);
+    }
+    this.exhibitor.currentInventoryPDF = function() {
+        M.api.openPDF('ciniki.ags.exhibitorInventoryPDF', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id});
     }
     this.exhibitor.printBarcodes = function() {
         var row = this.formValue('start_row');

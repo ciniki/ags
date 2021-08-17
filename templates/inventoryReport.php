@@ -99,7 +99,11 @@ function ciniki_ags_templates_inventoryReport(&$ciniki, $tnid, $args) {
         $pdf->SetFont('times', 'BI', 10);
         $pdf->SetCellPadding(2);
 
-        $pdf->title = $args['title'] . ' - ' . $exhibitor['display_name'];
+        if( isset($args['layout']) && $args['layout'] == 'exhibitor' ) {
+            $pdf->title = $args['title'];
+        } else {
+            $pdf->title = $args['title'] . ' - ' . $exhibitor['display_name'];
+        }
         // add a page
         $pdf->startPageGroup();
         $pdf->AddPage();
@@ -116,7 +120,11 @@ function ciniki_ags_templates_inventoryReport(&$ciniki, $tnid, $args) {
         $pdf->SetCellPaddings(1.5,2,1.5,2);
         $pdf->Cell($w[0], 6, 'Code', 1, 0, 'C', 1);
         $pdf->Cell($w[1], 6, 'Item', 1, 0, 'C', 1);
-        $pdf->Cell($w[2], 6, 'Info', 1, 0, 'C', 1);
+        if( isset($args['layout']) && $args['layout'] == 'exhibitor' ) {
+            $pdf->Cell($w[2], 6, 'Exhibit', 1, 0, 'C', 1);
+        } else {
+            $pdf->Cell($w[2], 6, 'Info', 1, 0, 'C', 1);
+        }
         $pdf->Cell($w[3], 6, 'Code', 1, 0, 'C', 1);
         $pdf->Cell($w[4], 6, 'Price', 1, 0, 'C', 1);
         $pdf->Cell($w[5], 6, 'Qty', 1, 0, 'C', 1);
@@ -159,7 +167,11 @@ function ciniki_ags_templates_inventoryReport(&$ciniki, $tnid, $args) {
                 $pdf->SetFont('', 'B');
                 $pdf->Cell($w[0], 6, 'Code', 1, 0, 'C', 1);
                 $pdf->Cell($w[1], 6, 'Item', 1, 0, 'C', 1);
-                $pdf->Cell($w[2], 6, 'Info', 1, 0, 'C', 1);
+                if( isset($args['layout']) && $args['layout'] == 'exhibitor' ) {
+                    $pdf->Cell($w[2], 6, 'Exhibit', 1, 0, 'C', 1);
+                } else {
+                    $pdf->Cell($w[2], 6, 'Info', 1, 0, 'C', 1);
+                }
                 $pdf->Cell($w[3], 6, 'Code', 1, 0, 'C', 1);
                 $pdf->Cell($w[4], 6, 'Price', 1, 0, 'C', 1);
                 $pdf->Cell($w[5], 6, 'Qty', 1, 0, 'C', 1);
@@ -171,7 +183,11 @@ function ciniki_ags_templates_inventoryReport(&$ciniki, $tnid, $args) {
             }
             $pdf->MultiCell($w[0], $lh, $code, 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[1], $lh, $name, 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
-            $pdf->MultiCell($w[2], $lh, $item['tag_info'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            if( isset($args['layout']) && $args['layout'] == 'exhibitor' ) {
+                $pdf->MultiCell($w[2], $lh, $item['exhibit_name'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            } else {
+                $pdf->MultiCell($w[2], $lh, $item['tag_info'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
+            }
             $pdf->MultiCell($w[3], $lh, $item['exhibitor_code'], 1, 'L', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[4], $lh, '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
             $pdf->MultiCell($w[5], $lh, (int)$item['inventory'], 1, 'R', $fill, 0, '', '', true, 0, false, true, 0, 'T', false);
