@@ -1933,6 +1933,10 @@ function ciniki_ags_main() {
                 'visible':function() {return M.ciniki_ags_main.exhibitor.exhibitor_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_ags_main.exhibitor.currentInventoryPDF();',
                 },
+            'catalogpdf':{'label':'Catalog (PDF)', 
+                'visible':function() {return M.ciniki_ags_main.exhibitor.exhibitor_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_ags_main.exhibitor.currentCatalogPDF();',
+                },
             'delete':{'label':'Delete Exhibitor', 
                 'visible':function() {return M.ciniki_ags_main.exhibitor.exhibitor_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_ags_main.exhibitor.remove();',
@@ -2100,6 +2104,9 @@ function ciniki_ags_main() {
     }
     this.exhibitor.currentInventoryPDF = function() {
         M.api.openPDF('ciniki.ags.exhibitorInventoryPDF', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id});
+    }
+    this.exhibitor.currentCatalogPDF = function() {
+        M.api.openPDF('ciniki.ags.exhibitorCatalogPDF', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id});
     }
     this.exhibitor.printBarcodes = function() {
         var row = this.formValue('start_row');
