@@ -2835,7 +2835,7 @@ function ciniki_ags_main() {
         '_filter':{'label':'Filter', 'aside':'yes', 'fields':{
             'start_date':{'label':'Start', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.open'},
             'end_date':{'label':'End', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.open'},
-            'exhibitor_id':{'label':'Exhibitor', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_ags_main.sales.open'},
+            'exhibitor_id':{'label':'Exhibitor', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_ags_main.donations.open'},
             }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'receiptspdf':{'label':'Donation Receipts (PDF)', 'fn':'M.ciniki_ags_main.donations.receiptsPDF();'},
