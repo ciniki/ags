@@ -2333,7 +2333,7 @@ function ciniki_ags_main() {
         'donor_details':{'label':'Donor', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 'visible':'hidden',
             'cellClasses':['label', ''],
             'changeTxt':'Change Donor',
-            'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_ags_main.item.show();\',\'mc\',{\'customer_id\':M.ciniki_ags_main.item.data.donor_customer_id, \'next\':\'M.ciniki_ags_main.item.updateDonor\'});',
+            'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_ags_main.item.show();\',\'mc\',{\'customer_id\':0, \'next\':\'M.ciniki_ags_main.item.updateDonor\'});',
             },
         'exhibit':{'label':'Inventory', 'aside':'yes', 
             'visible':function() { return M.ciniki_ags_main.item.item_id == 0 && M.ciniki_ags_main.item.exhibit_id > 0 ? 'yes' : 'no'; },
