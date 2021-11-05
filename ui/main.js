@@ -21,7 +21,7 @@ function ciniki_ags_main() {
     //
     // The panel to list the item
     //
-    this.exhibits = new M.panel('Exhibits', 'ciniki_ags_main', 'exhibits', 'mc', 'xlarge', 'sectioned', 'ciniki.ags.main.exhibits');
+    this.exhibits = new M.panel('Gallery', 'ciniki_ags_main', 'exhibits', 'mc', 'xlarge', 'sectioned', 'ciniki.ags.main.exhibits');
     this.exhibits.data = {};
     this.exhibits.nplist = [];
     this.exhibits.etype = '';

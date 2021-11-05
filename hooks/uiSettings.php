@@ -55,7 +55,7 @@ function ciniki_ags_hooks_uiSettings(&$ciniki, $tnid, $args) {
         ) {
         $menu_item = array(
             'priority'=>5000,
-            'label'=>'Exhibitions & Marketplaces',
+            'label'=>'Gallery',
             'edit'=>array('app'=>'ciniki.ags.main'),
             );
         $rsp['menu_items'][] = $menu_item;
@@ -70,7 +70,7 @@ function ciniki_ags_hooks_uiSettings(&$ciniki, $tnid, $args) {
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
         ) {
-        $rsp['settings_menu_items'][] = array('priority'=>5000, 'label'=>'Art Gallery Sales', 'edit'=>array('app'=>'ciniki.ags.settings'));
+        $rsp['settings_menu_items'][] = array('priority'=>5000, 'label'=>'Gallery Sales', 'edit'=>array('app'=>'ciniki.ags.settings'));
     }
 
     return $rsp;
