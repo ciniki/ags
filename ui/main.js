@@ -695,8 +695,14 @@ function ciniki_ags_main() {
             'changeTxt':'Edit',
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_ags_main.participant.open();\',\'mc\',{\'customer_id\':M.ciniki_ags_main.participant.data.participant.customer_id});',
             },
-        'barcodes':{'label':'Print Barcodes', 'aside':'yes',
+        'print_tabs':{'label':'', 'type':'paneltabs', 'selected':'barcodes', 'aside':'yes', 
             'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' :'hidden';},
+            'tabs':{
+                'barcodes':{'label':'Barcodes', 'fn':'M.ciniki_ags_main.participant.switchPrintTab("barcodes");'},
+                'namecards':{'label':'Name Cards', 'fn':'M.ciniki_ags_main.participant.switchPrintTab("namecards");'},
+            }},
+        'barcodes':{'label':'Print Barcodes', 'aside':'yes',
+            'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' && M.ciniki_ags_main.participant.sections.print_tabs.selected == 'barcodes' ? 'yes' :'hidden';},
             'fields':{
                 'start_row':{'label':'Row', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9', '10':'10', '11':'11', '12':'12', '13':'13', '14':'14', '15':'15', '16':'16', '17':'17', '18':'18', '19':'19', '20':'20'}},
                 'start_col':{'label':'Column', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4'}},
@@ -706,10 +712,24 @@ function ciniki_ags_main() {
 //                'halfsize':{'label':'Half Size', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 //                'codes':{'label':'Codes', 'type':'text'},
             }},
+        'namecards':{'label':'Print Name Cards', 'aside':'yes',
+            'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' && M.ciniki_ags_main.participant.sections.print_tabs.selected == 'namecards' ? 'yes' :'hidden';},
+            'fields':{
+                'nc_start_row':{'label':'Row', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5'}},
+                'nc_start_col':{'label':'Column', 'type':'select', 'options':{'1':'1', '2':'2'}},
+//
+// halfsize not working, makes barcode to small to scan
+//                'halfsize':{'label':'Half Size', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+//                'codes':{'label':'Codes', 'type':'text'},
+            }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
-            'barcodes':{'label':'Exhibit Item Barcodes', 
-                'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' :'no';},
+            'barcodes':{'label':'Print Item Barcodes', 
+                'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' && M.ciniki_ags_main.participant.sections.print_tabs.selected == 'barcodes' ? 'yes' :'no';},
                 'fn':'M.ciniki_ags_main.participant.printBarcodes();',
+                },
+            'namecards':{'label':'Print Name Cards', 
+                'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' && M.ciniki_ags_main.participant.sections.print_tabs.selected == 'namecards' ? 'yes' :'no';},
+                'fn':'M.ciniki_ags_main.participant.printNameCards();',
                 },
             'accept':{'label':'Accept', 
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 30 ? 'yes' :'no';},
@@ -1145,8 +1165,16 @@ function ciniki_ags_main() {
             i.codeselected = 'no';
         }
     }
+    this.participant.switchPrintTab = function(t) {
+        this.sections.print_tabs.selected = t;
+        this.refreshSection('print_tabs');
+        this.refreshSection('barcodes');
+        this.refreshSection('namecards');
+        this.refreshSection('_buttons');
+    }
     this.participant.switchTab = function(t) {
         this.sections._tabs.selected = t;
+        this.refreshSection('print_tabs');
         this.refreshSection('_tabs');
         this.refreshSection('_buttons');
         this.showHideSection('inventory');
@@ -1156,6 +1184,7 @@ function ciniki_ags_main() {
         this.showHideSection('logs');
         this.showHideSection('online');
         this.showHideSection('barcodes');
+        this.showHideSection('namecards');
         this.openLogs();
     }
     this.participant.upload_item_id = 0;
@@ -1290,6 +1319,19 @@ function ciniki_ags_main() {
             }
         }
         M.api.openPDF('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip, 'halfsize':hs, 'codes':codes});
+    }
+    this.participant.printNameCards = function() {
+        var row = this.formValue('nc_start_row');
+        var col = this.formValue('nc_start_col');
+        // Get the codes selected
+        var codes = '';
+        for(var i in this.data.inventory) {
+            var e = M.gE('code-' + this.data.inventory[i].code);
+            if( e.codeselected != null && e.codeselected == 'yes' ) {
+                codes += (codes != '' ? ',' : '') + this.data.inventory[i].code;
+            }
+        }
+        M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'codes':codes, 'template':'namecards'});
     }
     this.participant.exhibitInventoryPDF = function() {
         M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});

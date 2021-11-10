@@ -23,6 +23,9 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'exhibit_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit'),
         'exhibitor_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit'),
+        'codes'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'name'=>'Codes'),
+        'start_col'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Column'),
+        'start_row'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Row'),
         'template'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Template'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -138,6 +141,13 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
         $strsql .= "AND eitems.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' ";
     }
+    if( isset($args['exhibitor_id']) && $args['exhibitor_id'] > 0 ) {
+        $strsql .= "AND items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' ";
+    }
+    if( isset($args['codes']) && count($args['codes']) > 0 && $args['codes'][0] != "" ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteList');
+        $strsql .= "AND items.code IN (" . ciniki_core_dbQuoteList($ciniki, $args['codes']) . ") ";
+    }
     $strsql .= "ORDER by exhibitors.display_name, items.code, items.name ";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
@@ -183,6 +193,8 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
             'location' => $exhibit['location_name'],
             'footer' => $today->format('M d, Y'),
             'exhibitors' => $exhibitors,
+            'start_col' => (isset($args['start_col']) && $args['start_col'] > 0 ? $args['start_col'] : 1),
+            'start_row' => (isset($args['start_row']) && $args['start_row'] > 0 ? $args['start_row'] : 1),
             ));
         if( $rc['stat'] != 'ok' ) { 
             return $rc;

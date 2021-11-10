@@ -138,16 +138,23 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
 
     $num_seller = 0;
     $card_number = 0;
+    $card_offset = 0;       // Offset of (rows * cols)
+    if( isset($args['start_row']) && $args['start_row'] > 1 ) {
+        $card_offset += (($args['start_row']-1) * 2);
+    }
+    if( isset($args['start_col']) && $args['start_col'] > 1 ) {
+        $card_offset++;
+    }
     foreach($args['exhibitors'] as $exhibitor) {
 
         if( !isset($exhibitor['items']) || count($exhibitor['items']) == 0 ) {
             continue;
         }
         foreach($exhibitor['items'] as $item) {
-            if( ($card_number % $cards_per_page) == 0 ) {
+            if( $card_number == 0 || (($card_number + $card_offset) % $cards_per_page) == 0 ) {
                 $pdf->AddPage();
             }
-            $page_card_number = $card_number % $cards_per_page;
+            $page_card_number = ($card_number + $card_offset) % $cards_per_page;
             $x = ($page_card_number%2);
             $y = floor($page_card_number/2);
 
