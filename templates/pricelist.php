@@ -119,6 +119,7 @@ function ciniki_ags_templates_pricelist(&$ciniki, $tnid, $args) {
             }
         }
         $nlines = $pdf->getNumLines($name, $w[1]);
+        $lh = 6;
         if( $nlines == 2 ) {
             $lh = 3+($nlines*5);
         } elseif( $nlines > 2 ) {

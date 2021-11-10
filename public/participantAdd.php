@@ -31,7 +31,7 @@ function ciniki_ags_participantAdd(&$ciniki) {
         'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
         'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Override Name'),
         'display_name'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Name'),
-        'code'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Code'),
+        'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
