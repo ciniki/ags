@@ -1322,7 +1322,7 @@ function ciniki_ags_main() {
                 codes += (codes != '' ? ',' : '') + this.data.inventory[i].code;
             }
         }
-        M.api.openPDF('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip, 'halfsize':hs, 'codes':codes});
+        M.api.openPDF('ciniki.ags.barcodesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip, 'halfsize':hs, 'codes':codes});
     }
     this.participant.printNameCards = function() {
         var row = this.formValue('nc_start_row');
@@ -2158,7 +2158,7 @@ function ciniki_ags_main() {
         var row = this.formValue('start_row');
         var col = this.formValue('start_col');
         var tip = this.formValue('tag_info_price');
-        M.api.openPDF('ciniki.ags.exhibitorBarcodes', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip});
+        M.api.openPDF('ciniki.ags.barcodesPDF', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip});
     }
     this.exhibitor.unpaidSalesPDF = function() {
         M.api.openPDF('ciniki.ags.unpaidSalesPDF', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id});

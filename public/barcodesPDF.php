@@ -122,7 +122,7 @@ function ciniki_ags_barcodesPDF($ciniki) {
         $strsql .= ", 1 AS quantity "
             . "FROM ciniki_ags_items AS items "
             . "WHERE items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
-            . "AND exhibit.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
     }
     if( isset($args['start_code']) && $args['start_code'] != '' ) {
