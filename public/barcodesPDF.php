@@ -191,7 +191,11 @@ function ciniki_ags_barcodesPDF($ciniki) {
     }
 
     if( isset($rc['pdf']) ) {
-        $filename = 'Labels-' . preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '-', $exhibitor['display_name']));
+        if( isset($exhibitor) ) {
+            $filename = 'Labels-' . preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '-', $exhibitor['display_name']));
+        } else {
+            $filename = 'Labels';
+        }
         $rc['pdf']->Output($filename . '.pdf', 'D');
     }
 
