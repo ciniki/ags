@@ -86,6 +86,8 @@ function ciniki_ags_barcodesPDF($ciniki) {
         }
         $exhibitor = $rc['exhibitors'][0];
         $args['title'] = $exhibitor['display_name'] . ' Barcodes';
+    } else {
+        $args['title'] = "Barcodes";
     }
 
     //
