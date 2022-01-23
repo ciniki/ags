@@ -25,7 +25,8 @@ function ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, $args, $format=''
         . "DATE_FORMAT(exhibits.start_date, '%b %e, %Y') AS start_date, "
         . "DATE_FORMAT(exhibits.end_date, '%b %e, %Y') AS end_date, "
         . "locations.name AS location_name, "
-        . "locations.category "
+        . "locations.category, "
+        . "'yes' AS is_details "
         . "";
     //
     // Load the exhibition based on type
@@ -103,7 +104,7 @@ function ciniki_ags_web_exhibitList($ciniki, $settings, $tnid, $args, $format=''
                 'image_id'=>'primary_image_id', 
                 'start_date', 'start_month', 'start_day', 'start_year', 
                 'end_date', 'end_month', 'end_day', 'end_year', 
-                'synopsis')),
+                'synopsis', 'is_details')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

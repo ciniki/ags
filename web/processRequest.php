@@ -204,7 +204,11 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
     //
     $content = '';
     $page_content = '';
-    $page['title'] = 'Exhibitors';
+    if( isset($settings['site-layout']) && $settings['site-layout'] == 'twentyone' ) {
+        $page['title'] = '';
+    } else {
+        $page['title'] = 'Exhibitors';
+    }
     $ciniki['response']['head']['og']['url'] = $args['domain_base_url']; // $ciniki['request']['domain_base_url'] . '/exhibits';
 
     if( count($page['breadcrumbs']) == 0 ) {
@@ -249,7 +253,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
 
 
     //
-    // Display the list of exhibitors if a specific one isn't selected
+    // Display the list of exhibits if a specific one isn't selected
     //
     else {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'processExhibits');
@@ -337,18 +341,28 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 $exhibits = $rc['exhibits'];
                 $num_current = count($exhibits);
                 if( $num_current > 0 ) {
-                    $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $exhibits, array(
-                        'base_url' => $args['base_url'],
-                        ));
-                    if( $rc['stat'] != 'ok' ) {
-                        return $rc;
+                    if( isset($settings['site-layout']) && $settings['site-layout'] == 'twentyone' ) {
+                        $page['title'] = 'Current ' . $etype_label;
+                        $page['blocks'][] = array(
+                            'type' => 'imagelist',
+                            'section' => 'current-exhibits',
+                            'base_url' => $args['base_url'],
+                            'list' => $exhibits,
+                            );
+                    } else {
+                        $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $exhibits, array(
+                            'base_url' => $args['base_url'],
+                            ));
+                        if( $rc['stat'] != 'ok' ) {
+                            return $rc;
+                        }
+                        $page['blocks'][] = array(
+                            'type'=>'content', 
+                            'section'=>'current-exhibits',
+                            'title' => 'Current ' . $etype_label,
+                            'html' => $rc['content'],
+                            );
                     }
-                    $page['blocks'][] = array(
-                        'type'=>'content', 
-                        'section'=>'current-exhibits',
-                        'title' => 'Current ' . $etype_label,
-                        'html' => $rc['content'],
-                        );
                 }
             }
 
@@ -356,18 +370,28 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             // Display upcoming exhibits second
             //
             if( count($upcoming) > 0 ) {
-                $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $upcoming, array(
-                    'base_url' => $args['base_url'],
-                    ));
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-                $page['blocks'][] = array(
-                    'type'=>'content', 
-                    'section'=>'exhibit-list', 
-                    'title'=>'Upcoming ' . $etype_label,
-                    'html'=>$rc['content'],
+                if( isset($settings['site-layout']) && $settings['site-layout'] == 'twentyone' ) {
+                    $page['blocks'][] = array(
+                        'type' => 'imagelist',
+                        'section' => 'current-exhibits',
+                        'title' => 'Current ' . $etype_label,
+                        'base_url' => $args['base_url'],
+                        'list' => $upcoming,
+                        );
+                } else {
+                    $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $upcoming, array(
+                        'base_url' => $args['base_url'],
+                        ));
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                    $page['blocks'][] = array(
+                        'type'=>'content', 
+                        'section'=>'exhibit-list', 
+                        'title'=>'Upcoming ' . $etype_label,
+                        'html'=>$rc['content'],
                     ); 
+                }
             } elseif( $display == 'list' ) {
                 $page['blocks'][] = array(
                     'type'=>'content', 
