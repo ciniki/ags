@@ -53,6 +53,16 @@ function ciniki_ags_hooks_webOptions(&$ciniki, $tnid, $args) {
             ),
         );
     $options[] = array(
+        'label'=>'Include Upcoming',
+        'setting'=>'page-ags-upcoming', 
+        'type'=>'toggle',
+        'value'=>(isset($settings['page-ags-upcoming'])?$settings['page-ags-upcoming']:'yes'),
+        'toggles'=>array(
+            array('value'=>'no', 'label'=>'No'),
+            array('value'=>'yes', 'label'=>'Yes'),
+            ),
+        );
+    $options[] = array(
         'label'=>'Initial Exhibits/page',
         'setting'=>'page-ags-initial-number', 
         'type'=>'text',
@@ -99,12 +109,32 @@ function ciniki_ags_hooks_webOptions(&$ciniki, $tnid, $args) {
                     array('value'=>'yes', 'label'=>'Yes'),
                     ),
                 );
+            $options[] = array(
+                'label'=>'Include Upcoming Exhibits',
+                'setting'=>'page-ags-' . $row['permalink'] . '-upcoming', 
+                'type'=>'toggle',
+                'value'=>(isset($settings["page-ags-{$row['permalink']}-upcoming"])?$settings["page-ags-{$row['permalink']}-upcoming"]:'yes'),
+                'toggles'=>array(
+                    array('value'=>'no', 'label'=>'No'),
+                    array('value'=>'yes', 'label'=>'Yes'),
+                    ),
+                );
             // This is the category submenu for the page when multiple exhibitions shown
             $options[] = array(
                 'label'=>'Categories Submenu',
                 'setting'=>'page-ags-' . $row['permalink'] . '-submenu-categories', 
                 'type'=>'toggle',
                 'value'=>(isset($settings["page-ags-{$row['permalink']}-submenu-categories"])?$settings["page-ags-{$row['permalink']}-submenu-categories"]:'no'),
+                'toggles'=>array(
+                    array('value'=>'no', 'label'=>'No'),
+                    array('value'=>'yes', 'label'=>'Yes'),
+                    ),
+                );
+            $options[] = array(
+                'label'=>'Show Intro Photo',
+                'setting'=>'page-ags-' . $row['permalink'] . '-intro-photo', 
+                'type'=>'toggle',
+                'value'=>(isset($settings["page-ags-{$row['permalink']}-intro-photo"])?$settings["page-ags-{$row['permalink']}-intro-photo"]:'yes'),
                 'toggles'=>array(
                     array('value'=>'no', 'label'=>'No'),
                     array('value'=>'yes', 'label'=>'Yes'),

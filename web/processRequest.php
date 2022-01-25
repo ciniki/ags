@@ -55,6 +55,8 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
     $page_past_limit = 10;
     $page_submenu = '';
     $members_link = 'no';
+    $intro_photo = 'yes';
+    $show_upcoming = 'yes';
     $exhibitor_label = 'Created By';
     $settings_prefix = 'page-ags';
     if( $exhibit_type != '' ) {
@@ -76,6 +78,16 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         && $settings["{$settings_prefix}-submenu-categories"] == 'yes'
         ) {
         $page_submenu = 'categories';
+    }
+    if( isset($settings["{$settings_prefix}-upcoming"]) 
+        && $settings["{$settings_prefix}-upcoming"] == 'no'
+        ) {
+        $show_upcoming = 'no';
+    }
+    if( isset($settings["{$settings_prefix}-intro-photo"]) 
+        && $settings["{$settings_prefix}-intro-photo"] == 'no'
+        ) {
+        $intro_photo = 'no';
     }
     if( isset($settings["{$settings_prefix}-exhibitor-label"]) 
         && $settings["{$settings_prefix}-exhibitor-label"] != ''
@@ -342,7 +354,11 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 $num_current = count($exhibits);
                 if( $num_current > 0 ) {
                     if( isset($settings['site-layout']) && $settings['site-layout'] == 'twentyone' ) {
-                        $page['title'] = 'Current ' . $etype_label;
+                        if( $show_upcoming == 'yes' ) {
+                            $page['title'] = 'Current ' . $etype_label;
+                        } else {
+                            $page['title'] = $etype_label;
+                        }
                         $page['blocks'][] = array(
                             'type' => 'tradingcards',
                             'section' => 'current-exhibits',
@@ -632,16 +648,18 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                 if( isset($category_image_id) && $category_image_id > 0 && $category_image_id != '' 
                     && isset($category_description) && $category_description != '' 
                     ) {
-                    $page['blocks'][] = array(
-                        'id' => 'aside-image',
-                        'type' => 'asideimage', 
-                        'section' => 'primary-image', 
-                        'primary' => 'yes',
-                        'quality' => $image_quality,
-                        'image_id' => $category_image_id, 
-                        'title' => $exhibit['categories'][$category_permalink]['name'], 
-                        'caption' => '',
-                        );
+                    if( $intro_photo == 'yes' ) {
+                        $page['blocks'][] = array(
+                            'id' => 'aside-image',
+                            'type' => 'asideimage', 
+                            'section' => 'primary-image', 
+                            'primary' => 'yes',
+                            'quality' => $image_quality,
+                            'image_id' => $category_image_id, 
+                            'title' => $exhibit['categories'][$category_permalink]['name'], 
+                            'caption' => '',
+                            );
+                    }
                     $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>$category_description);
                 }
                 
@@ -716,7 +734,9 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         // Display the exhibit details
         //
         else {
-            if( isset($exhibit['primary_image_id']) && $exhibit['primary_image_id'] > 0 ) {
+            if( isset($exhibit['primary_image_id']) && $exhibit['primary_image_id'] > 0 
+                && $intro_photo == 'yes' 
+                ) {
                 $page['blocks'][] = array(
                     'id' => 'aside-image',
                     'type' => 'asideimage', 
