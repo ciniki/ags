@@ -385,35 +385,37 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             //
             // Display upcoming exhibits second
             //
-            if( count($upcoming) > 0 ) {
-                if( isset($settings['site-layout']) && $settings['site-layout'] == 'twentyone' ) {
-                    $page['blocks'][] = array(
-                        'type' => 'tradingcards',
-                        'section' => 'current-exhibits',
-                        'title' => 'Current ' . $etype_label,
-                        'base_url' => $args['base_url'],
-                        'cards' => $upcoming,
-                        );
-                } else {
-                    $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $upcoming, array(
-                        'base_url' => $args['base_url'],
-                        ));
-                    if( $rc['stat'] != 'ok' ) {
-                        return $rc;
+            if( $show_upcoming == 'yes' ) {
+                if( count($upcoming) > 0 ) {
+                    if( isset($settings['site-layout']) && $settings['site-layout'] == 'twentyone' ) {
+                        $page['blocks'][] = array(
+                            'type' => 'tradingcards',
+                            'section' => 'current-exhibits',
+                            'title' => 'Current ' . $etype_label,
+                            'base_url' => $args['base_url'],
+                            'cards' => $upcoming,
+                            );
+                    } else {
+                        $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $upcoming, array(
+                            'base_url' => $args['base_url'],
+                            ));
+                        if( $rc['stat'] != 'ok' ) {
+                            return $rc;
+                        }
+                        $page['blocks'][] = array(
+                            'type'=>'content', 
+                            'section'=>'exhibit-list', 
+                            'title'=>'Upcoming ' . $etype_label,
+                            'html'=>$rc['content'],
+                        ); 
                     }
+                } elseif( $display == 'list' ) {
                     $page['blocks'][] = array(
                         'type'=>'content', 
-                        'section'=>'exhibit-list', 
-                        'title'=>'Upcoming ' . $etype_label,
-                        'html'=>$rc['content'],
-                    ); 
+                        'title'=>'', 
+                        'content'=>'No upcoming exhibits',
+                        );
                 }
-            } elseif( $display == 'list' ) {
-                $page['blocks'][] = array(
-                    'type'=>'content', 
-                    'title'=>'', 
-                    'content'=>'No upcoming exhibits',
-                    );
             }
         }
 
