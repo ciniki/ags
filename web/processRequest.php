@@ -344,10 +344,10 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
                     if( isset($settings['site-layout']) && $settings['site-layout'] == 'twentyone' ) {
                         $page['title'] = 'Current ' . $etype_label;
                         $page['blocks'][] = array(
-                            'type' => 'imagelist',
+                            'type' => 'tradingcards',
                             'section' => 'current-exhibits',
                             'base_url' => $args['base_url'],
-                            'list' => $exhibits,
+                            'cards' => $exhibits,
                             );
                     } else {
                         $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $exhibits, array(
@@ -372,11 +372,11 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
             if( count($upcoming) > 0 ) {
                 if( isset($settings['site-layout']) && $settings['site-layout'] == 'twentyone' ) {
                     $page['blocks'][] = array(
-                        'type' => 'imagelist',
+                        'type' => 'tradingcards',
                         'section' => 'current-exhibits',
                         'title' => 'Current ' . $etype_label,
                         'base_url' => $args['base_url'],
-                        'list' => $upcoming,
+                        'cards' => $upcoming,
                         );
                 } else {
                     $rc = ciniki_ags_web_processExhibits($ciniki, $settings, $upcoming, array(
