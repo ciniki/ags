@@ -489,7 +489,12 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "tags.permalink, "
             . "IFNULL(image.detail_value, 0) AS image_id, "
             . "IFNULL(description.detail_value, '') AS description "
-            . "FROM ciniki_ags_item_tags AS tags "
+            . "FROM ciniki_ags_exhibit_items AS items "
+            . "INNER JOIN ciniki_ags_item_tags AS tags ON ("
+                . "items.item_id = tags.item_id "
+                . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND tags.tag_type = 20 "
+                . ") "
             . "LEFT JOIN ciniki_ags_settings AS image ON ("
                 . "image.detail_key = CONCAT('category-', tags.permalink, '-image') "
                 . "AND image.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -498,8 +503,8 @@ function ciniki_ags_exhibitGet($ciniki) {
                 . "tags.permalink = description.detail_key = CONCAT('category-', tags.permalink, '-description') "
                 . "AND description.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND tags.tag_type = 20 "
+            . "WHERE items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND items.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
