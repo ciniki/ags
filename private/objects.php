@@ -120,7 +120,7 @@ function ciniki_ags_objects(&$ciniki) {
             'code' => array('name'=>'Code'),
             'name' => array('name'=>'Name'),
             'permalink' => array('name'=>'Permalink'),
-            'status' => array('name'=>'Status', 'default'=>'30'),
+            'status' => array('name'=>'Status', 'default'=>'50'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'unit_amount' => array('name'=>'Price', 'default'=>'0'),
             'unit_discount_amount' => array('name'=>'Discount Amount', 'default'=>'0'),

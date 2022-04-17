@@ -32,6 +32,13 @@ function ciniki_ags_participantAdd(&$ciniki) {
         'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Override Name'),
         'display_name'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Name'),
         'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'),
+        // If form submission is specified for import
+        'submission_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Form Submission'),
+        'fee_percent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fee Percent'),
+        'item_flags3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sell Items Online'),
+        'item_flags5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Items Tagged'),
+        'item_synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis Append'),
+        'item_description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description Append'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -187,6 +194,21 @@ function ciniki_ags_participantAdd(&$ciniki) {
         return $rc;
     }
     $participant_id = $rc['id'];
+
+    //
+    // Check if a form submission has be specified to import
+    //
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') 
+        && isset($args['submission_id']) 
+        && $args['submission_id'] > 0 
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'exhibitorImportFormSubmission');
+        $rc = ciniki_ags_exhibitorImportFormSubmission($ciniki, $args['tnid'], $args);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.249', 'msg'=>'Unable to import form', 'err'=>$rc['err']));
+        }
+    }
 
     //
     // Commit the transaction

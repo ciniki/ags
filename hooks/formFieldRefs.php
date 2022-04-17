@@ -31,6 +31,28 @@ function ciniki_ags_hooks_formFieldRefs(&$ciniki, $tnid, $args) {
         'ciniki.ags.item.notes' => array('module'=>$module, 'type'=>'text', 'name'=>'Item Notes'),
         );
 
+    //
+    // Load the tax types
+    //
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.taxes') ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'taxes', 'hooks', 'taxTypes');
+        $rc = ciniki_taxes_hooks_taxTypes($ciniki, $tnid, array());
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['types']) ) {
+            foreach($rc['types'] as $type) {
+                if( $type['id'] > 0 ) {
+                    $refs['ciniki.ags.exhibit.taxtype_id.' . $type['id']] = array(
+                        'module' => $module,
+                        'type' => 'checkbox',
+                        'name' => $type['name'],
+                        );
+                }
+            }
+        }
+    }
+
     return array('stat'=>'ok', 'refs'=>$refs);
 }
 ?>

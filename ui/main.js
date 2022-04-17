@@ -1472,13 +1472,23 @@ function ciniki_ags_main() {
             'code':{'label':'Code', 'required':'yes', 'type':'text'},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'30':'Applied', '50':'Accepted', '70':'Inactive', '90':'Rejected'}},
             }},
+        '_submission':{'label':'Import Artwork from Form', 
+            'active':function() { return M.ciniki_ags_main.editparticipant.participant_id == 0 && M.modOn('ciniki.forms') ? 'yes' : 'no'; },
+            'fields':{
+                'submission_id':{'label':'Submission', 'hidelabel':'no', 'type':'select', 'options':{}, 'complex_options':{'value':'id', 'name':'name'}},
+                'fee_percent':{'label':'Fee %', 'type':'text', 'size':'small'},
+                'item_flags3':{'label':'Sell Items Online', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'item_flags5':{'label':'Items Tagged', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'item_synopsis':{'label':'Append to Item Synopsis', 'type':'textarea', 'size':'small'},
+                'item_description':{'label':'Append to Item Description', 'type':'textarea', 'size':'medium'},
+            }},
         '_message':{'label':'Sales Message', 
-            'visible':function() { return M.modFlagSet('ciniki.ags', 0x40); },
+            'active':function() { return M.modFlagSet('ciniki.ags', 0x40); },
             'fields':{
                 'message':{'label':'Message', 'type':'textarea', 'size':'medium'},
             }},
         '_synopsis':{'label':'Exhibitor Bio', 
-            'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
+            'active':function() { return M.modFlagSet('ciniki.ags', 0x80); },
             'fields':{
                 'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
@@ -1518,6 +1528,13 @@ function ciniki_ags_main() {
             }
             p.customer_id = rsp.participant.customer_id;
             p.exhibitor_id = rsp.participant.exhibitor_id;
+            p.sections._submission.fields.submission_id.options = {};
+            if( M.modOn('ciniki.forms') ) {
+                if( rsp.participant.submissions != null ) {
+                    p.sections._submission.fields.submission_id.options = rsp.participant.submissions;
+                }
+                p.sections._submission.fields.submission_id.options.unshift({'id':0, 'name':'No Import'});
+            }
             p.refresh();
             p.show(cb);
         });

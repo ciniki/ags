@@ -53,6 +53,16 @@ function ciniki_ags_participantGet($ciniki) {
     $maps = $rc['maps'];
 
     //
+    // Load the module settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_ags_settings', 'tnid', $args['tnid'], 'ciniki.ags', 'settings', '');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.158', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    $settings = isset($rc['settings']) ? $rc['settings'] : array();
+
+    //
     // Load tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
@@ -224,6 +234,7 @@ function ciniki_ags_participantGet($ciniki) {
                 $participant['code'] = $rc['code'];
             }
         } 
+        
         
         $rsp = array('stat'=>'ok', 'participant'=>$participant);
     }
@@ -523,6 +534,39 @@ function ciniki_ags_participantGet($ciniki) {
                 $rsp['logs'][$lid]['action_text'] = 'Item Removed';
             }
         }
+    }
+
+    //
+    // Check if form submissions should be loaded
+    //
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') 
+        && isset($participant['customer_id']) 
+        && $participant['customer_id'] > 0 
+        ) {
+        $strsql = "SELECT submissions.id, "
+            . "forms.name "
+            . "FROM ciniki_form_submissions AS submissions "
+            . "INNER JOIN ciniki_forms AS forms ON ("
+                . "submissions.form_id = forms.id "
+                . "AND forms.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE submissions.customer_id = '" . ciniki_core_dbQuote($ciniki, $participant['customer_id']) . "' "
+            . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND submissions.status = 90 "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'submissions', 'fname'=>'id', 'fields'=>array('id', 'name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.248', 'msg'=>'Unable to load submissions', 'err'=>$rc['err']));
+        }
+        $rsp['participant']['submissions'] = isset($rc['submissions']) ? $rc['submissions'] : array();
+
+        //
+        // Also load the default fee percent
+        //
+        $rsp['participant']['fee_percent'] = (isset($settings['defaults-item-fee-percent']) ? $settings['defaults-item-fee-percent'] : '');
     }
 
     return $rsp;
