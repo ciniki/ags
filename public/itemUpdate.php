@@ -37,6 +37,7 @@ function ciniki_ags_itemUpdate(&$ciniki) {
         'creation_year'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Creation Year'),
         'medium'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Medium'),
         'size'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Size'),
+        'framed_size'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Framed Size'),
         'current_condition'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Condition'),
         'tag_info'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Info'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),

@@ -190,6 +190,7 @@ function ciniki_ags_itemGet($ciniki) {
             . "ciniki_ags_items.creation_year, "
             . "ciniki_ags_items.medium, "
             . "ciniki_ags_items.size, "
+            . "ciniki_ags_items.framed_size, "
             . "ciniki_ags_items.current_condition, "
             . "ciniki_ags_items.notes "
             . "FROM ciniki_ags_items "
@@ -203,7 +204,7 @@ function ciniki_ags_itemGet($ciniki) {
                     'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 
                     'taxtype_id', 'shipping_profile_id', 'donor_customer_id',
                     'primary_image_id', 'synopsis', 'description', 'tag_info', 
-                    'creation_year', 'medium', 'size', 'current_condition', 'notes'),
+                    'creation_year', 'medium', 'size', 'framed_size', 'current_condition', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

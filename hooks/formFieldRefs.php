@@ -27,6 +27,7 @@ function ciniki_ags_hooks_formFieldRefs(&$ciniki, $tnid, $args) {
         'ciniki.ags.item.creation_year' => array('module'=>$module, 'type'=>'text', 'name'=>'Item Year Created'),
         'ciniki.ags.item.medium' => array('module'=>$module, 'type'=>'text', 'name'=>'Item Medium'),
         'ciniki.ags.item.size' => array('module'=>$module, 'type'=>'text', 'name'=>'Item Size'),
+        'ciniki.ags.item.framed_size' => array('module'=>$module, 'type'=>'text', 'name'=>'Item Framed Size'),
         'ciniki.ags.item.current_condition' => array('module'=>$module, 'type'=>'text', 'name'=>'Item Current Condition'),
         'ciniki.ags.item.notes' => array('module'=>$module, 'type'=>'text', 'name'=>'Item Notes'),
         );

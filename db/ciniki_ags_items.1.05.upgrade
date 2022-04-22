@@ -1,0 +1,5 @@
+#
+# Add field to store donor customer id if "Donation Receipts" is enabled in flags
+#
+ALTER TABLE ciniki_ags_items ADD COLUMN framed_size varchar(50) not null AFTER size;
+ALTER TABLE ciniki_ags_items COMMENT='v1.05';

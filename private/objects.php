@@ -135,6 +135,7 @@ function ciniki_ags_objects(&$ciniki) {
             'creation_year' => array('name'=>'Creation Year', 'default'=>''),
             'medium' => array('name'=>'Medium', 'default'=>''),
             'size' => array('name'=>'Size', 'default'=>''),
+            'framed_size' => array('name'=>'Framed Size', 'default'=>''),
             'current_condition' => array('name'=>'Condition', 'default'=>''),
             'tag_info' => array('name'=>'Tag Info', 'default'=>''),
             'notes' => array('name'=>'Notes', 'default'=>''),

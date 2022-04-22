@@ -59,6 +59,7 @@
 # creation_year:            The year the item was created.
 # medium:                   The medium of the item (optional).
 # size:                     The size of the item (optional).
+# framed_size:              The framed size of the item (optional).
 # current_condition:        The current condition of the item (optional).
 #
 # tag_info:                 The information for the second tag side.
@@ -91,6 +92,7 @@ create table ciniki_ags_items (
     creation_year varchar(20) not null,
     medium varchar(250) not null,
     size varchar(50) not null,
+    framed_size varchar(50) not null,
     current_condition varchar(250) not null,
     tag_info varchar(250) not null,
     notes text not null,
@@ -101,4 +103,4 @@ create table ciniki_ags_items (
     unique index (code, tnid),
     unique index (permalink, tnid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

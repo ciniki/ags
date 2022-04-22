@@ -68,6 +68,9 @@ function ciniki_ags_formSubmissionParse(&$ciniki, $tnid, $submission_id) {
                     elseif( $field['field_ref'] == 'ciniki.ags.item.size' && $data != '' ) {
                         $ritem['size'] = $data;
                     }
+                    elseif( $field['field_ref'] == 'ciniki.ags.item.framed_size' && $data != '' ) {
+                        $ritem['framed_size'] = $data;
+                    }
                     elseif( $field['field_ref'] == 'ciniki.ags.item.current_condition' && $data != '' ) {
                         $ritem['current_condition'] = $data;
                     }
