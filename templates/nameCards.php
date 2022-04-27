@@ -187,6 +187,9 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
             $pdf->Cell($card_width, 6, $artist_prefix . $exhibitor['display_name'], 0, 1, 'L', 0, '', 1);
 
             if( $item['size'] != '' && $include_size == 'yes' ) {
+                if( isset($item['framed_size']) && $item['framed_size'] != '' ) {
+                    $item['size'] .= ' (Framed: ' . $item['framed_size'] . ')';
+                }
                 $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
                 $pdf->SetFont($font_other, '', 13);
                 $pdf->Cell($card_width, 6, $item['size'], 0, 1, 'L', 0, '', 1);

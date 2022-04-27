@@ -118,6 +118,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
         . "items.creation_year, "
         . "items.medium, "
         . "items.size, "
+        . "items.framed_size, "
         . "items.current_condition, "
         . "items.tag_info, "
         . "items.flags, "
@@ -154,7 +155,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
         array('container'=>'exhibitors', 'fname'=>'exhibitor_id', 
             'fields'=>array('display_name')),
         array('container'=>'items', 'fname'=>'exhibit_item_id', 
-            'fields'=>array('code', 'name', 'exhibitor_code', 'creation_year', 'medium', 'size', 'current_condition', 
+            'fields'=>array('code', 'name', 'exhibitor_code', 'creation_year', 'medium', 'size', 'framed_size', 'current_condition', 
                 'tag_info', 'flags', 'flags_text', 'inventory', 'unit_amount', 'taxtype_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
