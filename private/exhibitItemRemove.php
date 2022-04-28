@@ -26,7 +26,7 @@ function ciniki_ags_exhibitItemRemove(&$ciniki, $tnid, $exhibit_id, $item_id) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.24', 'msg'=>'Item is not part of this exhibit', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.250', 'msg'=>'Item is not part of this exhibit', 'err'=>$rc['err']));
     }
     $exhibititem = isset($rc['item']) ? $rc['item'] : null;
 
@@ -49,7 +49,7 @@ function ciniki_ags_exhibitItemRemove(&$ciniki, $tnid, $exhibit_id, $item_id) {
         array('container'=>'invoices', 'fname'=>'invoice_number', 'fields'=>array('invoice_number')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.186', 'msg'=>'Unable to load invoices', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.268', 'msg'=>'Unable to load invoices', 'err'=>$rc['err']));
     }
     if( isset($rc['invoices']) ) {
         $invoice_list = '';
@@ -57,7 +57,7 @@ function ciniki_ags_exhibitItemRemove(&$ciniki, $tnid, $exhibit_id, $item_id) {
             $invoice_list .= ($invoice_list != '' ? ', ' : '') . '#' . $invoice['invoice_number'];
         }
         if( $invoice_list != '' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.187', 'msg'=>'Item must first be removed from the following invoice(s): ' . $invoice_list));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.269', 'msg'=>'Item must first be removed from the following invoice(s): ' . $invoice_list));
         }
     }
 
@@ -71,10 +71,10 @@ function ciniki_ags_exhibitItemRemove(&$ciniki, $tnid, $exhibit_id, $item_id) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.27', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.270', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
     if( !isset($rc['item']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.110', 'msg'=>'That item does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.271', 'msg'=>'That item does not exist'));
     }
     $item = $rc['item'];
     $item['unit_amount_display'] = '$' . number_format($item['unit_amount'], 2);
@@ -82,7 +82,7 @@ function ciniki_ags_exhibitItemRemove(&$ciniki, $tnid, $exhibit_id, $item_id) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
     $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.ags.exhibititem', $exhibititem['id'], 0x04);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.26', 'msg'=>'Unable to remove item', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.273', 'msg'=>'Unable to remove item', 'err'=>$rc['err']));
     }
 
     //
@@ -100,7 +100,7 @@ function ciniki_ags_exhibitItemRemove(&$ciniki, $tnid, $exhibit_id, $item_id) {
         'notes' => '',
         ), 0x04);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.177', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.272', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');

@@ -83,10 +83,10 @@ function ciniki_ags_exhibitorInventoryPDF($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'exhibitor');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.145', 'msg'=>'Unable to load exhibitor', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.282', 'msg'=>'Unable to load exhibitor', 'err'=>$rc['err']));
         }
         if( !isset($rc['exhibitor']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.146', 'msg'=>'Unable to find requested exhibitor'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.283', 'msg'=>'Unable to find requested exhibitor'));
         }
         $exhibitor = $rc['exhibitor'];
         $report_title = $exhibitor['display_name'] . ' - Inventory';
@@ -134,7 +134,7 @@ function ciniki_ags_exhibitorInventoryPDF($ciniki) {
                 'tag_info', 'flags', 'flags_text', 'inventory', 'unit_amount', 'taxtype_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.147', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.284', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
     }
     if( isset($rc['exhibitors']) ) {
         $exhibitors = $rc['exhibitors'];
