@@ -34,7 +34,7 @@ function ciniki_ags_participantAdd(&$ciniki) {
         'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'),
         // If form submission is specified for import
         'submission_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Form Submission'),
-        'fee_percent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fee Percent'),
+        'fee_percent'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'percent', 'name'=>'Fee Percent'),
         'item_flags3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sell Items Online'),
         'item_flags5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Items Tagged'),
         'item_synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis Append'),
