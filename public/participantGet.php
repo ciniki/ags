@@ -194,7 +194,7 @@ function ciniki_ags_participantGet($ciniki) {
         // Get the customer details
         //
         if( isset($args['customer_id']) ) {
-            $strsql = "SELECT id, display_name, code "
+            $strsql = "SELECT id, display_name, code, synopsis "
                 . "FROM ciniki_ags_exhibitors "
                 . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -207,6 +207,7 @@ function ciniki_ags_participantGet($ciniki) {
                 $participant['exhibitor_id'] = $rc['exhibitor']['id'];
                 $participant['display_name_override'] = $rc['exhibitor']['display_name'];
                 $participant['code'] = $rc['exhibitor']['code'];
+                $participant['synopsis'] = $rc['exhibitor']['synopsis'];
             } else {
                 $participant['exhibitor_id'] = 0;
                 $strsql = "SELECT display_name "
@@ -234,8 +235,7 @@ function ciniki_ags_participantGet($ciniki) {
                 $participant['code'] = $rc['code'];
             }
         } 
-        
-        
+
         $rsp = array('stat'=>'ok', 'participant'=>$participant);
     }
 
@@ -544,19 +544,35 @@ function ciniki_ags_participantGet($ciniki) {
         && $participant['customer_id'] > 0 
         ) {
         $strsql = "SELECT submissions.id, "
-            . "forms.name "
+            . "forms.name, "
+            . "data.data AS exhibitor_synopsis "
             . "FROM ciniki_form_submissions AS submissions "
             . "INNER JOIN ciniki_forms AS forms ON ("
                 . "submissions.form_id = forms.id "
                 . "AND forms.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_form_sections AS sections ON ("
+                . "forms.id = sections.form_id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_form_fields AS fields ON ("
+                . "sections.id = fields.section_id "
+                . "AND fields.field_ref = 'ciniki.ags.exhibitor.synopsis' "
+                . "AND fields.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_form_data AS data ON ("
+                . "submissions.id = data.submission_id "
+                . "AND fields.id = data.field_id "
+                . "AND data.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE submissions.customer_id = '" . ciniki_core_dbQuote($ciniki, $participant['customer_id']) . "' "
             . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND submissions.status = 90 "
+            . "GROUP BY submissions.id "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
-            array('container'=>'submissions', 'fname'=>'id', 'fields'=>array('id', 'name')),
+            array('container'=>'submissions', 'fname'=>'id', 'fields'=>array('id', 'name', 'exhibitor_synopsis')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.248', 'msg'=>'Unable to load submissions', 'err'=>$rc['err']));

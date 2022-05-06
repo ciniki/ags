@@ -19,6 +19,7 @@ function ciniki_ags_hooks_formFieldRefs(&$ciniki, $tnid, $args) {
         'ciniki.ags.exhibit.name' => array('module'=>$module, 'type'=>'text', 'name'=>'Exhibit Name'),
         'ciniki.ags.exhibit.synopsis' => array('module'=>$module, 'type'=>'textarea', 'name'=>'Exhibit Synopsis'),
         'ciniki.ags.exhibit.description' => array('module'=>$module, 'type'=>'textarea', 'name'=>'Exhibit Description'),
+        'ciniki.ags.exhibitor.synopsis' => array('module'=>$module, 'type'=>'textarea', 'name'=>'Exhibitor Bio'),
         'ciniki.ags.item.primary_image_id' => array('module'=>$module, 'type'=>'image', 'name'=>'Item Image'),
         'ciniki.ags.item.name' => array('module'=>$module, 'type'=>'text', 'name'=>'Item Name'),
         'ciniki.ags.item.flags.1' => array('module'=>$module, 'type'=>'checkbox', 'name'=>'For Sale'),

@@ -21,6 +21,7 @@ function ciniki_ags_exhibitList($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'etype'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit Type'),
+        'open'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Open/Upcoming Exhibits'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -52,6 +53,43 @@ function ciniki_ags_exhibitList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
     
+    if( isset($args['open']) && $args['open'] == 'yes' ) {
+        $strsql = "SELECT exhibits.id, "
+            . "exhibits.name, "
+            . "exhibits.permalink, "
+            . "exhibits.location_id, "
+            . "IFNULL(locations.name, '') AS location_name, "
+            . "exhibits.status, "
+            . "exhibits.status AS status_text, "
+            . "exhibits.flags, "
+            . "exhibits.start_date, "
+            . "exhibits.start_date AS start_date_display, "
+            . "DATE_FORMAT(exhibits.start_date, '%Y') AS year, "
+            . "IF((exhibits.flags&0x01)=0x01, 'Yes', 'No') AS visible, "
+            . "exhibits.end_date, "
+            . "exhibits.end_date AS end_date_display "
+            . "FROM ciniki_ags_exhibits AS exhibits "
+            . "LEFT JOIN ciniki_ags_locations AS locations ON ("
+                . "exhibits.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND (exhibits.end_date = '0000-00-00' OR exhibits.end_date > NOW()) "
+            . "ORDER BY exhibits.name ASC "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        return ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'exhibits', 'fname'=>'id', 
+                'fields'=>array('id', 'name', 'permalink', 'location_id', 'location_name', 'status', 'status_text', 'flags', 
+                    'start_date', 'start_date_display', 'visible', 'end_date', 'end_date_display'),
+                'maps'=>array('status_text'=>$maps['exhibit']['status']),
+                'utctotz'=>array('start_date_display'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                    'end_date_display'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                    ),
+                ),
+            ));
+    }
+
     //
     // Get the list of exhibits
     //

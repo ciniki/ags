@@ -1511,12 +1511,22 @@ function ciniki_ags_main() {
     this.editparticipant.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.ags.participantHistory', 'args':{'tnid':M.curTenantID, 'participant_id':this.participant_id, 'field':i}};
     }
-    this.editparticipant.addCustomer = function(cb, cid, eid) {
+    this.editparticipant.addCustomer = function(cb, cid, eid,sub_id) {
         this.participant_id = 0;
         this.exhibitor_id = 0;
         this.customer_id = cid;
         this.exhibit_id = eid;
-        M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':0, 'exhibitor_id':0, 'customer_id':this.customer_id, 'exhibit_id':this.exhibit_id}, function(rsp) {
+        var args = {
+            'tnid':M.curTenantID, 
+            'participant_id':0, 
+            'exhibitor_id':0, 
+            'customer_id':this.customer_id, 
+            'exhibit_id':this.exhibit_id
+            };
+        if( sub_id != null && sub_id > 0 ) {
+            args['submission_id'] = sub_id;
+        }
+        M.api.getJSONCb('ciniki.ags.participantGet', args, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -1530,6 +1540,9 @@ function ciniki_ags_main() {
             p.exhibitor_id = rsp.participant.exhibitor_id;
             p.sections._submission.fields.submission_id.options = {};
             if( M.modOn('ciniki.forms') ) {
+                if( sub_id != null && sub_id > 0 ) {
+                    p.data.submission_id = sub_id;
+                }
                 if( rsp.participant.submissions != null ) {
                     p.sections._submission.fields.submission_id.options = rsp.participant.submissions;
                 }
@@ -1537,6 +1550,17 @@ function ciniki_ags_main() {
             }
             p.refresh();
             p.show(cb);
+            if( sub_id != null && sub_id > 0 ) {
+                p.setFieldValue('status', 50);
+                for(var i in rsp.participant.submissions) {
+                    if( rsp.participant.submissions[i].id = sub_id 
+                        && rsp.participant.submissions[i].exhibitor_synopsis != null
+                        && rsp.participant.submissions[i].exhibitor_synopsis != ''
+                        ) {
+                        p.setFieldValue('synopsis', rsp.participant.submissions[i].exhibitor_synopsis);
+                    }
+                }
+            }
         });
     }
     this.editparticipant.open = function(cb, pid) {
@@ -2982,6 +3006,53 @@ function ciniki_ags_main() {
     }
     this.donations.addClose('Back');
 
+    //
+    // Choose and exhibit to add a participant to from form submission
+    //
+    this.chooseexhibit = new M.panel('Choose Exhibit', 'ciniki_ags_main', 'chooseexhibit', 'mc', 'xlarge', 'sectioned', 'ciniki.ags.main.chooseexhibit');
+    this.chooseexhibit.participant_submission_id = 0;
+    this.chooseexhibit.sections = {
+        'exhibits':{'label':'Exhibits', 'type':'simplegrid', 'num_cols':5,
+            'headerValues':['Name', 'Location', 'Start', 'End', 'Visible'],
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'date', 'date', 'text'],
+            'noData':'No exhibits found',
+            },
+    }
+    this.chooseexhibit.cellValue = function(s, i, j, d) {
+        switch(j) {
+            case 0: return d.name;
+            case 1: return d.location_name;
+            case 2: return d.start_date_display;
+            case 3: return d.end_date_display;
+            case 4: return d.visible;
+        }
+    }
+    this.chooseexhibit.rowFn = function(s, i, d) {
+        if( this.participant_submission_id > 0 ) {
+            return 'M.ciniki_ags_main.editparticipant.addCustomer(null, ' + this.customer_id + ', ' + d.id + ',' + this.participant_submission_id + ');';
+        }
+        return '';
+    }
+    this.chooseexhibit.open = function(cb, customer_id, sub_id) {
+        this.customer_id = customer_id;
+        this.participant_submission_id = sub_id;
+        M.ciniki_ags_main.editparticipant.cb = cb;
+        M.ciniki_ags_main.participant.cb = cb;
+        M.api.getJSONCb('ciniki.ags.exhibitList', {'tnid':M.curTenantID, 'open':'yes'}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_ags_main.chooseexhibit;
+            p.data = rsp;
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.chooseexhibit.addClose('Back');
+
+    
 
     //
     // Start the app
@@ -3077,7 +3148,10 @@ function ciniki_ags_main() {
         this.exhibitors.cb = cb;
         this.sales.cb = cb;
         this.donations.cb = cb;
-        if( this[this.menutabs.selected] == null ) {
+        if( args.customer_id != null && args.customer_id > 0 && args.participant_submission_id != null && args.participant_submission_id > 0 ) {
+            this.chooseexhibit.open(cb, args.customer_id, args.participant_submission_id);
+        }
+        else if( this[this.menutabs.selected] == null ) {
             this.exhibits.open(null,this.menutabs.selected);
         } else {
             this[this.menutabs.selected].open();

@@ -143,7 +143,7 @@ function ciniki_ags_formSubmissionParse(&$ciniki, $tnid, $submission_id) {
         }
     }
 
-    if( $item['name'] != '' ) {
+    if( isset($item['name']) && $item['name'] != '' ) {
         $exhibit['items'][] = $item;
     }
 

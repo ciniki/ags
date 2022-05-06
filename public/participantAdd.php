@@ -169,7 +169,7 @@ function ciniki_ags_participantAdd(&$ciniki) {
     // If exhibitor_id is specified, check to make sure they exist
     //
     else {
-        $strsql = "SELECT id, display_name, code "
+        $strsql = "SELECT id, display_name, code, synopsis "
             . "FROM ciniki_ags_exhibitors "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -182,6 +182,16 @@ function ciniki_ags_participantAdd(&$ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.122', 'msg'=>'Unable to find requested exhibitor'));
         }
         $exhibitor = $rc['exhibitor'];
+
+        if( isset($args['synopsis']) && $args['synopsis'] != $exhibitor['synopsis'] ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.exhibitor', $exhibitor['id'], array(
+                'synopsis' => $args['synopsis'],
+                ), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.285', 'msg'=>'Unable to update the exhibitor', 'err'=>$rc['err']));
+            }
+        }
     }
 
     //
