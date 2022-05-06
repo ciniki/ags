@@ -166,7 +166,7 @@ function ciniki_ags_exhibitorImportFormSubmission(&$ciniki, $tnid, $args) {
             $strsql = "SELECT id, name, permalink "
                 . "FROM ciniki_ags_items "
                 . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+                . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $item['permalink']) . "' "
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
             if( $rc['stat'] != 'ok' ) {

@@ -81,7 +81,7 @@ function ciniki_ags_formSubmissionParse(&$ciniki, $tnid, $submission_id) {
                 //
                 // Add the item if a name is specified
                 //
-                if( $ritem['name'] != '' ) {
+                if( isset($ritem['name']) && $ritem['name'] != '' ) {
                     $exhibit['items'][] = $ritem;
                 }
             }
