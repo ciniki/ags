@@ -2396,8 +2396,10 @@ function ciniki_ags_main() {
             'current_condition':{'label':'Condition', 'required':'no', 'type':'text'},
             'exhibitor_code':{'label':'Exhibitor Code', 'type':'text'},
             }},
-        '_types':{'label':'Type', 'aside':'yes', 'fields':{
-            'types':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new item type: '},
+        '_types':{'label':'Type', 'aside':'yes', 
+            'active':function() { return M.modFlagSet('ciniki.ags', 0x02); },
+            'fields':{
+                'types':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new item type: '},
             }},
         'price':{'label':'Pricing', 'aside':'yes', 'fields':{
             'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'For Sale'}, '2':{'name':'Visible Online'}, '3':{'name':'Sell Online'}, '4':{'name':'Hide Price'}, '5':{'name':'Tagged'}}},
