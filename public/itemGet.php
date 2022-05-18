@@ -128,6 +128,7 @@ function ciniki_ags_itemGet($ciniki) {
             'fee_percent' => (isset($settings['defaults-item-fee-percent']) ? $settings['defaults-item-fee-percent'] : ''),
             'taxtype_id' => '',
             'shipping_profile_id' => 0,
+            'sapos_category' => '',
             'primary_image_id' => '0',
             'synopsis' => '',
             'description' => '',
@@ -182,6 +183,7 @@ function ciniki_ags_itemGet($ciniki) {
             . "ciniki_ags_items.fee_percent, "
             . "ciniki_ags_items.taxtype_id, "
             . "ciniki_ags_items.shipping_profile_id, "
+            . "ciniki_ags_items.sapos_category, "
             . "ciniki_ags_items.donor_customer_id, "
             . "ciniki_ags_items.primary_image_id, "
             . "ciniki_ags_items.synopsis, "
@@ -202,7 +204,7 @@ function ciniki_ags_itemGet($ciniki) {
             array('container'=>'items', 'fname'=>'id', 
                 'fields'=>array('exhibitor_id', 'exhibitor_code', 'code', 'name', 'permalink', 'status', 'flags', 
                     'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 
-                    'taxtype_id', 'shipping_profile_id', 'donor_customer_id',
+                    'taxtype_id', 'shipping_profile_id', 'sapos_category', 'donor_customer_id',
                     'primary_image_id', 'synopsis', 'description', 'tag_info', 
                     'creation_year', 'medium', 'size', 'framed_size', 'current_condition', 'notes'),
                 ),

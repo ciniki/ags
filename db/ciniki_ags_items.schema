@@ -50,6 +50,8 @@
 #
 # shipping_profile_id:      The ID of the shipping profile for this item. The shipping profiles come from ciniki.sapos.
 #
+# sapos_category:           The Category in ciniki.sapos for the item.
+#
 # donor_customer_id:        The ID of the customer in ciniki.customers who donated the item.
 #
 # primary_image_id:         The ID of the primary image for the item.
@@ -86,6 +88,7 @@ create table ciniki_ags_items (
     fee_percent decimal(19,4) not null,
     taxtype_id int not null,
     shipping_profile_id int not null,
+    sapos_category varchar(150) not null,
     primary_image_id int not null,
     synopsis varchar(6000) not null,
     description text not null,
@@ -103,4 +106,4 @@ create table ciniki_ags_items (
     unique index (code, tnid),
     unique index (permalink, tnid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';

@@ -2409,6 +2409,9 @@ function ciniki_ags_main() {
 //            'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
 //            'unit_discount_percentage':{'label':'Discount Percent', 'type':'text', 'size':'small'},
             'fee_percent':{'label':'Fee %', 'type':'text', 'size':'small'},
+            'sapos_category':{'label':'Accounting Category', 'type':'text',
+                'visible':function() {return M.modFlagSet('ciniki.sapos', 0x01000000); }, // Item Categories flag in ciniki.sapos
+                },
             'shipping_profile_id':{'label':'Shipping', 'type':'select', 'options':{},
                 'complex_options':{'value':'id', 'name':'name'},
                 'visible':function() {return M.modFlagSet('ciniki.sapos', 0x40); }, // Shipping flag in ciniki.sapos

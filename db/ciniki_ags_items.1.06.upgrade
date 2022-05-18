@@ -1,0 +1,5 @@
+#
+# Add field for invoice item category in ciniki.sapos module.
+#
+ALTER TABLE ciniki_ags_items ADD COLUMN sapos_category varchar(150) not null AFTER shipping_profile_id;
+ALTER TABLE ciniki_ags_items COMMENT='v1.06';

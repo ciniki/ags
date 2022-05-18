@@ -32,6 +32,7 @@ function ciniki_ags_sapos_itemLookup($ciniki, $tnid, $args) {
             . "items.unit_discount_percentage, "
             . "items.taxtype_id, "
             . "items.shipping_profile_id, "
+            . "items.sapos_category AS category, "
             . "eitems.inventory AS inventory_current_num, "
             . "exhibits.name AS exhibit_name, "
             . "exhibitors.display_name "
