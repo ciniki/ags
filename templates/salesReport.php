@@ -144,6 +144,9 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
             $lh = 6;
             $code = $item['code'];
             $name = $item['name'];
+            if( isset($item['exhibitor_code']) && $item['exhibitor_code'] != '' ) {
+                $name = $item['exhibitor_code'] . ' - ' . $name;
+            }
             $total_amount += $item['total_amount'];
             $total_tenant_amount += $item['tenant_amount'];
             $total_exhibitor_amount += $item['exhibitor_amount'];
