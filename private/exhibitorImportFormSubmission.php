@@ -124,7 +124,7 @@ function ciniki_ags_exhibitorImportFormSubmission(&$ciniki, $tnid, $args) {
     foreach($items as $item) {
         $item_found = null;
         foreach($exhibitor_items as $eitem) {
-            if( $eitem['primary_image_id'] == $item['primary_image_id'] ) {
+            if( isset($item['primary_image_id']) && $eitem['primary_image_id'] == $item['primary_image_id'] ) {
                 $item_found = $eitem;
                 break;
             }
