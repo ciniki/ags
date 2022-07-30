@@ -22,7 +22,7 @@ function ciniki_ags_hooks_sponsorshipObjects(&$ciniki, $tnid, $args) {
     $strsql = "SELECT exhibits.id, "
         . "exhibits.name, "
         . "exhibits.start_date, "
-        . "DATE_FORMAT(exhibits.start_date, '%b %e, %Y') AS exhibit "
+        . "DATE_FORMAT(exhibits.start_date, '%b %e, %Y') AS exhibit_date "
         . "FROM ciniki_ags_exhibits AS exhibits "
         . "WHERE exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (exhibits.start_date > NOW() "
