@@ -104,7 +104,9 @@ function ciniki_ags_objects(&$ciniki) {
             'code' => array('name'=>'Code'),
             'status' => array('name'=>'Status', 'default'=>'30'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
+            'primary_image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis' => array('name'=>'Synopsis', 'default'=>''),
+            'fullbio' => array('name'=>'Full Bio', 'default'=>''),
             ),
         'history_table' => 'ciniki_ags_history',
         );

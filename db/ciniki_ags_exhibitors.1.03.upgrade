@@ -1,0 +1,8 @@
+#
+# Add primary image and full bio field
+#
+ALTER TABLE ciniki_ags_exhibitors ADD COLUMN primary_image_id int not null AFTER flags;
+ALTER TABLE ciniki_ags_exhibitors ADD COLUMN fullbio text not null AFTER synopsis;
+ALTER TABLE ciniki_ags_exhibitors COMMENT='v1.03';
+UPDATE ciniki_ags_exhibitors SET fullbio = synopsis;
+UPDATE ciniki_ags_exhibitors INNER JOIN ciniki_customers ON (ciniki_ags_exhibitors.customer_id = ciniki_customers.id) SET ciniki_ags_exhibitors.primary_image_id = ciniki_customers.primary_image_id;

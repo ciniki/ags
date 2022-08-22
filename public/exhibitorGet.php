@@ -163,7 +163,9 @@ function ciniki_ags_exhibitorGet($ciniki) {
             . "ciniki_ags_exhibitors.code, "
             . "ciniki_ags_exhibitors.status, "
             . "ciniki_ags_exhibitors.flags, "
-            . "ciniki_ags_exhibitors.synopsis "
+            . "ciniki_ags_exhibitors.primary_image_id, "
+            . "ciniki_ags_exhibitors.synopsis, "
+            . "ciniki_ags_exhibitors.fullbio "
             . "FROM ciniki_ags_exhibitors "
             . "WHERE ciniki_ags_exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_ags_exhibitors.id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
@@ -172,7 +174,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'exhibitors', 'fname'=>'id', 
                 'fields'=>array('customer_id', 'display_name_override', 'display_name', 'permalink', 'code', 
-                    'status', 'flags', 'synopsis'),
+                    'status', 'flags', 'primary_image_id', 'synopsis', 'fullbio'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

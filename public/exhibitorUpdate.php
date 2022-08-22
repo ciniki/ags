@@ -24,7 +24,9 @@ function ciniki_ags_exhibitorUpdate(&$ciniki) {
         'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
+        'fullbio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Full Bio'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

@@ -24,7 +24,7 @@ function ciniki_ags_flags(&$ciniki) {
         array('flag'=>array('bit'=>'5', 'name'=>'Barcodes')),
         array('flag'=>array('bit'=>'6', 'name'=>'Location Categories')),
         array('flag'=>array('bit'=>'7', 'name'=>'Participant Message')),    // Sales message auto added to each item
-        array('flag'=>array('bit'=>'8', 'name'=>'Participant Bios')),
+        array('flag'=>array('bit'=>'8', 'name'=>'Exhibitor Bios')),
         // 0x0100
         array('flag'=>array('bit'=>'9', 'name'=>'Donation Receipts')),
 //        array('flag'=>array('bit'=>'10', 'name'=>'')),

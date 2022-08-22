@@ -2278,14 +2278,30 @@ function ciniki_ags_main() {
     this.editexhibitor.exhibitor_id = 0;
     this.editexhibitor.nplist = [];
     this.editexhibitor.sections = {
-        'general':{'label':'', 'fields':{
-            'display_name_override':{'label':'Exhibitor Name', 'type':'text'},
-            'code':{'label':'Code', 'required':'yes', 'type':'text'},
-            }},
-        '_synopsis':{'label':'Exhibitor Bio', 
+        '_primary_image_id':{'label':'', 'type':'imageform', 'aside':'yes',
             'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
             'fields':{
-                'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+                'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                    'addDropImage':function(iid) {
+                        M.ciniki_ags_main.item.setFieldValue('primary_image_id', iid);
+                        return true;
+                        },
+                    'addDropImageRefresh':'',
+                },
+             }},
+        'general':{'label':'Exhibitor', 'aside':'yes', 'fields':{
+            'display_name_override':{'label':'Name', 'type':'text'},
+            'code':{'label':'Code', 'required':'yes', 'type':'text'},
+            }},
+        '_synopsis':{'label':'Exhibitor Synopsis', 
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
+            'fields':{
+                'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
+            }},
+        '_fullbio':{'label':'Exhibitor Full Bio', 
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
+            'fields':{
+                'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'next':{'label':'Next', 
@@ -3140,6 +3156,7 @@ function ciniki_ags_main() {
             this.participant.sections.inventory.headerClasses = ['','','','alignright','alignright',''];
             this.participant.sections.inventory.cellClasses = ['multiline', '', 'multiline', 'multiline alignright', 'alignright'];
         }
+        this.editexhibitor.size = (M.modFlagOn('ciniki.ags', 0x80) ? 'medium mediumaside' : 'medium');
 
         //
         // Create the app container
