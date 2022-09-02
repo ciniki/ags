@@ -247,6 +247,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         // Get the list of past participants
         //
         $strsql = "SELECT participants.id, "
+            . "exhibitors.customer_id, "
             . "exhibitors.id AS exhibitor_id, "
             . "exhibitors.display_name, "
             . "participants.status, "
@@ -264,7 +265,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'participants', 'fname'=>'exhibitor_id', 
-                'fields'=>array('id', 'exhibitor_id', 'display_name', 'status', 'status_text'),
+                'fields'=>array('id', 'customer_id', 'exhibitor_id', 'display_name', 'status', 'status_text'),
                 'maps'=>array('status_text'=>$maps['participant']['status']),
                 ),
             ));
@@ -277,6 +278,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         // Get the list of participants
         //
         $strsql = "SELECT participants.id, "
+            . "exhibitors.customer_id, "
             . "exhibitors.id AS exhibitor_id, "
             . "exhibitors.display_name, "
             . "participants.status, "
@@ -294,7 +296,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'participants', 'fname'=>'exhibitor_id', 
-                'fields'=>array('id', 'exhibitor_id', 'display_name', 'status', 'status_text'),
+                'fields'=>array('id', 'customer_id', 'exhibitor_id', 'display_name', 'status', 'status_text'),
                 'maps'=>array('status_text'=>$maps['participant']['status']),
                 ),
             ));

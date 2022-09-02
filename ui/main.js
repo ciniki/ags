@@ -148,15 +148,16 @@ function ciniki_ags_main() {
             'changeTxt':'Edit Exhibit',
             'changeFn':'M.ciniki_ags_main.exhibitedit.open(\'M.ciniki_ags_main.exhibit.open();\',M.ciniki_ags_main.exhibit.exhibit_id,null);',
             },
-        '_buttons':{'label':'', 'aside':'yes', 'buttons':{
+        '_buttons':{'label':'', 'aside':'yes', 'size':'half', 'buttons':{
             'excelinventory':{'label':'Inventory (Excel)', 'fn':'M.ciniki_ags_main.exhibit.exhibitInventory();'},
-            'pricespdf':{'label':'Price List (PDF)', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceList();'},
-            'pricebookpdf':{'label':'Untagged Price Book (PDF)', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceBook();'},
-            'inventorypdf':{'label':'Current Inventory (PDF)', 'fn':'M.ciniki_ags_main.exhibit.currentInventoryPDF();'},
-            'salespdf':{'label':'Unpaid Sales (PDF)', 'fn':'M.ciniki_ags_main.exhibit.unpaidSalesPDF();'},
-            'namecards':{'label':'Name Cards (PDF)', 'fn':'M.ciniki_ags_main.exhibit.nameCardsPDF();'},
-            'barcodes':{'label':'Barcodes (PDF)', 'fn':'M.ciniki_ags_main.exhibit.barcodesPDF();'},
+            'pricespdf':{'label':'Price List', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceList();'},
+            'pricebookpdf':{'label':'Untagged Price Book', 'fn':'M.ciniki_ags_main.exhibit.exhibitPriceBook();'},
+            'inventorypdf':{'label':'Current Inventory', 'fn':'M.ciniki_ags_main.exhibit.currentInventoryPDF();'},
+            'salespdf':{'label':'Unpaid Sales', 'fn':'M.ciniki_ags_main.exhibit.unpaidSalesPDF();'},
+            'namecards':{'label':'Name Cards', 'fn':'M.ciniki_ags_main.exhibit.nameCardsPDF();'},
+            'barcodes':{'label':'Barcodes', 'fn':'M.ciniki_ags_main.exhibit.barcodesPDF();'},
             'riskpdf':{'label':'Risk Management Form', 'fn':'M.ciniki_ags_main.exhibit.riskManagementPDF();'},
+            'email':{'label':'Email Exhibitors', 'fn':'M.ciniki_ags_main.exhibit.emailShow();'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'participants', 
             'tabs':{
@@ -477,6 +478,25 @@ function ciniki_ags_main() {
     }
     this.exhibit.riskManagementPDF = function() {
         M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'template':'riskmanagement'});
+    }
+    this.exhibit.emailShow = function() {
+        var customers = [];
+        for(var i in this.data.participants) {
+            customers[i] = {
+                'id':this.data.participants[i].customer_id,
+                'name':this.data.participants[i].display_name,
+                };
+        }
+        M.startApp('ciniki.mail.omessage',
+            null,
+            'M.ciniki_ags_main.exhibit.open();',
+            'mc',
+            {'subject':'Re: ' + this.data.exhibit.name,
+                'list':customers, 
+                'object':'ciniki.ags.exhibit',
+                'object_id':this.exhibit_id,
+                'removeable':'yes',
+            });
     }
     this.exhibit.addClose('Back');
 
