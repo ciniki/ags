@@ -746,7 +746,7 @@ function ciniki_ags_main() {
 //                'halfsize':{'label':'Half Size', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 //                'codes':{'label':'Codes', 'type':'text'},
             }},
-        '_buttons':{'label':'', 'aside':'yes', 'buttons':{
+        '_buttons':{'label':'', 'aside':'yes', 'size':'half', 'buttons':{
             'barcodes':{'label':'Print Item Barcodes', 
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 && M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' && M.ciniki_ags_main.participant.sections.print_tabs.selected == 'barcodes' ? 'yes' :'no';},
                 'fn':'M.ciniki_ags_main.participant.printBarcodes();',
