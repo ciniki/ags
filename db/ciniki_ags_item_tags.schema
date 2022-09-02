@@ -17,6 +17,8 @@
 #                   0 - unknown
 #                   10 - Type 
 #                   20 - Category (Used for categories on the website)
+#                   30 - Subcategory (Used for subcategories on the website)
+#                   60 - Tags (Used for tags on the website)
 #
 # tag_name:         The name of the tag, list or category.
 #

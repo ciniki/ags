@@ -290,6 +290,10 @@ function ciniki_ags_itemGet($ciniki) {
                     $item['types'] = $tags['names'];
                 } elseif( $tags['tag_type'] == 20 ) {
                     $item['categories'] = $tags['names'];
+                } elseif( $tags['tag_type'] == 30 ) {
+                    $item['subcategories'] = $tags['names'];
+                } elseif( $tags['tag_type'] == 60 ) {
+                    $item['tags'] = $tags['names'];
                 }
             }
         }
@@ -438,12 +442,18 @@ function ciniki_ags_itemGet($ciniki) {
     }
     $rsp['types'] = array();
     $rsp['categories'] = array();
+    $rsp['subcategories'] = array();
+    $rsp['tags'] = array();
     if( isset($rc['tags']) ) {
         foreach($rc['tags'] as $tid => $type) {
             if( $type['type'] == 10 ) {
                 $rsp['types'] = explode('::', $type['names']);
             } elseif( $type['type'] == 20 ) {
                 $rsp['categories'] = explode('::', $type['names']);
+            } elseif( $type['type'] == 30 ) {
+                $rsp['subcategories'] = explode('::', $type['names']);
+            } elseif( $type['type'] == 60 ) {
+                $rsp['tags'] = explode('::', $type['names']);
             }
         }
     }

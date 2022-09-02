@@ -31,9 +31,9 @@ function ciniki_ags_flags(&$ciniki) {
 //        array('flag'=>array('bit'=>'11', 'name'=>'')),
 //        array('flag'=>array('bit'=>'12', 'name'=>'')),
         // 0x1000
-//        array('flag'=>array('bit'=>'13', 'name'=>'')),
-//        array('flag'=>array('bit'=>'14', 'name'=>'')),
-//        array('flag'=>array('bit'=>'15', 'name'=>'')),
+//        array('flag'=>array('bit'=>'13', 'name'=>'Item Categories')),
+        array('flag'=>array('bit'=>'14', 'name'=>'Item Subcategories')),
+        array('flag'=>array('bit'=>'15', 'name'=>'Item Tags')),
 //        array('flag'=>array('bit'=>'16', 'name'=>'')),
         );
     //

@@ -47,6 +47,8 @@ function ciniki_ags_itemAdd(&$ciniki) {
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'types'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Types'),
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'),
+        'subcategories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Subcategories'),
+        'tags'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Tags'),
         'exhibit_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Exhibit'),
         'quantity'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Inventory'),
         ));
@@ -133,6 +135,26 @@ function ciniki_ags_itemAdd(&$ciniki) {
         $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.ags', 'itemtag', $args['tnid'],
             'ciniki_ags_item_tags', 'ciniki_ags_history',
             'item_id', $item_id, 20, $args['categories']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+            return $rc;
+        }
+    }
+    if( isset($args['subcategories']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.ags', 'itemtag', $args['tnid'],
+            'ciniki_ags_item_tags', 'ciniki_ags_history',
+            'item_id', $item_id, 30, $args['subcategories']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+            return $rc;
+        }
+    }
+    if( isset($args['tags']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.ags', 'itemtag', $args['tnid'],
+            'ciniki_ags_item_tags', 'ciniki_ags_history',
+            'item_id', $item_id, 60, $args['tags']);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
             return $rc;

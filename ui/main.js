@@ -2480,8 +2480,20 @@ function ciniki_ags_main() {
         '_description':{'label':'Description', 'panelcolumn':1, 'fields':{
             'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
-        '_categories':{'label':'Web Categories', 'aside':'yes', 'panelcolumn':2, 'fields':{
-            'categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category: '},
+        '_categories':{'label':'Web Categories', 'aside':'yes', 'panelcolumn':2, 
+//            'visible':function() { return M.modFlagSet('ciniki.ags', 0x1000); },
+            'fields':{
+                'categories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new category: '},
+            }},
+        '_subcategories':{'label':'Web Subcategories', 'aside':'yes', 'panelcolumn':2, 
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x2000); },
+            'fields':{
+                'subcategories':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new subcategory: '},
+            }},
+        '_tags':{'label':'Web Tags', 'aside':'yes', 'panelcolumn':2, 
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x4000); },
+            'fields':{
+                'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag: '},
             }},
         'images':{'label':'Additional Images', 'panelcolumn':2, 'type':'simplethumbs'},
         '_images':{'label':'', 'type':'simplegrid', 'panelcolumn':2, 'num_cols':1,
@@ -2610,7 +2622,9 @@ function ciniki_ags_main() {
             var p = M.ciniki_ags_main.item;
             p.data = rsp.item;
             p.sections._types.fields.types.tags = rsp.types;
+            p.sections._tags.fields.tags.tags = rsp.tags;
             p.sections._categories.fields.categories.tags = rsp.categories;
+            p.sections._subcategories.fields.subcategories.tags = rsp.subcategories;
             p.sections.price.fields.shipping_profile_id.options = (rsp.shippingprofiles != null ? rsp.shippingprofiles : []);
             p.sections.price.fields.taxtype_id.options = (rsp.taxtypes != null ? rsp.taxtypes : []);
             p.refresh();
