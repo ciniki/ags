@@ -779,6 +779,10 @@ function ciniki_ags_main() {
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
                 'fn':'M.ciniki_ags_main.participant.riskManagementPDF();',
                 },
+            'email':{'label':'Email Exhibitor', 
+                'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
+                'fn':'M.ciniki_ags_main.participant.emailShow();',
+                },
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'inventory', 
             'tabs':{
@@ -1409,6 +1413,22 @@ function ciniki_ags_main() {
         p.exhibitor_id = rsp.participant.exhibitor_id;
         p.refresh();
         p.show();
+    }
+    this.participant.emailShow = function() {
+        var customers = [{
+            'id':this.data.participant.customer_id,
+            'name':this.data.participant.display_name,
+            }];
+        M.startApp('ciniki.mail.omessage',
+            null,
+            'M.ciniki_ags_main.exhibit.open();',
+            'mc',
+            {'subject':'',
+                'list':customers, 
+                'object':'ciniki.ags.participant',
+                'object_id':this.participant_id,
+                'removeable':'yes',
+            });
     }
     this.participant.openLogs = function() {
         M.api.getJSONBgCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id}, function(rsp) {
