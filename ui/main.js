@@ -157,7 +157,7 @@ function ciniki_ags_main() {
             'namecards':{'label':'Name Cards', 'fn':'M.ciniki_ags_main.exhibit.nameCardsPDF();'},
             'barcodes':{'label':'Barcodes', 'fn':'M.ciniki_ags_main.exhibit.barcodesPDF();'},
             'riskpdf':{'label':'Risk Management Form', 'fn':'M.ciniki_ags_main.exhibit.riskManagementPDF();'},
-            'email':{'label':'Email Exhibitors', 'fn':'M.ciniki_ags_main.exhibit.emailShow();'},
+            'email':{'label':'Email Participants', 'fn':'M.ciniki_ags_main.exhibit.emailShow();'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'participants', 
             'tabs':{
@@ -166,6 +166,7 @@ function ciniki_ags_main() {
                 'sales':{'label':'Sales', 'fn':'M.ciniki_ags_main.exhibit.switchTab("sales");'},
                 'categories':{'label':'Categories', 'fn':'M.ciniki_ags_main.exhibit.switchTab("categories");'},
                 'inactive':{'label':'Inactive Participants', 'fn':'M.ciniki_ags_main.exhibit.switchTab("inactive");'},
+                'emails':{'label':'Emails', 'fn':'M.ciniki_ags_main.exhibit.switchTab("emails");'},
             }},
 //        'participant_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':6,
 //            'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'participants' ? 'yes' : 'hidden'},
@@ -240,6 +241,14 @@ function ciniki_ags_main() {
             'sortTypes':['text', 'text'],
             'headerValues':['Exhibitor', 'Status'],
             'noData':'No inactive participants',
+            },
+        'messages':{'label':'Emails', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'emails' ? 'yes' : 'hidden';},
+            'cellClasses':['multiline', 'multiline'],
+            'headerValues':['Name/Date', 'Email/Subject'],
+            'sortable':'yes',
+            'sortTypes':['text','text'],
+            'noData':'No Emails Sent',
             },
     }
     this.exhibit.liveSearchCb = function(s, i, v) {
@@ -339,6 +348,14 @@ function ciniki_ags_main() {
             }
             return d.tag_name;
         }
+        if( s == 'messages' ) {
+            switch(j) {
+                case 0: return '<span class="maintext">' + d.customer_name + '</span>'    
+                    + '<span class="subtext">' + d.status_text + ' - ' + d.date_sent + '</span>';
+                case 1: return '<span class="maintext">' + d.customer_email + '</span>' 
+                    + '<span class="subtext">' + d.subject + '</span>';
+            }
+        }
     }
     this.exhibit.footerValue = function(s, i, d) {
         if( s == 'participants' ) {
@@ -396,6 +413,9 @@ function ciniki_ags_main() {
         if( s == 'categories' ) {
             return 'M.ciniki_ags_main.category.open(\'M.ciniki_ags_main.exhibit.open();\',\'' + d.permalink + '\',0,0);';
         }
+        if( s == 'messages' ) {
+            return 'M.startApp(\'ciniki.mail.main\',null,\'M.ciniki_ags_main.exhibit.open();\',\'mc\',{\'message_id\':\'' + d.id + '\'});';
+        }
         return '';
     }
     this.exhibit.switchTab = function(t) {
@@ -409,6 +429,7 @@ function ciniki_ags_main() {
         this.showHideSection('pending_payouts');
         this.showHideSection('paid_sales');
         this.showHideSection('inactive');
+        this.showHideSection('messages');
         this.showHideSection('categories');
     }
     this.exhibit.saleFeeUpdate = function(event,sid) {
@@ -484,7 +505,7 @@ function ciniki_ags_main() {
         for(var i in this.data.participants) {
             customers[i] = {
                 'id':this.data.participants[i].customer_id,
-                'name':this.data.participants[i].display_name,
+                'name':this.data.participants[i].customer_name,
                 };
         }
         M.startApp('ciniki.mail.omessage',
@@ -779,7 +800,7 @@ function ciniki_ags_main() {
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
                 'fn':'M.ciniki_ags_main.participant.riskManagementPDF();',
                 },
-            'email':{'label':'Email Exhibitor', 
+            'email':{'label':'Email Participant', 
                 'visible':function() {return M.ciniki_ags_main.participant.data.participant.status == 50 ? 'yes' :'no';},
                 'fn':'M.ciniki_ags_main.participant.emailShow();',
                 },
@@ -790,6 +811,7 @@ function ciniki_ags_main() {
                 'sales':{'label':'Sales', 'fn':'M.ciniki_ags_main.participant.switchTab("sales");'},
                 'online':{'label':'Online', 'fn':'M.ciniki_ags_main.participant.switchTab("online");'},
                 'history':{'label':'History', 'fn':'M.ciniki_ags_main.participant.switchTab("history");'},
+                'emails':{'label':'Emails', 'fn':'M.ciniki_ags_main.participant.switchTab("emails");'},
             }},
 /*        'inventory_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' : 'hidden'},
@@ -856,6 +878,14 @@ function ciniki_ags_main() {
             'cellClasses':['thumbnail', 'multiline', '', 'aligncenter', 'aligncenter', 'aligncenter', 'multiline alignright', ''],
             'headerClasses':['', '', '', 'aligncenter', 'aligncenter', 'aligncenter', 'alignright', ''],
             'noData':'No items in this exhibit',
+            },
+        'messages':{'label':'Emails', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'emails' ? 'yes' : 'hidden';},
+            'cellClasses':['multiline', 'multiline'],
+            'headerValues':['Name/Date', 'Email/Subject'],
+            'sortable':'yes',
+            'sortTypes':['text','text'],
+            'noData':'No Emails Sent',
             },
     }
     this.participant.sectionData = function(s) {
@@ -1110,6 +1140,14 @@ function ciniki_ags_main() {
                 case 5: return d.item_name;
             }
         }
+        if( s == 'messages' ) {
+            switch(j) {
+                case 0: return '<span class="maintext">' + d.customer_name + '</span>'    
+                    + '<span class="subtext">' + d.status_text + ' - ' + d.date_sent + '</span>';
+                case 1: return '<span class="maintext">' + d.customer_email + '</span>' 
+                    + '<span class="subtext">' + d.subject + '</span>';
+            }
+        }
     }
     this.participant.footerValue = function(s, i, d) {
         if( s == 'paid_sales' ) {
@@ -1180,6 +1218,9 @@ function ciniki_ags_main() {
         if( s == 'participant_details' ) {
             return null;
         }
+        if( s == 'messages' ) {
+            return 'M.startApp(\'ciniki.mail.main\',null,\'M.ciniki_ags_main.participant.open();\',\'mc\',{\'message_id\':\'' + d.id + '\'});';
+        }
         return '';
     }
     this.participant.selectCode = function(event, code) {
@@ -1213,6 +1254,7 @@ function ciniki_ags_main() {
         this.showHideSection('online');
         this.showHideSection('barcodes');
         this.showHideSection('namecards');
+        this.showHideSection('messages');
         this.openLogs();
     }
     this.participant.upload_item_id = 0;
@@ -1417,16 +1459,16 @@ function ciniki_ags_main() {
     this.participant.emailShow = function() {
         var customers = [{
             'id':this.data.participant.customer_id,
-            'name':this.data.participant.display_name,
+            'name':this.data.participant.customer_name,
             }];
         M.startApp('ciniki.mail.omessage',
             null,
-            'M.ciniki_ags_main.exhibit.open();',
+            'M.ciniki_ags_main.participant.open();',
             'mc',
-            {'subject':'',
+            {'subject':'Re: ' + this.data.exhibit_details[0].value,
                 'list':customers, 
-                'object':'ciniki.ags.participant',
-                'object_id':this.participant_id,
+                'object':'ciniki.ags.exhibit',
+                'object_id':this.data.participant.exhibit_id,
                 'removeable':'yes',
             });
     }

@@ -281,12 +281,17 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "exhibitors.customer_id, "
             . "exhibitors.id AS exhibitor_id, "
             . "exhibitors.display_name, "
+            . "customers.display_name AS customer_name, "
             . "participants.status, "
             . "participants.status AS status_text "
             . "FROM ciniki_ags_participants AS participants "
             . "INNER JOIN ciniki_ags_exhibitors AS exhibitors ON ("
                 . "participants.exhibitor_id = exhibitors.id "
                 . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_customers AS customers ON ("
+                . "exhibitors.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE participants.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
             . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -296,7 +301,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'participants', 'fname'=>'exhibitor_id', 
-                'fields'=>array('id', 'customer_id', 'exhibitor_id', 'display_name', 'status', 'status_text'),
+                'fields'=>array('id', 'customer_id', 'customer_name', 'exhibitor_id', 'display_name', 'status', 'status_text'),
                 'maps'=>array('status_text'=>$maps['participant']['status']),
                 ),
             ));
@@ -529,6 +534,20 @@ function ciniki_ags_exhibitGet($ciniki) {
             }
         }
         $rsp['categories'] = $categories;
+
+        //
+        // Get the list of emails sent for this exhibit
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessages');
+        $rc = ciniki_mail_hooks_objectMessages($ciniki, $args['tnid'], array(
+            'object' => 'ciniki.ags.exhibit',
+            'object_id' => $args['exhibit_id'],
+            'xml' => 'no',
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $rsp['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
     }
 
     return $rsp;
