@@ -23,7 +23,9 @@ function ciniki_ags_participantUpdate(&$ciniki) {
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
+        'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
+        'fullbio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Full Bio'),
         'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Code'),
         ));
@@ -57,7 +59,12 @@ function ciniki_ags_participantUpdate(&$ciniki) {
     //
     // Check if updating exhibitor name or code
     //
-    if( isset($args['display_name_override']) || isset($args['code']) || isset($args['synopsis']) ) {
+    if( isset($args['display_name_override']) 
+        || isset($args['code']) 
+        || isset($args['primary_image_id']) 
+        || isset($args['synopsis']) 
+        || isset($args['fullbio']) 
+        ) {
         $strsql = "SELECT participants.id, "
             . "participants.exhibitor_id "
             . "FROM ciniki_ags_participants AS participants "
@@ -73,7 +80,10 @@ function ciniki_ags_participantUpdate(&$ciniki) {
         }
         $participant = $rc['participant'];
         $ciniki['request']['args']['exhibitor_id'] = $participant['exhibitor_id'];
-        
+       
+        //
+        // Update any exhibitor settings
+        //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'public', 'exhibitorUpdate');
         $rc = ciniki_ags_exhibitorUpdate($ciniki);
         if( $rc['stat'] != 'ok' ) {

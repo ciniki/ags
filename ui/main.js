@@ -1549,7 +1549,18 @@ function ciniki_ags_main() {
     this.editparticipant.customer_id = 0;
     this.editparticipant.nplist = [];
     this.editparticipant.sections = {
-        'general':{'label':'', 'fields':{
+        '_primary_image_id':{'label':'', 'type':'imageform', 'aside':'yes',
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
+            'fields':{
+                'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                    'addDropImage':function(iid) {
+                        M.ciniki_ags_main.editparticipant.setFieldValue('primary_image_id', iid);
+                        return true;
+                        },
+                    'addDropImageRefresh':'',
+                },
+             }},
+        'general':{'label':'', 'aside':'yes', 'fields':{
             'display_name_override':{'label':'Exhibitor Name', 'type':'text'},
             'code':{'label':'Code', 'required':'yes', 'type':'text'},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'30':'Applied', '50':'Accepted', '70':'Inactive', '90':'Rejected'}},
@@ -1573,6 +1584,11 @@ function ciniki_ags_main() {
             'active':function() { return M.modFlagSet('ciniki.ags', 0x80); },
             'fields':{
                 'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_fullbio':{'label':'Exhibitor Full Bio', 
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
+            'fields':{
+                'fullbio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'next':{'label':'Next', 
@@ -2365,7 +2381,7 @@ function ciniki_ags_main() {
             'fields':{
                 'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
                     'addDropImage':function(iid) {
-                        M.ciniki_ags_main.item.setFieldValue('primary_image_id', iid);
+                        M.ciniki_ags_main.editexhibitor.setFieldValue('primary_image_id', iid);
                         return true;
                         },
                     'addDropImageRefresh':'',
@@ -2378,12 +2394,12 @@ function ciniki_ags_main() {
         '_synopsis':{'label':'Exhibitor Synopsis', 
             'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
             'fields':{
-                'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'},
+                'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
         '_fullbio':{'label':'Exhibitor Full Bio', 
             'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
             'fields':{
-                'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+                'fullbio':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'next':{'label':'Next', 
@@ -3253,6 +3269,7 @@ function ciniki_ags_main() {
             this.participant.sections.inventory.cellClasses = ['multiline', '', 'multiline', 'multiline alignright', 'alignright'];
         }
         this.editexhibitor.size = (M.modFlagOn('ciniki.ags', 0x80) ? 'medium mediumaside' : 'medium');
+        this.editparticipant.size = (M.modFlagOn('ciniki.ags', 0x80) ? 'medium mediumaside' : 'medium');
 
         //
         // Create the app container

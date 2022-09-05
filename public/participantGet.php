@@ -255,7 +255,9 @@ function ciniki_ags_participantGet($ciniki) {
             . "participants.flags, "
             . "participants.message, "
             . "participants.notes, "
-            . "exhibitors.synopsis "
+            . "exhibitors.primary_image_id, "
+            . "exhibitors.synopsis, "
+            . "exhibitors.fullbio "
             . "FROM ciniki_ags_participants AS participants "
             . "LEFT JOIN ciniki_ags_exhibitors AS exhibitors ON ("
                 . "participants.exhibitor_id = exhibitors.id "
@@ -272,7 +274,7 @@ function ciniki_ags_participantGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'participants', 'fname'=>'id', 
                 'fields'=>array('id', 'exhibit_id', 'exhibitor_id', 'customer_id', 'display_name', 'customer_name', 'code',
-                    'status', 'status_text', 'flags', 'message', 'notes', 'synopsis'),
+                    'status', 'status_text', 'flags', 'message', 'notes', 'primary_image_id', 'synopsis', 'fullbio'),
                 'maps'=>array('status_text'=>$maps['participant']['status']),
                 ),
             ));
