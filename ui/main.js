@@ -574,9 +574,14 @@ function ciniki_ags_main() {
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_ags_main.exhibitedit.save();'},
+            'duplicate':{'label':'Duplicate & End Exhibit', 
+                'visible':function() {return M.ciniki_ags_main.exhibitedit.exhibit_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_ags_main.exhibitedit.duplicate();',
+                },
             'delete':{'label':'Delete', 
                 'visible':function() {return M.ciniki_ags_main.exhibitedit.exhibit_id > 0 ? 'yes' : 'no'; },
-                'fn':'M.ciniki_ags_main.exhibitedit.remove();'},
+                'fn':'M.ciniki_ags_main.exhibitedit.remove();',
+                },
             }},
         };
     this.exhibitedit.fieldValue = function(s, i, d) { return this.data[i]; }
@@ -632,6 +637,17 @@ function ciniki_ags_main() {
                 eval(cb);
             });
         }
+    }
+    this.exhibitedit.duplicate = function() {
+        M.confirm('Are you sure you want to duplicate this exhibit?',null,function() {
+            M.api.getJSONCb('ciniki.ags.exhibitDuplicate', {'tnid':M.curTenantID, 'exhibit_id':M.ciniki_ags_main.exhibitedit.exhibit_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_ags_main.exhibit.close();
+            });
+        });
     }
     this.exhibitedit.remove = function() {
         M.confirm('Are you sure you want to remove exhibit?',null,function() {
