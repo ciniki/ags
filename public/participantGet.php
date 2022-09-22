@@ -589,7 +589,7 @@ function ciniki_ags_participantGet($ciniki) {
                 . ") "
             . "WHERE submissions.customer_id = '" . ciniki_core_dbQuote($ciniki, $participant['customer_id']) . "' "
             . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND submissions.status = 90 "
+            . "AND (submissions.status = 90 OR submissions.status = 100) "  // Submitted or accepted
             . "GROUP BY submissions.id "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
