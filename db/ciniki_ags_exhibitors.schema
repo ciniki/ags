@@ -20,6 +20,8 @@
 # code:                     The unique code assigned to this exhibitor. This is used when assigning
 #                           codes to the items.
 #
+# barcode_message:          The message to include on the barcodes for the exhibitor.
+#
 # status:                   The current status of the exhibitor.
 #
 #                               30 - Active
@@ -48,6 +50,7 @@ create table ciniki_ags_exhibitors (
     display_name varchar(250) not null,
     permalink varchar(250) not null,
     code varchar(50) not null,
+    barcode_message varchar(100) not null,
     status tinyint unsigned not null,
     flags tinyint unsigned not null,
     primary_image_id int not null,
@@ -61,4 +64,4 @@ create table ciniki_ags_exhibitors (
     unique index (tnid, permalink),
     unique index (tnid, code),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

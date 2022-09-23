@@ -22,6 +22,7 @@ function ciniki_ags_participantUpdate(&$ciniki) {
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message'),
+        'barcode_message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
@@ -61,6 +62,7 @@ function ciniki_ags_participantUpdate(&$ciniki) {
     //
     if( isset($args['display_name_override']) 
         || isset($args['code']) 
+        || isset($args['barcode_message']) 
         || isset($args['primary_image_id']) 
         || isset($args['synopsis']) 
         || isset($args['fullbio']) 

@@ -25,6 +25,7 @@ function ciniki_ags_exhibitorAdd(&$ciniki) {
         'display_name'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
         'code'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Code'),
+        'barcode_message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),

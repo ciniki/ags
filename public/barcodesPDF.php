@@ -60,22 +60,23 @@ function ciniki_ags_barcodesPDF($ciniki) {
     // Get the exhibitor details
     //
     if( isset($args['exhibitor_id']) ) {
-        $strsql = "SELECT ciniki_ags_exhibitors.id, "
-            . "ciniki_ags_exhibitors.customer_id, "
-            . "ciniki_ags_exhibitors.display_name_override, "
-            . "ciniki_ags_exhibitors.display_name, "
-            . "ciniki_ags_exhibitors.permalink, "
-            . "ciniki_ags_exhibitors.code, "
-            . "ciniki_ags_exhibitors.status, "
-            . "ciniki_ags_exhibitors.flags "
-            . "FROM ciniki_ags_exhibitors "
-            . "WHERE ciniki_ags_exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_ags_exhibitors.id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
+        $strsql = "SELECT exhibitors.id, "
+            . "exhibitors.customer_id, "
+            . "exhibitors.display_name_override, "
+            . "exhibitors.display_name, "
+            . "exhibitors.permalink, "
+            . "exhibitors.code, "
+            . "exhibitors.barcode_message, "
+            . "exhibitors.status, "
+            . "exhibitors.flags "
+            . "FROM ciniki_ags_exhibitors AS exhibitors "
+            . "WHERE exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND exhibitors.id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'exhibitors', 'fname'=>'id', 
-                'fields'=>array('customer_id', 'display_name_override', 'display_name', 'permalink', 'code', 'status', 'flags'),
+                'fields'=>array('customer_id', 'display_name_override', 'display_name', 'permalink', 'code', 'barcode_message', 'status', 'flags'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -155,6 +156,9 @@ function ciniki_ags_barcodesPDF($ciniki) {
     $args['barcodes'] = array();
     if( isset($rc['items']) ) {
         foreach($rc['items'] as $item) {
+            if( isset($exhibitor['barcode_message']) && $exhibitor['barcode_message'] != '' ) {
+                $item['barcode_message'] = $exhibitor['barcode_message'];
+            }
             if( $item['quantity'] > 1 ) {
                 for($i=0;$i<$item['quantity'];$i++) {
                     if( isset($args['halfsize']) && $args['halfsize'] == 'yes' ) {

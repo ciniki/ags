@@ -145,6 +145,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
             'display_name' => (isset($customer['display_name']) ? $customer['display_name'] : ''),
             'permalink'=>'',
             'code' => (isset($customer['code']) ? $customer['code'] : ''),
+            'barcode_message' => '',
             'status'=>'30',
             'flags'=>'0',
         );
@@ -161,6 +162,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
             . "ciniki_ags_exhibitors.display_name, "
             . "ciniki_ags_exhibitors.permalink, "
             . "ciniki_ags_exhibitors.code, "
+            . "ciniki_ags_exhibitors.barcode_message, "
             . "ciniki_ags_exhibitors.status, "
             . "ciniki_ags_exhibitors.flags, "
             . "ciniki_ags_exhibitors.primary_image_id, "
@@ -173,7 +175,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'exhibitors', 'fname'=>'id', 
-                'fields'=>array('customer_id', 'display_name_override', 'display_name', 'permalink', 'code', 
+                'fields'=>array('customer_id', 'display_name_override', 'display_name', 'permalink', 'code', 'barcode_message',
                     'status', 'flags', 'primary_image_id', 'synopsis', 'fullbio'),
                 ),
             ));

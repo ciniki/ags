@@ -1,0 +1,5 @@
+#
+# Add barcode message field
+#
+ALTER TABLE ciniki_ags_exhibitors ADD COLUMN barcode_message varchar(100) not null AFTER code;
+ALTER TABLE ciniki_ags_exhibitors COMMENT='v1.04';

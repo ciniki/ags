@@ -202,12 +202,16 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell((($label['cell']['width']/2)-1), $label['cell']['height'], '$' . number_format($item['unit_amount'], 2) + ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, ($col['x'] + ($label['cell']['width']/2)+1), $row['y']+4, true, 1, false, true, 0, 'M');
 
                     } else {
-                        if( $item['exhibitor_code'] != '' ) {
+                        if( $item['exhibitor_code'] != '' || (isset($item['barcode_message']) && $item['barcode_message'] != '') ) {
+                            $message = $item['exhibitor_code'];
+                            if( isset($item['barcode_message']) && $item['barcode_message'] != '' ) {
+                                $message .= ($message != '' ? ' - ' : '') . $item['barcode_message'];
+                            }
                             $pdf->write1DBarcode($item['code'], 'C39', $col['x']+1, $row['y']+2, $label['cell']['width'], 14, 0.3, $style, 'N');
                             $pdf->SetFont('helvetica', '', 7);
                             $pdf->SetY($row['y']+12);
                             $pdf->SetX($col['x']);
-                            $pdf->cell($label['cell']['width'], 7, $item['exhibitor_code'], 0, 0, 'C', false, '', 1, false, 'C', 'T');
+                            $pdf->cell($label['cell']['width'], 7, $message, 0, 0, 'C', false, '', 1, false, 'C', 'T');
                         } else {
                             $pdf->write1DBarcode($item['code'], 'C39', $col['x']+1, $row['y']+2, $label['cell']['width'], 16, 0.3, $style, 'N');
                         }

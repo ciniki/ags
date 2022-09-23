@@ -1580,6 +1580,7 @@ function ciniki_ags_main() {
             'display_name_override':{'label':'Exhibitor Name', 'type':'text'},
             'code':{'label':'Code', 'required':'yes', 'type':'text'},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'30':'Applied', '50':'Accepted', '70':'Inactive', '90':'Rejected'}},
+            'barcode_message':{'label':'Barcode Message', 'type':'text'},
             }},
         '_submission':{'label':'Import Artwork from Form', 
             'active':function() { return M.ciniki_ags_main.editparticipant.participant_id == 0 && M.modOn('ciniki.forms') ? 'yes' : 'no'; },
@@ -2406,6 +2407,7 @@ function ciniki_ags_main() {
         'general':{'label':'Exhibitor', 'aside':'yes', 'fields':{
             'display_name_override':{'label':'Name', 'type':'text'},
             'code':{'label':'Code', 'required':'yes', 'type':'text'},
+            'barcode_message':{'label':'Barcode Message', 'type':'text'},
             }},
         '_synopsis':{'label':'Exhibitor Synopsis', 
             'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },

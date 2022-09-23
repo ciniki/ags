@@ -102,6 +102,7 @@ function ciniki_ags_objects(&$ciniki) {
             'display_name' => array('name'=>'Name', 'default'=>''),
             'permalink' => array('name'=>'Permalink'),
             'code' => array('name'=>'Code'),
+            'barcode_message' => array('name'=>'Barcode Message', 'default'=>''),
             'status' => array('name'=>'Status', 'default'=>'30'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'primary_image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
