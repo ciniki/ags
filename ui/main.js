@@ -767,6 +767,7 @@ function ciniki_ags_main() {
             'fields':{
                 'start_row':{'label':'Row', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8', '9':'9', '10':'10', '11':'11', '12':'12', '13':'13', '14':'14', '15':'15', '16':'16', '17':'17', '18':'18', '19':'19', '20':'20'}},
                 'start_col':{'label':'Column', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4'}},
+                'inventory_days':{'label':'Recent Inventory', 'type':'text', 'size':'small', 'hint':'Days'},
                 'tag_info_price':{'label':'Name/Prices', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 //
 // halfsize not working, makes barcode to small to scan
@@ -1394,6 +1395,7 @@ function ciniki_ags_main() {
     this.participant.printBarcodes = function() {
         var row = this.formValue('start_row');
         var col = this.formValue('start_col');
+        var idays = this.formValue('inventory_days');
         var tip = this.formValue('tag_info_price');
         var hs = this.formValue('halfsize');
         // Get the codes selected
@@ -1404,7 +1406,7 @@ function ciniki_ags_main() {
                 codes += (codes != '' ? ',' : '') + this.data.inventory[i].code;
             }
         }
-        M.api.openPDF('ciniki.ags.barcodesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip, 'halfsize':hs, 'codes':codes});
+        M.api.openPDF('ciniki.ags.barcodesPDF', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_info_price':tip, 'inventory_days':idays, 'halfsize':hs, 'codes':codes});
     }
     this.participant.printNameCards = function() {
         var row = this.formValue('nc_start_row');

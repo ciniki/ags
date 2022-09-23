@@ -29,6 +29,7 @@ function ciniki_ags_barcodesPDF($ciniki) {
         'codes'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'name'=>'Codes'),
         'start_col'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Column'),
         'start_row'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Row'),
+        'inventory_days'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recent Inventory'),
         'tag_info_price'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Info & Price'),
         'halfsize'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Half Size'),
         ));
@@ -106,12 +107,30 @@ function ciniki_ags_barcodesPDF($ciniki) {
         . "items.taxtype_id "
         . "";
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
-        $strsql .= ", exhibit.inventory AS quantity "
-            . "FROM ciniki_ags_exhibit_items AS exhibit "
-            . "INNER JOIN ciniki_ags_items AS items ON ("
-                . "exhibit.item_id = items.id "
-                . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        if( isset($args['inventory_days']) && $args['inventory_days'] > 0 ) {
+            $strsql .= ", logs.quantity AS quantity "
+                . "FROM ciniki_ags_exhibit_items AS exhibit "
+                . "INNER JOIN ciniki_ags_items AS items ON ("
+                    . "exhibit.item_id = items.id "
+                    . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") ";
+            $dt = new DateTime('now', new DateTimezone('UTC'));
+            $dt->sub(new DateInterval('P' . $args['inventory_days'] . 'D'));
+            $strsql .= "INNER JOIN ciniki_ags_item_logs AS logs ON ("
+                . "items.id = logs.item_id "
+                . "AND (logs.action = 10 OR (logs.action = 50 AND logs.quantity > 0))"
+                . "AND logs.actioned_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
+                . "AND logs.log_date >= '" . $dt->format('Y-m-d') . "' "
+                . "AND logs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") ";
+        } else {
+            $strsql .= ", exhibit.inventory AS quantity "
+                . "FROM ciniki_ags_exhibit_items AS exhibit "
+                . "INNER JOIN ciniki_ags_items AS items ON ("
+                    . "exhibit.item_id = items.id "
+                    . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") ";
+        }
         if( isset($args['exhibitor_id']) ) {
             $strsql .= "WHERE items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
                 . "AND exhibit.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
