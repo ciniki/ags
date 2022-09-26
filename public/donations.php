@@ -206,7 +206,7 @@ function ciniki_ags_donations($ciniki) {
         }
 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'donationreceipt');
-        $rc = ciniki_ags_templates_donationreceipt($ciniki, $args['tnid'], $sales_ids, $tenant_settings, $sapos_settings);
+        $rc = ciniki_ags_templates_donationreceipt($ciniki, $args['tnid'], $sales_ids, $tenant_details, $sapos_settings);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.244', 'msg'=>'Unable to generate receipts', 'err'=>$rc['err']));
         }
