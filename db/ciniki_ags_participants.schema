@@ -51,4 +51,4 @@ create table ciniki_ags_participants (
     unique index (uuid),
     unique index (exhibit_id, exhibitor_id),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.02';
