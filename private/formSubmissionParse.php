@@ -56,6 +56,9 @@ function ciniki_ags_formSubmissionParse(&$ciniki, $tnid, $submission_id) {
                     elseif( $field['field_ref'] == 'ciniki.ags.item.unit_amount' && $data != '' ) {
                         $ritem['unit_amount'] = preg_replace("/[^0-9\.]/", '', $data);
                     }
+                    elseif( $field['field_ref'] == 'ciniki.ags.item.quantity' && $data != '' ) {
+                        $ritem['quantity'] = $data;
+                    }
                     elseif( $field['field_ref'] == 'ciniki.ags.item.description' && $data != '' ) {
                         $ritem['description'] = $data;
                     }
@@ -104,6 +107,9 @@ function ciniki_ags_formSubmissionParse(&$ciniki, $tnid, $submission_id) {
                     }
                     elseif( $field['field_ref'] == 'ciniki.ags.item.unit_amount' && $data != '' ) {
                         $item['unit_amount'] = $data;
+                    }
+                    elseif( $field['field_ref'] == 'ciniki.ags.item.quantity' && $data != '' ) {
+                        $item['quantity'] = $data;
                     }
                     elseif( $field['field_ref'] == 'ciniki.ags.item.description' && $data != '' ) {
                         $item['description'] = $data;

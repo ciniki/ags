@@ -197,8 +197,8 @@ function ciniki_ags_exhibitorImportFormSubmission(&$ciniki, $tnid, $args) {
             $exhibit_item = array(
                 'exhibit_id' => $args['exhibit_id'],
                 'item_id' => $item_found['id'],
-                'inventory' => 1,
-                'fee_percent' => isset($item_found['fee_percent']) ? $item_found['fee_percent'] : 0,
+                'inventory' => (isset($item_found['quantity']) && $item_found['quantity'] > 0 ? $item_found['quantity'] : 1),
+                'fee_percent' => (isset($item_found['fee_percent']) ? $item_found['fee_percent'] : 0),
                 );
             $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.ags.exhibititem', $exhibit_item, 0x04);
             if( $rc['stat'] != 'ok' ) {
@@ -212,7 +212,7 @@ function ciniki_ags_exhibitorImportFormSubmission(&$ciniki, $tnid, $args) {
                 'item_id' => $item_found['id'],
                 'action' => 10,
                 'actioned_id' => $args['exhibit_id'],
-                'quantity' => 1,
+                'quantity' => (isset($item_found['quantity']) && $item_found['quantity'] > 0 ? $item_found['quantity'] : 1),
                 'log_date' => $dt->format('Y-m-d H:i:s'),
                 'user_id' => $ciniki['session']['user']['id'],
                 'notes' => '',
