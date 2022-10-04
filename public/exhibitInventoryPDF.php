@@ -26,6 +26,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
         'codes'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'name'=>'Codes'),
         'start_col'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Column'),
         'start_row'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Start Row'),
+        'tag_price'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Price'),
         'template'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Template'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -196,6 +197,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
             'exhibitors' => $exhibitors,
             'start_col' => (isset($args['start_col']) && $args['start_col'] > 0 ? $args['start_col'] : 1),
             'start_row' => (isset($args['start_row']) && $args['start_row'] > 0 ? $args['start_row'] : 1),
+            'tag_price' => (isset($args['tag_price']) && $args['tag_price'] == 'no' ? 'no' : 'yes'),
             ));
         if( $rc['stat'] != 'ok' ) { 
             return $rc;

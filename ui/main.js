@@ -779,6 +779,7 @@ function ciniki_ags_main() {
             'fields':{
                 'nc_start_row':{'label':'Row', 'type':'select', 'options':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5'}},
                 'nc_start_col':{'label':'Column', 'type':'select', 'options':{'1':'1', '2':'2'}},
+                'tag_price':{'label':'Prices', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
 //
 // halfsize not working, makes barcode to small to scan
 //                'halfsize':{'label':'Half Size', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
@@ -1411,6 +1412,7 @@ function ciniki_ags_main() {
     this.participant.printNameCards = function() {
         var row = this.formValue('nc_start_row');
         var col = this.formValue('nc_start_col');
+        var tp = this.formValue('tag_price');
         // Get the codes selected
         var codes = '';
         for(var i in this.data.inventory) {
@@ -1419,7 +1421,7 @@ function ciniki_ags_main() {
                 codes += (codes != '' ? ',' : '') + this.data.inventory[i].code;
             }
         }
-        M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'codes':codes, 'template':'namecards'});
+        M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'exhibitor_id':this.data.participant.exhibitor_id, 'start_row':row, 'start_col':col, 'tag_price':tp, 'codes':codes, 'template':'namecards'});
     }
     this.participant.exhibitInventoryPDF = function() {
         M.api.openPDF('ciniki.ags.exhibitInventoryPDF', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id});
