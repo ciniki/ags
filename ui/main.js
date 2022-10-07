@@ -3208,7 +3208,6 @@ function ciniki_ags_main() {
         });
     }
     this.chooseexhibit.addClose('Back');
-
     
 
     //
@@ -3301,7 +3300,12 @@ function ciniki_ags_main() {
             M.alert('App Error');
             return false;
         }
-      
+    
+        if( M.modFlagAny('ciniki.ags', 0x6002) == 'yes' ) {
+            this.exhibits.addButton('tools', 'Tools', 'M.startApp(\'ciniki.ags.tools\',null,\'M.ciniki_ags_main.exhibits.open();\',\'mc\',{});');
+        } else {
+            this.exhibits.delButton('tools');
+        }
         this.exhibits.cb = cb;
         this.locations.cb = cb;
         this.exhibitors.cb = cb;
