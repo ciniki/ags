@@ -14,11 +14,13 @@ function ciniki_ags_tools() {
     this.menu.data = {};
     this.menu.sections = {
         'tools':{'label':'Tools', 
-            'visible':function() {return M.modFlagAny('ciniki.ags', 0x6002); },
             'list':{
                 'categories':{'label':'Update Item Categories', 
-                    'visible':function() {return M.modFlagAny('ciniki.ags', 0x6002); },
                     'fn':'M.ciniki_ags_tools.tags.open(\'M.ciniki_ags_tools.menu.open();\',\'20\',\'Item Categories\');',
+                    },
+                'subcategories':{'label':'Update Item Subcategories', 
+                    'visible':function() {return M.modFlagAny('ciniki.ags', 0x2000); },
+                    'fn':'M.ciniki_ags_tools.tags.open(\'M.ciniki_ags_tools.menu.open();\',\'30\',\'Item Subcategories\');',
                     },
             }},
         };
