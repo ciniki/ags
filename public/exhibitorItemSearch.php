@@ -50,6 +50,8 @@ function ciniki_ags_exhibitorItemSearch($ciniki) {
         return $rc;
     }
     $maps = $rc['maps'];
+
+    $args['start_needle'] = preg_replace("/ /", '%', $args['start_needle']);
     
     //
     // Get the list of items
@@ -129,6 +131,8 @@ function ciniki_ags_exhibitorItemSearch($ciniki) {
                 . "name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR name LIKE '%-" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR exhibitor_code LIKE '%" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+                . "OR exhibitor_code LIKE '%0" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR code LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR code LIKE '%-" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
