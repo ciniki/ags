@@ -354,6 +354,7 @@ function ciniki_ags_participantGet($ciniki) {
         $strsql = "SELECT items.id AS item_id, "
             . "IFNULL(exhibit.id, 0) AS exhibit_item_id, "
             . "items.code, "
+            . "items.exhibitor_code, "
             . "items.name, "
             . "items.tag_info, "
             . "items.status, "
@@ -382,7 +383,7 @@ function ciniki_ags_participantGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'items', 'fname'=>'item_id', 
-                'fields'=>array('item_id', 'exhibit_item_id', 'primary_image_id', 'code', 'name', 'status', 
+                'fields'=>array('item_id', 'exhibit_item_id', 'primary_image_id', 'code', 'exhibitor_code', 'name', 'status', 
                     'flags', 'flags_text', 'online_flags_text', 'unit_amount', 'fee_percent', 'taxtype_id', 'tag_info', 'inventory', 'categories'),
                 'dlists'=>array('categories'=>', '),
                 'flags'=>array('flags_text'=>$maps['item']['flags'], 

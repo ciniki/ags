@@ -990,7 +990,9 @@ function ciniki_ags_main() {
             switch(j) {
                 case 0: 
                     if( d.categories != null && d.categories != '' ) {
-                        return '<span class="maintext">' + d.code + '</span><span class="subtext">' + d.categories + '</span>';
+                        return '<span class="maintext">' + d.code 
+                            + (d.exhibitor_code != '' ? ' <span class="subdue">[' + d.exhibitor_code + ']</span>' : '')
+                            + '</span><span class="subtext">' + d.categories + '</span>';
                     } 
                     return d.code;
                 case 1: return '<span id="code-' + d.code + '" class="faicon edit">&#xf02f;</span>';
@@ -1025,7 +1027,9 @@ function ciniki_ags_main() {
             switch(j) {
                 case 0: 
                     if( d.categories != null && d.categories != '' ) {
-                        return '<span class="maintext">' + d.code + '</span><span class="subtext">' + d.categories + '</span>';
+                        return '<span class="maintext">' + d.code 
+                            + (d.exhibitor_code != '' ? ' <span class="subdue">[' + d.exhibitor_code + ']</span>' : '')
+                            + '</span><span class="subtext">' + d.categories + '</span>';
                     } 
                     return d.code;
                 case 1: 
