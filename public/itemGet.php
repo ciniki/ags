@@ -347,6 +347,7 @@ function ciniki_ags_itemGet($ciniki) {
             . "FROM ciniki_ags_exhibit_items AS items "
             . "INNER JOIN ciniki_ags_exhibits AS exhibits ON ("
                 . "items.exhibit_id = exhibits.id "
+                . "AND exhibits.status = 50 "
                 . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 .") "
             . "WHERE items.item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
