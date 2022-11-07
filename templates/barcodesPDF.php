@@ -35,6 +35,16 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_ags_settings', 'tnid', $tnid, 'ciniki.ags', 'settings', 'barcodes');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.291', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    $settings = isset($rc['settings']) ? $rc['settings'] : array();
+   
+    //
     // Load the label definitions
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'labels');
@@ -173,18 +183,23 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
                             //
                             // Adjust spacing based on size
                             //
-                            $pdf->SetFont('helvetica', '', 8);
-                            $nlines = $pdf->getNumLines($item['tag_info'], $label['cell']['width']);
-                            if( $nlines > 1 ) {
-                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y'], true, 1);
-                                $pdf->SetFont('helvetica', '', 9);
-                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, $col['x'], $row['y']+7, true, 1);
+                            if( isset($settings['barcodes-label-format']) && $settings['barcodes-label-format'] == 'taginfo' ) {
+                                $pdf->SetFont('helvetica', '', 10);
+                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height'], $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y']+1, true, 1, false, true, 0, 'M', true);
                             } else {
-                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y']+1, true, 1);
-                                $pdf->SetFont('helvetica', '', 9);
-                                $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, $col['x'], $row['y']+6, true, 1);
+                                $pdf->SetFont('helvetica', '', 8);
+                                $nlines = $pdf->getNumLines($item['tag_info'], $label['cell']['width']);
+                                if( $nlines > 1 ) {
+                                    $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y'], true, 1);
+                                    $pdf->SetFont('helvetica', '', 9);
+                                    $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, $col['x'], $row['y']+7, true, 1);
+                                } else {
+                                    $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, $item['tag_info'], 0, 'C', false, 0, $col['x'], $row['y']+1, true, 1);
+                                    $pdf->SetFont('helvetica', '', 9);
+                                    $pdf->MultiCell($label['cell']['width'], $label['cell']['height']-7, '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, $col['x'], $row['y']+6, true, 1);
+                                }
                             }
-                        } else {
+                        } elseif( !isset($settings['barcodes-label-format']) || $settings['barcodes-label-format'] != 'taginfo' ) {
                             $pdf->SetFont('helvetica', '', 12);
                             $pdf->MultiCell($label['cell']['width'], $label['cell']['height'], '$' . number_format($item['unit_amount'], 2) . ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, $col['x'], $row['y']+4, true, 1, false, true, 0, 'M');
                         }
@@ -202,7 +217,18 @@ function ciniki_ags_templates_barcodesPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell((($label['cell']['width']/2)-1), $label['cell']['height'], '$' . number_format($item['unit_amount'], 2) + ($item['taxtype_id'] > 0 ? ' + HST' : ''), 0, 'C', false, 0, ($col['x'] + ($label['cell']['width']/2)+1), $row['y']+4, true, 1, false, true, 0, 'M');
 
                     } else {
-                        if( $item['exhibitor_code'] != '' || (isset($item['barcode_message']) && $item['barcode_message'] != '') ) {
+                        if( isset($settings['barcodes-barcode-format']) && $settings['barcodes-barcode-format'] == 'price-message' ) {
+                            $message = '$' . number_format($item['unit_amount'], 2);
+                            if( isset($item['barcode_message']) && $item['barcode_message'] != '' ) {
+                                $message .= ($message != '' ? ' - ' : '') . $item['barcode_message'];
+                            }
+                            $pdf->write1DBarcode($item['code'], 'C39', $col['x']+1, $row['y']+2, $label['cell']['width'], 14, 0.3, $style, 'N');
+                            $pdf->SetFont('helvetica', '', 7);
+                            $pdf->SetY($row['y']+12);
+                            $pdf->SetX($col['x']);
+                            $pdf->cell($label['cell']['width'], 7, $message, 0, 0, 'C', false, '', 1, false, 'C', 'T');
+                        }
+                        elseif( $item['exhibitor_code'] != '' || (isset($item['barcode_message']) && $item['barcode_message'] != '') ) {
                             $message = $item['exhibitor_code'];
                             if( isset($item['barcode_message']) && $item['barcode_message'] != '' ) {
                                 $message .= ($message != '' ? ' - ' : '') . $item['barcode_message'];

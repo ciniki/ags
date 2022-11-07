@@ -71,6 +71,8 @@ function ciniki_ags_settingsUpdate(&$ciniki) {
         'namecards-artist-prefix',
         'namecards-include-size',
         'namecards-last-line',
+        'barcodes-barcode-format',
+        'barcodes-label-format',
         );
     //
     // Check each valid setting and see if a new value was passed in the arguments for it.

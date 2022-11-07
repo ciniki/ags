@@ -33,7 +33,6 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.229', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
     }
     $settings = isset($rc['settings']) ? $rc['settings'] : array();
-   
 
     //
     // Determine which template to use

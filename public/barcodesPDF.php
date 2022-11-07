@@ -51,6 +51,16 @@ function ciniki_ags_barcodesPDF($ciniki) {
     }
 
     //
+    // Load the settings for the barcodes
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
+    $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_ags_settings', 'tnid', $args['tnid'], 'ciniki.ags', 'settings', 'barcodes');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.290', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    $settings = isset($rc['settings']) ? $rc['settings'] : array();
+
+    //
     // Check to make sure either exhibitor_id or exhibit_id is specified
     //
     if( !isset($args['exhibit_id']) && !isset($args['exhibitor_id']) ) {
@@ -187,8 +197,18 @@ function ciniki_ags_barcodesPDF($ciniki) {
                     }
                     $args['barcodes'][] = $item;
                     if( isset($args['tag_info_price']) && $args['tag_info_price'] == 'yes' ) {
-                        $item['label_type'] = 'info';
-                        $args['barcodes'][] = $item;
+                        if( isset($settings['barcodes-label-format']) && $settings['barcodes-label-format'] == 'taginfo' ) {
+                            // Only add if tag info otherwise would be blank label with no price printed
+                            if( $item['tag_info'] != '' ) {
+                                error_log('add info');
+                                $item['label_type'] = 'info';
+                                $args['barcodes'][] = $item;
+                            }
+                        } else {
+                            // Always add info tag because price will be printed
+                            $item['label_type'] = 'info';
+                            $args['barcodes'][] = $item;
+                        }
                     }
                 }
             } else {
@@ -199,8 +219,18 @@ function ciniki_ags_barcodesPDF($ciniki) {
                 }
                 $args['barcodes'][] = $item;
                 if( isset($args['tag_info_price']) && $args['tag_info_price'] == 'yes' ) {
-                    $item['label_type'] = 'info';
-                    $args['barcodes'][] = $item;
+                    if( isset($settings['barcodes-label-format']) && $settings['barcodes-label-format'] == 'taginfo' ) {
+                        // Only add if tag info otherwise would be blank label with no price printed
+                        if( $item['tag_info'] != '' ) {
+                            error_log('add: ' . $item['tag_info']);
+                            $item['label_type'] = 'info';
+                            $args['barcodes'][] = $item;
+                        }
+                    } else {
+                        // Always add info tag because price will be printed
+                        $item['label_type'] = 'info';
+                        $args['barcodes'][] = $item;
+                    }
                 }
             }
         }

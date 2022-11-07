@@ -14,6 +14,16 @@ function ciniki_ags_settings() {
             'sales-customer-name':{'label':'Show Sales Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
             'sales-pdf-customer-name':{'label':'PDF Include Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
+        'barcodes':{'label':'Barcode Printing', 'fields':{
+            'barcodes-barcode-format':{'label':'Barcode Format', 'type':'select', 'default':'exhibitorcode-message', 'options':{
+                'exhibitorcode-message':'Exhibitor Code - Participant Message', 
+                'price-message':'Price - Participant Message',
+                }},
+            'barcodes-label-format':{'label':'Label Format', 'type':'select', 'default':'taginfo-price', 'options':{
+                'taginfo':'Tag Info',
+                'taginfo-price':'Tag Info - Price',
+                }},
+            }},
         'image':{'label':'Name Cards', 'aside':'yes', 'fields':{
             'namecards-image':{'label':'Logo', 'type':'image_id', 'controls':'all', 'history':'no', 'size':'small'},
             'namecards-template':{'label':'Format', 'type':'select', 'default':'businesscards', 'options':{
