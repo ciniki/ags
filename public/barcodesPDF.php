@@ -200,7 +200,6 @@ function ciniki_ags_barcodesPDF($ciniki) {
                         if( isset($settings['barcodes-label-format']) && $settings['barcodes-label-format'] == 'taginfo' ) {
                             // Only add if tag info otherwise would be blank label with no price printed
                             if( $item['tag_info'] != '' ) {
-                                error_log('add info');
                                 $item['label_type'] = 'info';
                                 $args['barcodes'][] = $item;
                             }
@@ -222,7 +221,6 @@ function ciniki_ags_barcodesPDF($ciniki) {
                     if( isset($settings['barcodes-label-format']) && $settings['barcodes-label-format'] == 'taginfo' ) {
                         // Only add if tag info otherwise would be blank label with no price printed
                         if( $item['tag_info'] != '' ) {
-                            error_log('add: ' . $item['tag_info']);
                             $item['label_type'] = 'info';
                             $args['barcodes'][] = $item;
                         }
