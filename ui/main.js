@@ -2528,7 +2528,6 @@ function ciniki_ags_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'50':'Active', '70':'Sold', '90':'Archived'}},
             'code':{'label':'Code', 'required':'yes', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
-            'tag_info':{'label':'Tag Info', 'required':'no', 'type':'text'},
             'creation_year':{'label':'Creation Year', 'required':'no', 'size':'small', 'type':'text'},
             'medium':{'label':'Medium', 'required':'no', 'type':'text'},
             'size':{'label':'Size', 'required':'no', 'size':'small', 'type':'text'},
@@ -2537,6 +2536,9 @@ function ciniki_ags_main() {
                 'active':function() { return M.modFlagSet('ciniki.ags', 0x04); },
                 },
             'exhibitor_code':{'label':'Exhibitor Code', 'type':'text'},
+            }},
+        '_tag_info':{'label':'Tag Info', 'aside':'yes', 'fields':{
+            'tag_info':{'label':'', 'hidelabel':'yes', 'required':'no', 'type':'textarea', 'size':'small'},
             }},
         '_types':{'label':'Type', 'aside':'yes', 
             'active':function() { return M.modFlagSet('ciniki.ags', 0x02); },
