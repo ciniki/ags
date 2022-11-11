@@ -1586,6 +1586,9 @@ function ciniki_ags_main() {
              }},
         'general':{'label':'', 'aside':'yes', 'fields':{
             'display_name_override':{'label':'Exhibitor Name', 'type':'text'},
+            'profile_name':{'label':'Profile Name', 'type':'text',
+                'visible':function() { return M.modFlagSet('ciniki.ags', 0x0200); },
+                },
             'code':{'label':'Code', 'required':'yes', 'type':'text'},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'30':'Applied', '50':'Accepted', '70':'Inactive', '90':'Rejected'}},
             'barcode_message':{'label':'Barcode Message', 'type':'text'},
@@ -2414,6 +2417,9 @@ function ciniki_ags_main() {
              }},
         'general':{'label':'Exhibitor', 'aside':'yes', 'fields':{
             'display_name_override':{'label':'Name', 'type':'text'},
+            'profile_name':{'label':'Profile Name', 'type':'text',
+                'visible':function() { return M.modFlagSet('ciniki.ags', 0x0200); },
+                },
             'code':{'label':'Code', 'required':'yes', 'type':'text'},
             'barcode_message':{'label':'Barcode Message', 'type':'text'},
             }},

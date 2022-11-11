@@ -28,6 +28,7 @@ function ciniki_ags_participantUpdate(&$ciniki) {
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'fullbio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Full Bio'),
         'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
+        'profile_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Profile Name'),
         'code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Code'),
         ));
     if( $rc['stat'] != 'ok' ) {

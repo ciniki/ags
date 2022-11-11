@@ -100,6 +100,7 @@ function ciniki_ags_objects(&$ciniki) {
             'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer_id'),
             'display_name_override' => array('name'=>'Override Name', 'default'=>''),
             'display_name' => array('name'=>'Name', 'default'=>''),
+            'profile_name' => array('name'=>'Profile Name', 'default'=>''),
             'permalink' => array('name'=>'Permalink'),
             'code' => array('name'=>'Code'),
             'barcode_message' => array('name'=>'Barcode Message', 'default'=>''),

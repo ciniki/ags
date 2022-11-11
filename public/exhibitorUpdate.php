@@ -20,6 +20,7 @@ function ciniki_ags_exhibitorUpdate(&$ciniki) {
         'customer_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customer'),
         'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Override Name'),
         'display_name'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Name'),
+        'profile_name'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Profile Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'),
         'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'),
         'barcode_message'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message'),

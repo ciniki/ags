@@ -31,6 +31,7 @@ function ciniki_ags_participantAdd(&$ciniki) {
         'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
         'display_name_override'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Override Name'),
         'display_name'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Name'),
+        'profile_name'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Profile Name'),
         'code'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Code'),
         // If form submission is specified for import
         'submission_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Form Submission'),
@@ -169,7 +170,7 @@ function ciniki_ags_participantAdd(&$ciniki) {
     // If exhibitor_id is specified, check to make sure they exist
     //
     else {
-        $strsql = "SELECT id, display_name, code, synopsis "
+        $strsql = "SELECT id, display_name, profile_name, code, synopsis "
             . "FROM ciniki_ags_exhibitors "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -183,11 +184,16 @@ function ciniki_ags_participantAdd(&$ciniki) {
         }
         $exhibitor = $rc['exhibitor'];
 
+        $update_args = array();
         if( isset($args['synopsis']) && $args['synopsis'] != $exhibitor['synopsis'] ) {
+            $update_args['synopsis'] = $args['synopsis'];
+        }
+        if( isset($args['profile_name']) && $args['profile_name'] != $exhibitor['profile_name'] ) {
+            $update_args['profile_name'] = $args['profile_name'];
+        }
+        if( count($update_args) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.exhibitor', $exhibitor['id'], array(
-                'synopsis' => $args['synopsis'],
-                ), 0x04);
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.exhibitor', $exhibitor['id'], $update_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.285', 'msg'=>'Unable to update the exhibitor', 'err'=>$rc['err']));
             }

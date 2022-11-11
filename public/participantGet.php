@@ -194,7 +194,7 @@ function ciniki_ags_participantGet($ciniki) {
         // Get the customer details
         //
         if( isset($args['customer_id']) ) {
-            $strsql = "SELECT id, display_name, code, synopsis "
+            $strsql = "SELECT id, display_name, profile_name, code, synopsis "
                 . "FROM ciniki_ags_exhibitors "
                 . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -206,6 +206,7 @@ function ciniki_ags_participantGet($ciniki) {
             if( isset($rc['exhibitor']['display_name']) ) {
                 $participant['exhibitor_id'] = $rc['exhibitor']['id'];
                 $participant['display_name_override'] = $rc['exhibitor']['display_name'];
+                $participant['profile_name'] = $rc['exhibitor']['profile_name'];
                 $participant['code'] = $rc['exhibitor']['code'];
                 $participant['synopsis'] = $rc['exhibitor']['synopsis'];
             } else {
@@ -250,6 +251,7 @@ function ciniki_ags_participantGet($ciniki) {
             . "exhibitors.code, "
             . "exhibitors.barcode_message, "
             . "exhibitors.display_name, "
+            . "exhibitors.profile_name, "
             . "customers.display_name AS customer_name, "
             . "participants.status, "
             . "participants.status AS status_text, "
@@ -274,7 +276,7 @@ function ciniki_ags_participantGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'participants', 'fname'=>'id', 
-                'fields'=>array('id', 'exhibit_id', 'exhibitor_id', 'customer_id', 'display_name', 'customer_name', 'code', 'barcode_message',
+                'fields'=>array('id', 'exhibit_id', 'exhibitor_id', 'customer_id', 'display_name', 'profile_name', 'customer_name', 'code', 'barcode_message',
                     'status', 'status_text', 'flags', 'message', 'notes', 'primary_image_id', 'synopsis', 'fullbio'),
                 'maps'=>array('status_text'=>$maps['participant']['status']),
                 ),

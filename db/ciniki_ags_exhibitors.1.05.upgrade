@@ -1,0 +1,5 @@
+#
+# Add profile name field
+#
+ALTER TABLE ciniki_ags_exhibitors ADD COLUMN profile_name varchar(250) not null AFTER display_name;
+ALTER TABLE ciniki_ags_exhibitors COMMENT='v1.05';

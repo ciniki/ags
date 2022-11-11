@@ -15,6 +15,8 @@
 # display_name:             The name to display on the website and UI for the exhibitor. 
 #                           This field saves linking to the ciniki_customers for just the name.
 #
+# profile_name:             The name to be displayed on profile pages, typically longer than display name.
+#
 # permalink:                The permalink for this exhibitor, if needed in urls.
 #
 # code:                     The unique code assigned to this exhibitor. This is used when assigning
@@ -48,6 +50,7 @@ create table ciniki_ags_exhibitors (
     customer_id int not null,
     display_name_override varchar(250) not null,
     display_name varchar(250) not null,
+    profile_name varchar(250) not null,
     permalink varchar(250) not null,
     code varchar(50) not null,
     barcode_message varchar(100) not null,
@@ -64,4 +67,4 @@ create table ciniki_ags_exhibitors (
     unique index (tnid, permalink),
     unique index (tnid, code),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';
