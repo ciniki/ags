@@ -139,6 +139,7 @@ function ciniki_ags_exhibitInventory($ciniki) {
         . "items.name, "
         . "items.medium, "
         . "items.size, "
+        . "eitems.inventory, "
         . "items.unit_amount, "
         . "items.fee_percent, "
         . "IFNULL(sales.sell_date, '') AS sell_date, "
@@ -166,7 +167,7 @@ function ciniki_ags_exhibitInventory($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.marketplaces', array(
         array('container'=>'items', 'fname'=>'id',
-            'fields'=>array('id', 'display_name', 'code', 'name', 'medium', 'size', 'unit_amount', 'fee_percent',
+            'fields'=>array('id', 'display_name', 'code', 'name', 'medium', 'size', 'unit_amount', 'fee_percent', 'inventory',
                 'sell_date', 'total_amount', 'tenant_amount', 'exhibitor_amount', 'notes', 'permalink')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -196,6 +197,7 @@ function ciniki_ags_exhibitInventory($ciniki) {
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Medium', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Size', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Exhibitor', false);
+    $sheet->setCellValueByColumnAndRow($i++, 1, 'Qty', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Price', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Fee %', false);
     $sheet->setCellValueByColumnAndRow($i++, 1, 'Sell Date', false);
@@ -220,8 +222,9 @@ function ciniki_ags_exhibitInventory($ciniki) {
     $sheet->getStyle('K1')->getFont()->setBold(true);
     $sheet->getStyle('L1')->getFont()->setBold(true);
     $sheet->getStyle('M1')->getFont()->setBold(true);
+    $sheet->getStyle('N1')->getFont()->setBold(true);
     if( isset($base_url) ) {
-        $sheet->getStyle('N1')->getFont()->setBold(true);
+        $sheet->getStyle('O1')->getFont()->setBold(true);
     }
 
     $row = 2;
@@ -232,6 +235,7 @@ function ciniki_ags_exhibitInventory($ciniki) {
         $sheet->setCellValueByColumnAndRow($i++, $row, $item['medium']);
         $sheet->setCellValueByColumnAndRow($i++, $row, $item['size']);
         $sheet->setCellValueByColumnAndRow($i++, $row, $item['display_name']);
+        $sheet->setCellValueByColumnAndRow($i++, $row, $item['inventory']);
         $sheet->setCellValueByColumnAndRow($i++, $row, $item['unit_amount']);
         if( $item['fee_percent'] > 0 ) {
             $sheet->setCellValueByColumnAndRow($i++, $row, ($item['fee_percent']/100));
