@@ -146,6 +146,7 @@ function ciniki_ags_exhibitorUpdate(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
     ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.ags.exhibitor', 'object_id'=>$args['exhibitor_id']));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'wng', 'indexObject', array('object'=>'ciniki.ags.exhibitor', 'object_id'=>$args['exhibitor_id']));
 
     return array('stat'=>'ok');
 }

@@ -120,6 +120,7 @@ function ciniki_ags_itemImageAdd(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
     ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.ags.itemimage', 'object_id'=>$itemimage_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'wng', 'indexObject', array('object'=>'ciniki.ags.itemimage', 'object_id'=>$itemimage_id));
 
     return array('stat'=>'ok', 'id'=>$itemimage_id);
 }

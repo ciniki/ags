@@ -85,6 +85,12 @@ function ciniki_ags_categoryUpdate(&$ciniki) {
         }
     }
     
+    //
+    // Update the web index if enabled
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'wng', 'indexObject', array());
+
     return array('stat'=>'ok');
 }
 ?>

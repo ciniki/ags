@@ -41,7 +41,18 @@ function ciniki_ags_exhibitItemDelete(&$ciniki) {
     // Remove the item from the exhibit
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'private', 'exhibitItemRemove');
-    return ciniki_ags_exhibitItemRemove($ciniki, $args['tnid'], $args['exhibit_id'], $args['item_id']);
+    $rc = ciniki_ags_exhibitItemRemove($ciniki, $args['tnid'], $args['exhibit_id'], $args['item_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.292', 'msg'=>'', 'err'=>$rc['err']));
+    }
+
+    //
+    // Update the web index if enabled
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'wng', 'indexObject', array());
+
+    return array('stat'=>'ok');
 
 /*    //
     // Check if the item is already a part of the exhibit

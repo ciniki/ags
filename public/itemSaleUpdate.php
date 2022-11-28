@@ -101,6 +101,7 @@ function ciniki_ags_itemSaleUpdate(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
     ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.ags.itemsale', 'object_id'=>$args['sale_id']));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'wng', 'indexObject', array('object'=>'ciniki.ags.itemsale', 'object_id'=>$args['sale_id']));
 
     return array('stat'=>'ok');
 }

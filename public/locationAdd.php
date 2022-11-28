@@ -117,6 +117,7 @@ function ciniki_ags_locationAdd(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
     ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.ags.location', 'object_id'=>$location_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'wng', 'indexObject', array('object'=>'ciniki.ags.location', 'object_id'=>$location_id));
 
     return array('stat'=>'ok', 'id'=>$location_id);
 }
