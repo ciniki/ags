@@ -28,6 +28,12 @@ function ciniki_ags_exhibitItemRemove(&$ciniki, $tnid, $exhibit_id, $item_id) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.250', 'msg'=>'Item is not part of this exhibit', 'err'=>$rc['err']));
     }
+    //
+    // If no item found, already removed from exhibit
+    //
+    if( !isset($rc['item']) ) {
+        return array('stat'=>'ok');
+    }
     $exhibititem = isset($rc['item']) ? $rc['item'] : null;
 
     //
