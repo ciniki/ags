@@ -386,9 +386,10 @@ function ciniki_ags_main() {
                 case 0: return '';
                 case 1: return '';
                 case 2: return '';
-                case 3: return this.data.totals.pending_payouts.tenant_amount_display;
-                case 4: return this.data.totals.pending_payouts.exhibitor_amount_display;
-                case 5: return this.data.totals.pending_payouts.total_amount_display;
+                case 3: return '';
+                case 4: return this.data.totals.pending_payouts.tenant_amount_display;
+                case 5: return this.data.totals.pending_payouts.exhibitor_amount_display;
+                case 6: return this.data.totals.pending_payouts.total_amount_display;
             }
             return '';
         }
