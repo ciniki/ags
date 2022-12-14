@@ -158,6 +158,7 @@ function ciniki_ags_main() {
             'barcodes':{'label':'Barcodes', 'fn':'M.ciniki_ags_main.exhibit.barcodesPDF();'},
             'riskpdf':{'label':'Risk Management Form', 'fn':'M.ciniki_ags_main.exhibit.riskManagementPDF();'},
             'email':{'label':'Email Participants', 'fn':'M.ciniki_ags_main.exhibit.emailShow();'},
+            'emailcusts':{'label':'Email Customers', 'fn':'M.ciniki_ags_main.exhibit.emailCustomers();'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'participants', 
             'tabs':{
@@ -509,6 +510,27 @@ function ciniki_ags_main() {
                 'id':this.data.participants[i].customer_id,
                 'name':this.data.participants[i].customer_name,
                 };
+        }
+        M.startApp('ciniki.mail.omessage',
+            null,
+            'M.ciniki_ags_main.exhibit.open();',
+            'mc',
+            {'subject':'Re: ' + this.data.exhibit.name,
+                'list':customers, 
+                'object':'ciniki.ags.exhibit',
+                'object_id':this.exhibit_id,
+                'removeable':'yes',
+            });
+    }
+    this.exhibit.emailCustomers = function() {
+        var customers = [];
+        for(var i in this.data.customers) {
+            if( this.data.customers[i].customer_id > 0 ) {
+                customers[i] = {
+                    'id':this.data.customers[i].customer_id,
+                    'name':this.data.customers[i].customer_name,
+                    };
+            }
         }
         M.startApp('ciniki.mail.omessage',
             null,

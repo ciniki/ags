@@ -342,6 +342,41 @@ function ciniki_ags_exhibitGet($ciniki) {
         $inventory = isset($rc['items']) ? $rc['items'] : array();
 
         //
+        // Get the customers
+        //
+        $strsql = "SELECT IFNULL(customers.id, 0) AS id, "
+            . "IFNULL(customers.display_name, 'Unknown Customer') AS display_name, "
+            . "SUM(sales.quantity) AS quantity, "
+            . "SUM(sales.tenant_amount) AS tenant_amount, "
+            . "SUM(sales.exhibitor_amount) AS exhibitor_amount, "
+            . "SUM(sales.total_amount) AS total_amount "
+            . "FROM ciniki_ags_item_sales AS sales "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "sales.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_customers AS customers ON ("
+                . "invoices.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE sales.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
+            . "AND sales.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "GROUP BY id "
+            . "ORDER BY customers.display_name, id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'customers', 'fname'=>'id', 
+                'fields'=>array('customer_id'=>'id', 'customer_name'=>'display_name', 
+                    'quantity', 'tenant_amount', 'exhibitor_amount', 'total_amount',
+                    )),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.293', 'msg'=>'Unable to load exhibit customers', 'err'=>$rc['err']));
+        }
+        $rsp['customers'] = isset($rc['customers']) ? $rc['customers'] : array();
+
+        //
         // Get the sales
         //
         $strsql = "SELECT sales.id, "
@@ -360,6 +395,10 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "INNER JOIN ciniki_ags_items AS items ON ("
                 . "sales.item_id = items.id "
                 . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "sales.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE sales.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
             . "AND sales.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
