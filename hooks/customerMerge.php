@@ -65,7 +65,7 @@ function ciniki_ags_hooks_customerMerge($ciniki, $tnid, $args) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.194', 'msg'=>'Unable to merge exhibitors', 'err'=>$rc['err']));
             }
             $updated += (isset($rc['updated']) ? $rc['updated'] : 0);
-    return array('stat'=>'ok', 'updated'=>$updated);
+            return array('stat'=>'ok', 'updated'=>$updated);
         } 
         // 
         // Update exhibitor to move to new customer record
