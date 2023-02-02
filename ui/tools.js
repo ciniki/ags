@@ -22,6 +22,9 @@ function ciniki_ags_tools() {
                     'visible':function() {return M.modFlagAny('ciniki.ags', 0x2000); },
                     'fn':'M.ciniki_ags_tools.tags.open(\'M.ciniki_ags_tools.menu.open();\',\'30\',\'Item Subcategories\');',
                     },
+                'fees':{'label':'Update Fees', 
+                    'fn':'M.ciniki_ags_tools.fees.open(\'M.ciniki_ags_tools.menu.open();\');',
+                    },
             }},
         };
     this.menu.open = function(cb) {
@@ -90,6 +93,59 @@ function ciniki_ags_tools() {
     };
     this.tags.addButton('save', 'Save', 'M.ciniki_ags_tools.tags.save();');
     this.tags.addClose('Cancel');
+
+    //
+    // The fees update
+    //
+    this.fees = new M.panel('Update Fees',
+        'ciniki_ags_tools', 'fees',
+        'mc', 'medium', 'sectioned', 'ciniki.ags.tools.fees');
+    this.fees.data = {};
+    this.fees.sections = {
+        'items':{'label':'Set New Fees', 'fields':{}},
+        'buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_ags_tools.fees.save();'},
+            }},
+        };
+    this.fees.fieldValue = function(s, i, d) {
+        return this.data.fees[i].fee;
+    }
+    this.fees.open = function(cb) {
+        M.api.getJSONCb('ciniki.ags.feesGet', {'tnid':M.curTenantID}, function(rsp) {
+            if( rsp['stat'] != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            } 
+            var p = M.ciniki_ags_tools.fees;
+            p.data = {};
+            p.sections.items.fields = {};
+            p.data.fees = rsp.fees;
+            if( rsp.fees != null ) {
+                for(i in rsp.fees) {
+                    p.sections.items.fields[rsp.fees[i].id] = {
+                        'label':rsp.fees[i].label, 'type':'text',
+                        };
+                }
+            }
+            p.refresh();
+            p.show(cb);
+            });
+    }
+    this.fees.save = function() {
+        var c = this.serializeForm('yes');
+        M.api.postJSONCb('ciniki.ags.feesUpdate', {'tnid':M.curTenantID}, c,
+            function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                } 
+                M.ciniki_ags_tools.fees.close();
+            });
+    };
+    this.fees.addButton('save', 'Save', 'M.ciniki_ags_tools.fees.save();');
+    this.fees.addClose('Cancel');
+
+
 
     //
     // Arguments:
