@@ -64,7 +64,6 @@ function ciniki_ags_feesUpdate($ciniki) {
                 }
                 $items = isset($rc['rows']) ? $rc['rows'] : array();
                 foreach($items as $item) {
-                    error_log('update item');
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.item', $item['id'], array('fee_percent'=>$value), 0x04);
                     if( $rc['stat'] != 'ok' ) {
@@ -85,7 +84,6 @@ function ciniki_ags_feesUpdate($ciniki) {
                 }
                 $items = isset($rc['rows']) ? $rc['rows'] : array();
                 foreach($items as $item) {
-                    error_log('update exhibit item');
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.exhibititem', $item['id'], array('fee_percent'=>$value), 0x04);
                     if( $rc['stat'] != 'ok' ) {
