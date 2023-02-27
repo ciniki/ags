@@ -51,6 +51,44 @@ function ciniki_ags_settingsGet($ciniki) {
     }
     $settings = $rc['settings'];
 
+    //
+    // Check if different settings used for each type of exhibit
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0400) ) {
+        //
+        // Get the types used
+        //
+        $strsql = "SELECT DISTINCT tag_name AS name, permalink "
+            . "FROM ciniki_ags_exhibit_tags "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND tag_type = 20 "
+            . "ORDER BY permalink "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'types', 'fname'=>'permalink', 'fields'=>array('name', 'permalink'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.24', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
+        }
+        $types = isset($rc['types']) ? $rc['types'] : array();
+    
+        $settings['typecards'] = array();
+        foreach($types as $type) {
+            foreach(['image', 'template', 'artist-prefix', 'include-size', 'last-line', 'description'] as $item) {
+                if( isset($settings["namecards-{$type['permalink']}-{$item}"]) ) {
+                    $type[$item] = $settings["namecards-{$type['permalink']}-{$item}"];
+                } else {
+                    $type[$item] = '';
+                }
+            }
+            $settings['typecards'][$type['permalink']] = $type;
+        }
+
+    }
+
+
     return array('stat'=>'ok', 'settings'=>$settings);
 }
 ?>

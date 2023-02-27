@@ -28,7 +28,7 @@ function ciniki_ags_flags(&$ciniki) {
         // 0x0100
         array('flag'=>array('bit'=>'9', 'name'=>'Donation Receipts')),
         array('flag'=>array('bit'=>'10', 'name'=>'Exhibitor Profile Names')),
-//        array('flag'=>array('bit'=>'11', 'name'=>'')),
+        array('flag'=>array('bit'=>'11', 'name'=>'Name Card Type Images')), // Have different images for each type of exhibit
 //        array('flag'=>array('bit'=>'12', 'name'=>'')),
         // 0x1000
 //        array('flag'=>array('bit'=>'13', 'name'=>'Item Categories')),

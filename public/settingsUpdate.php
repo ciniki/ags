@@ -75,6 +75,31 @@ function ciniki_ags_settingsUpdate(&$ciniki) {
         'barcodes-label-format',
         );
     //
+    // Get the types used
+    //
+    $strsql = "SELECT DISTINCT tag_name AS name, permalink "
+        . "FROM ciniki_ags_exhibit_tags "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND tag_type = 20 "
+        . "ORDER BY permalink "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+        array('container'=>'types', 'fname'=>'permalink', 'fields'=>array('name', 'permalink'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.24', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
+    }
+    $types = isset($rc['types']) ? $rc['types'] : array();
+
+    foreach($types as $type) {
+        foreach(['image', 'template', 'artist-prefix', 'include-size', 'last-line', 'description'] as $item) {
+            $changelog_fields[] = "namecards-{$type['permalink']}-{$item}";
+        }
+    }
+
+    //
     // Check each valid setting and see if a new value was passed in the arguments for it.
     // Insert or update the entry in the ciniki_ags_settings table
     //

@@ -35,19 +35,69 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
     $settings = isset($rc['settings']) ? $rc['settings'] : array();
 
     //
+    // Get the type of exhibit
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0400) ) {
+        //
+        // Get the type of exhibit
+        //
+        $strsql = "SELECT permalink "
+            . "FROM ciniki_ags_exhibit_tags "
+            . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND tag_type = 20 "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'tag');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.27', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
+        }
+        if( isset($rc['rows'][0]['permalink']) ) {
+            $type = $rc['rows'][0]['permalink'];
+        }
+    }
+
+    //
     // Determine which template to use
     //
     $template = 'businesscards';
-    if( isset($settings['namecards-template']) && $settings['namecards-template'] != '' ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0400) ) {
+        if( isset($type) 
+            && isset($settings["namecards-{$type}-template"]) 
+            && $settings["namecards-{$type}-template"] != '' 
+            ) {
+            $template = $settings["namecards-{$type}-template"];
+        }
+    }
+    elseif( isset($settings['namecards-template']) && $settings['namecards-template'] != '' ) {
         $template = $settings['namecards-template'];
     }
+
 
     //
     // Setup artist prefix
     //
     $artist_prefix = '';
-    if( isset($settings['namecards-artist-prefix']) && $settings['namecards-artist-prefix'] != '' && $settings['namecards-artist-prefix'] != 'none' ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0400) ) {
+        if( isset($type) 
+            && isset($settings["namecards-{$type}-artist-prefix"]) 
+            && $settings["namecards-{$type}-artist-prefix"] != '' 
+            ) {
+            $artist_prefix = $settings["namecards-{$type}-artist-prefix"];
+        }
+    }
+    elseif( isset($settings['namecards-artist-prefix']) && $settings['namecards-artist-prefix'] != '' && $settings['namecards-artist-prefix'] != 'none' ) {
         $artist_prefix = $settings['namecards-artist-prefix'] . ' ';
+    }
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0400) ) {
+        if( isset($type) 
+            && isset($settings["namecards-{$type}-last-line"]) 
+            && $settings["namecards-{$type}-last-line"] != '' 
+            ) {
+            $last_line = $settings["namecards-{$type}-last-line"];
+        }
+    }
+    elseif( isset($settings['namecards-last-line']) && $settings['namecards-last-line'] != '' ) {
+        $last_line = $settings['namecards-last-line'];
     }
 
     //
@@ -112,13 +162,32 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
         $card_height = 66;
     }
 
-    if( isset($settings['namecards-include-size']) && $settings['namecards-include-size'] == 'no' ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0400) ) {
+        if( isset($type) 
+            && isset($settings["namecards-{$type}-include-size"]) 
+            && $settings["namecards-{$type}-include-size"] == 'no' 
+            ) {
+            $include_size = 'no';
+        }
+    }
+    elseif( isset($settings['namecards-include-size']) && $settings['namecards-include-size'] == 'no' ) {
         $include_size = 'no';
     }
 
-    if( isset($settings['namecards-image']) && $settings['namecards-image'] != '' ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0400) ) {
+        if( isset($type) 
+            && isset($settings["namecards-{$type}-image"]) 
+            && $settings["namecards-{$type}-image"] != '' 
+            ) {
+            $image_id = $settings["namecards-{$type}-image"];
+        }
+    }
+    elseif( isset($settings['namecards-image']) && $settings['namecards-image'] != '' ) {
+        $image_id = $settings["namecards-image"];
+    }
+    if( isset($image_id) && $image_id > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
-        $rc = ciniki_images_loadImage($ciniki, $tnid, $settings['namecards-image'], 'original');
+        $rc = ciniki_images_loadImage($ciniki, $tnid, $image_id, 'original');
         if( $rc['stat'] == 'ok' ) {
             $card_image = $rc['image'];
             $image_width = ($card_width/2)- 5;
@@ -218,9 +287,9 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
                     $pdf->Cell(50, 6, '', 0, 1, 'L', 0);
                 }
                 
-                if( isset($settings['namecards-last-line']) && $settings['namecards-last-line'] != '' ) {
+                if( isset($last_line) && $last_line != '' ) {
                     $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
-                    $pdf->Cell($card_width-20, 6, $settings['namecards-last-line'], 0, 0, 'L', 0, '', 1);
+                    $pdf->Cell($card_width-20, 6, $last_line, 0, 0, 'L', 0, '', 1);
                 }
                 if( $item['code'] != '' ) {
                     $pdf->SetY($y_offset + ($card_height-1) + ($y*$card_height) + ($y*$y_margin));

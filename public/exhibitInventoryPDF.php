@@ -188,6 +188,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
     } elseif( isset($args['template']) && $args['template'] == 'namecards' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'templates', 'nameCards');
         $rc = ciniki_ags_templates_nameCards($ciniki, $args['tnid'], array(
+            'exhibit_id' => isset($args['exhibit_id']) ? $args['exhibit_id'] : 0,
             'title' => $report_title,
             'start_date' => $exhibit['start_date'],
             'end_date' => $exhibit['end_date'],
