@@ -94,7 +94,7 @@ function ciniki_ags_settingsUpdate(&$ciniki) {
     $types = isset($rc['types']) ? $rc['types'] : array();
 
     foreach($types as $type) {
-        foreach(['image', 'template', 'artist-prefix', 'include-size', 'last-line', 'description'] as $item) {
+        foreach(['image', 'template', 'artist-prefix', 'include-size', 'last-line', 'title', 'description'] as $item) {
             $changelog_fields[] = "namecards-{$type['permalink']}-{$item}";
         }
     }

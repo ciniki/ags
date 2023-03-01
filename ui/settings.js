@@ -25,7 +25,7 @@ function ciniki_ags_settings() {
                 }},
             }},
         'image':{'label':'Name Cards', 'aside':'yes', 
-            'visible':function() { return M.modFlagOn('ciniki.ags', 0x0400) ? 'no' : 'yes'; },
+//            'visible':function() { return M.modFlagOn('ciniki.ags', 0x0400) ? 'no' : 'yes'; },
             'fields':{
                 'namecards-image':{'label':'Logo', 'type':'image_id', 'controls':'all', 'history':'no', 'size':'small'},
                 'namecards-template':{'label':'Format', 'type':'select', 'default':'businesscards', 'options':{
@@ -131,10 +131,11 @@ function ciniki_ags_settings() {
                 }},
             'last-line':{'label':'Last Line', 'type':'text'},
         }},
-        '_description':{'label':'Description', 
+        '_description':{'label':'Website Description', 
             'visible':function() { return M.modOn('ciniki.wng') ? 'yes' : 'no'; },
             'fields':{
-                'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+                'title':{'label':'Title', 'type':'text'},
+                'description':{'label':'Description', 'type':'textarea', 'size':'medium'},
                 }},
     };
     this.typenamecard.fieldValue = function(s, i, d) { 
@@ -165,6 +166,10 @@ function ciniki_ags_settings() {
             }
         }
         if( M.modOn('ciniki.wng') ) {
+            var n = this.formFieldValue(this.sections._description.fields.description, 'title');
+            if( n != this.data['title'] ) {
+                c += encodeURIComponent('namecards-' + this.data.permalink + '-title') + '=' + encodeURIComponent(n) + '&';
+            }
             var n = this.formFieldValue(this.sections._description.fields.description, 'description');
             if( n != this.data['description'] ) {
                 c += encodeURIComponent('namecards-' + this.data.permalink + '-description') + '=' + encodeURIComponent(n) + '&';
