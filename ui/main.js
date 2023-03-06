@@ -565,7 +565,7 @@ function ciniki_ags_main() {
         'general':{'label':'', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'location_id':{'label':'Location', 'type':'select', 'options':{}, 'complex_options':{'value':'id', 'name':'name'}},
-            'status':{'label':'Status', 'type':'toggle', 'toggles':{'50':'Active', '90':'Archived'}},
+            'status':{'label':'Status', 'type':'toggle', 'toggles':{'30':'Applications Open', '50':'Active', '90':'Archived'}},
             'flags1':{'label':'Visible', 'type':'flagtoggle', 'field':'flags', 'bit':0x01, 'default':'off'},
             //'flags2':{'label':'Category Buttons', 'type':'flagtoggle', 'field':'flags', 'bit':0x02, 'default':'off'},
             'flags2':{'label':'Category Display', 'type':'flagspiece', 'field':'flags', 'mask':0x12, 'toggle':'yes', 'join':'yes', 
@@ -581,6 +581,10 @@ function ciniki_ags_main() {
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},
             'reception_info':{'label':'Opening Reception', 'type':'text'},
+            'application_form_id':{'label':'Application Form', 'type':'select', 'options':{}, 
+                'visible':function() { return M.modOn('ciniki.forms') ? 'yes' : 'no'; },
+                'complex_options':{'value':'id', 'name':'name'},
+                },
             }},
         '_types':{'label':'Type', 'aside':'yes', 'fields':{
             'types':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new exhibit type: '},
@@ -629,6 +633,11 @@ function ciniki_ags_main() {
                 for(i in rsp.types) {
                     p.sections._types.fields.types.tags.push(rsp.types[i].tag.name);
                 }
+            }
+            p.sections.general.fields.application_form_id.options = [{'id':0, 'name':'None'}];
+            if( M.modOn('ciniki.forms') && rsp.forms != null ) {
+                p.sections.general.fields.application_form_id.options = rsp.forms;
+                p.sections.general.fields.application_form_id.options.unshift({'id':0, 'name':'None'});
             }
             p.refresh();
             p.show(cb);
@@ -3355,6 +3364,15 @@ function ciniki_ags_main() {
         this.exhibitors.cb = cb;
         this.sales.cb = cb;
         this.donations.cb = cb;
+        if( M.modOn('ciniki.forms') ) {
+            this.exhibitedit.sections.general.fields.status.toggles = {
+                '30':'Applications Open', '50':'Active', '90':'Archived',
+                };
+        } else {
+            this.exhibitedit.sections.general.fields.status.toggles = {
+                '50':'Active', '90':'Archived',
+                };
+        }
         if( args.customer_id != null && args.customer_id > 0 && args.participant_submission_id != null && args.participant_submission_id > 0 ) {
             this.chooseexhibit.open(cb, args.customer_id, args.participant_submission_id);
         }

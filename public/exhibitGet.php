@@ -82,6 +82,7 @@ function ciniki_ags_exhibitGet($ciniki) {
             'primary_image_id'=>'0',
             'synopsis'=>'',
             'description'=>'',
+            'application_form_id'=>0,
         );
     }
 
@@ -102,7 +103,8 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "exhibits.reception_info, "
             . "exhibits.primary_image_id, "
             . "exhibits.synopsis, "
-            . "exhibits.description "
+            . "exhibits.description, "
+            . "exhibits.application_form_id "
             . "FROM ciniki_ags_exhibits AS exhibits "
             . "LEFT JOIN ciniki_ags_locations AS locations ON ("
                 . "exhibits.location_id = locations.id "
@@ -115,7 +117,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'exhibits', 'fname'=>'id', 
                 'fields'=>array('name', 'permalink', 'location_id', 'location_name', 'status', 'status_text', 
-                    'flags', 'start_date', 'end_date', 'reception_info', 'primary_image_id', 'synopsis', 'description'),
+                    'flags', 'start_date', 'end_date', 'reception_info', 'primary_image_id', 'synopsis', 'description', 'application_form_id'),
                 'maps'=>array('status_text'=>$maps['exhibit']['status']),
                 'utctotz'=>array('start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
                     'end_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),
@@ -587,6 +589,18 @@ function ciniki_ags_exhibitGet($ciniki) {
             return $rc;
         }
         $rsp['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
+    }
+
+    //
+    // Return the list of forms available
+    //
+    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'hooks', 'formList');
+        $rc = ciniki_forms_hooks_formList($ciniki, $args['tnid'], array());
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.296', 'msg'=>'Unable to get list of forms', 'err'=>$rc['err']));
+        }
+        $rsp['forms'] = isset($rc['forms']) ? $rc['forms'] : array();
     }
 
     return $rsp;

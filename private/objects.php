@@ -59,6 +59,7 @@ function ciniki_ags_objects(&$ciniki) {
             'primary_image_id' => array('name'=>'', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis' => array('name'=>'', 'default'=>''),
             'description' => array('name'=>'', 'default'=>''),
+            'application_form_id' => array('name'=>'Application Form', 'ref'=>'ciniki.forms.form', 'default'=>'0'),
             ),
         'history_table' => 'ciniki_ags_history',
         );

@@ -1,0 +1,5 @@
+#
+# Add field for opening reception
+#
+ALTER TABLE ciniki_ags_exhibits ADD COLUMN application_form_id int not null AFTER description;
+ALTER TABLE ciniki_ags_exhibits COMMENT='v1.03';
