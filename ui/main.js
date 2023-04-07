@@ -638,7 +638,7 @@ function ciniki_ags_main() {
     this.exhibitedit.open = function(cb, eid, list) {
         if( eid != null ) { this.exhibit_id = eid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.ags.exhibitGet', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'locations':'yes', 'types':'yes', 'webcollections':'yes'}, function(rsp) {
+        M.api.getJSONCb('ciniki.ags.exhibitGet', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'locations':'yes', 'types':'yes', 'webcollections':'yes', 'forms':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
