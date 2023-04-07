@@ -243,7 +243,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
 //      $rc = ciniki_ags_web_exhibitApplicationDetails($ciniki, $settings, $tnid);
         $rc = ciniki_info_web_pageDetails($ciniki, $settings, $tnid, array('content_type'=>10));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.web.44', 'msg'=>"I'm sorry, but we can't find any information about the requestion application.", 'err'=>$rc['err']));;
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.44', 'msg'=>"I'm sorry, but we can't find any information about the requestion application.", 'err'=>$rc['err']));;
         }
         $page['blocks'][] = array('type'=>'content', 'content'=>$rc['content']['content']);
         if( isset($rc['content']['files']) && count($rc['content']['files']) > 0 ) {
@@ -500,7 +500,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'web', 'exhibitDetails');
         $rc = ciniki_ags_web_exhibitDetails($ciniki, $settings, $tnid, $exhibit_permalink);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.web.45', 'msg'=>"I'm sorry, but we can't seem to find the image your requested.", $rc['err']));
+            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.45', 'msg'=>"I'm sorry, but we can't seem to find the image your requested.", $rc['err']));
         }
         $exhibit = $rc['exhibit'];
 
@@ -535,7 +535,7 @@ function ciniki_ags_web_processRequest(&$ciniki, $settings, $tnid, $args) {
         //
         if( isset($args['uri_split'][1]) && $args['uri_split'][1] == 'gallery' && isset($args['uri_split'][2]) && $args['uri_split'][2] != '' ) {
             if( !isset($exhibit['images']) || count($exhibit['images']) < 1 ) {
-                return array('stat'=>'404', 'err'=>array('code'=>'ciniki.web.46', 'msg'=>"I'm sorry, but we can't seem to find the image your requested."));
+                return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.46', 'msg'=>"I'm sorry, but we can't seem to find the image your requested."));
             }
 
             $image_permalink = $args['uri_split'][2];

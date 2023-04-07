@@ -41,7 +41,7 @@ function ciniki_ags_hooks_sponsorshipObjects(&$ciniki, $tnid, $args) {
         array('container'=>'exhibits', 'fname'=>'name', 'fields'=>array('id', 'name', 'start_date', 'exhibit_date')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.92', 'msg'=>'Unable to load exhibits', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.311', 'msg'=>'Unable to load exhibits', 'err'=>$rc['err']));
     }
     $exhibits = isset($rc['exhibits']) ? $rc['exhibits'] : array();
 

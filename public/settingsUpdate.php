@@ -89,7 +89,7 @@ function ciniki_ags_settingsUpdate(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.24', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.312', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
     }
     $types = isset($rc['types']) ? $rc['types'] : array();
 

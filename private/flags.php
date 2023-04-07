@@ -19,7 +19,7 @@ function ciniki_ags_flags(&$ciniki) {
         array('flag'=>array('bit'=>'1', 'name'=>'Exhibit Types')),
         array('flag'=>array('bit'=>'2', 'name'=>'Item Types')),
         array('flag'=>array('bit'=>'3', 'name'=>'Item Condition')),
-//        array('flag'=>array('bit'=>'4', 'name'=>'')),
+        array('flag'=>array('bit'=>'4', 'name'=>'Web Updater')),
         // 0x10
         array('flag'=>array('bit'=>'5', 'name'=>'Barcodes')),
         array('flag'=>array('bit'=>'6', 'name'=>'Location Categories')),

@@ -70,9 +70,9 @@ function ciniki_ags_itemTagsUpdate(&$ciniki) {
                 . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $tag['permalink']) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.customers', 'item');
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.customers.287', 'msg'=>'Unable to load tag', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.287', 'msg'=>'Unable to load tag', 'err'=>$rc['err']));
             }
             $rows = isset($rc['rows']) ? $rc['rows'] : array();
                 

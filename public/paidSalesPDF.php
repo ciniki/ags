@@ -46,7 +46,7 @@ function ciniki_ags_paidSalesPDF($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDetailsQueryDash');
     $rc = ciniki_core_dbDetailsQueryDash($ciniki, 'ciniki_ags_settings', 'tnid', $args['tnid'], 'ciniki.ags', 'settings', '');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.225', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.301', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
     }
     $settings = isset($rc['settings']) ? $rc['settings'] : array();
     
@@ -68,7 +68,7 @@ function ciniki_ags_paidSalesPDF($ciniki) {
         && (!isset($args['exhibitor_id']) || $args['exhibitor_id'] == 0 || $args['exhibitor_id'] == '') 
         && (!isset($args['start_date']) || $args['start_date'] == '') 
         ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.140', 'msg'=>'An exhibit or exhibitor must be specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.305', 'msg'=>'An exhibit or exhibitor must be specified'));
     }
 
     //
@@ -97,10 +97,10 @@ function ciniki_ags_paidSalesPDF($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'exhibit');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.142', 'msg'=>'Unable to load exhibit', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.302', 'msg'=>'Unable to load exhibit', 'err'=>$rc['err']));
         }
         if( !isset($rc['exhibit']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.143', 'msg'=>'Unable to find requested exhibit'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.303', 'msg'=>'Unable to find requested exhibit'));
         }
         $exhibit = $rc['exhibit'];
         $report_title = $exhibit['name'] . ' - Paid Sales';
@@ -163,7 +163,7 @@ function ciniki_ags_paidSalesPDF($ciniki) {
             'fields'=>array('code', 'exhibitor_code', 'name', 'quantity', 'sell_date', 'tenant_amount', 'exhibitor_amount', 'total_amount', 'billing_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.141', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.304', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
     }
     if( isset($rc['exhibitors']) ) {
         $exhibitors = $rc['exhibitors'];

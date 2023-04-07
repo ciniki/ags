@@ -78,10 +78,10 @@ function ciniki_ags_exhibitDuplicate(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.62', 'msg'=>'Exhibit not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.309', 'msg'=>'Exhibit not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['exhibits'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.63', 'msg'=>'Unable to find Exhibit')); 
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.310', 'msg'=>'Unable to find Exhibit')); 
     }
     $exhibit = $rc['exhibits'][0];
 
@@ -129,7 +129,7 @@ function ciniki_ags_exhibitDuplicate(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.150', 'msg'=>'Unable to load exhibit inventory', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.307', 'msg'=>'Unable to load exhibit inventory', 'err'=>$rc['err']));
     }
     $items = isset($rc['items']) ? $rc['items'] : array();
 
@@ -165,7 +165,7 @@ function ciniki_ags_exhibitDuplicate(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.11', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.306', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
     }
     $participants = isset($rc['participants']) ? $rc['participants'] : array();
 
@@ -198,7 +198,7 @@ function ciniki_ags_exhibitDuplicate(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.58', 'msg'=>'You already have a exhibit with that name, please choose another.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.308', 'msg'=>'You already have a exhibit with that name, please choose another.'));
     }
 
     //

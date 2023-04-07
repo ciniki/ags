@@ -25,6 +25,13 @@ function ciniki_ags_exhibitGet($ciniki) {
         'locations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Locations'),
         'types'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Types'),
         'details'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Extra Details'),
+        'participants'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Get Participatns'),
+        'inventory'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Get Inventory'),
+        'sales'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Get Sales'),
+        'categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Get Categories'),
+        'inactive'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Get Inactive'),
+        'emails'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Get Emails'),
+        'forms'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Get Forms List'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -237,45 +244,17 @@ function ciniki_ags_exhibitGet($ciniki) {
             $rsp['exhibit']['_webcollections'] = $rc['collections'];
             $rsp['exhibit']['webcollections'] = $rc['selected'];
             $rsp['exhibit']['webcollections_text'] = $rc['selected_text'];
-            $rsp['exhibit_details'][] = array('label'=>'Web Collections', 'value'=>$rc['selected_text']);
+//            $rsp['exhibit_details'][] = array('label'=>'Web Collections', 'value'=>$rc['selected_text']);
         }
     }
 
     //
     // Load the participant list, inventory and sales
     //
-    if( isset($args['details']) && $args['details'] == 'yes' ) {
-        //
-        // Get the list of past participants
-        //
-        $strsql = "SELECT participants.id, "
-            . "exhibitors.customer_id, "
-            . "exhibitors.id AS exhibitor_id, "
-            . "exhibitors.display_name, "
-            . "participants.status, "
-            . "participants.status AS status_text "
-            . "FROM ciniki_ags_participants AS participants "
-            . "INNER JOIN ciniki_ags_exhibitors AS exhibitors ON ("
-                . "participants.exhibitor_id = exhibitors.id "
-                . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "WHERE participants.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
-            . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND participants.status = 70 "
-            . "ORDER BY exhibitors.display_name "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
-            array('container'=>'participants', 'fname'=>'exhibitor_id', 
-                'fields'=>array('id', 'customer_id', 'exhibitor_id', 'display_name', 'status', 'status_text'),
-                'maps'=>array('status_text'=>$maps['participant']['status']),
-                ),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.200', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
-        }
-        $rsp['inactive'] = isset($rc['participants']) ? $rc['participants'] : array();
-
+    if( (isset($args['participants']) && $args['participants'] == 'yes')
+        || (isset($args['inventory']) && $args['inventory'] == 'yes')
+        || (isset($args['sales']) && $args['sales'] == 'yes')
+        ) {
         //
         // Get the list of participants
         //
@@ -529,7 +508,9 @@ function ciniki_ags_exhibitGet($ciniki) {
         $rsp['pending_payouts'] = $pending_payouts;
         $rsp['paid_sales'] = $paid_sales;
         $rsp['totals'] = $totals;
+    }
 
+    if( isset($args['categories']) && $args['categories'] == 'yes' ) {
         //
         // Get the list of categories and their thumbnails
         //
@@ -575,7 +556,42 @@ function ciniki_ags_exhibitGet($ciniki) {
             }
         }
         $rsp['categories'] = $categories;
+    }
 
+    if( isset($args['inactive']) && $args['inactive'] == 'yes' ) {
+        //
+        // Get the list of past participants
+        //
+        $strsql = "SELECT participants.id, "
+            . "exhibitors.customer_id, "
+            . "exhibitors.id AS exhibitor_id, "
+            . "exhibitors.display_name, "
+            . "participants.status, "
+            . "participants.status AS status_text "
+            . "FROM ciniki_ags_participants AS participants "
+            . "INNER JOIN ciniki_ags_exhibitors AS exhibitors ON ("
+                . "participants.exhibitor_id = exhibitors.id "
+                . "AND exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE participants.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
+            . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND participants.status = 70 "
+            . "ORDER BY exhibitors.display_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'participants', 'fname'=>'exhibitor_id', 
+                'fields'=>array('id', 'customer_id', 'exhibitor_id', 'display_name', 'status', 'status_text'),
+                'maps'=>array('status_text'=>$maps['participant']['status']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.200', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
+        }
+        $rsp['inactive'] = isset($rc['participants']) ? $rc['participants'] : array();
+    }
+
+    if( isset($args['emails']) && $args['emails'] == 'yes' ) {
         //
         // Get the list of emails sent for this exhibit
         //
@@ -594,7 +610,9 @@ function ciniki_ags_exhibitGet($ciniki) {
     //
     // Return the list of forms available
     //
-    if( ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') ) {
+    if( isset($args['forms']) && $args['forms'] == 'yes' 
+        && ciniki_core_checkModuleActive($ciniki, 'ciniki.forms') 
+        ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'hooks', 'formList');
         $rc = ciniki_forms_hooks_formList($ciniki, $args['tnid'], array());
         if( $rc['stat'] != 'ok' ) {
