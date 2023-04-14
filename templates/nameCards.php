@@ -197,8 +197,8 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
             $image_ratio = $card_image->getImageHeight()/$card_image->getImageWidth();
 
             $image_height = $image_width * $image_ratio;
-            if( $image_height > 30 ) {
-                $image_height = 30;
+            if( $image_height > 28 ) {
+                $image_height = 28;
                 $image_width = $image_height/$image_ratio;
             }
         }
@@ -270,7 +270,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
             }
 
             if( $template == 'fourbythree' && isset($card_image) ) {
-                $pdf->SetY($y_offset + ($card_height-10) + ($y*$card_height) + ($y*$y_margin));
+                $pdf->SetY($y_offset + ($card_height-2) + ($y*$card_height) + ($y*$y_margin));
                 $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
                 if( !isset($args['tag_price']) || $args['tag_price'] == 'yes' ) {
                     if( ($item['flags']&0x01) == 0x01 && $item['unit_amount'] != 0 ) {
