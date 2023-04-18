@@ -1555,6 +1555,7 @@ function ciniki_ags_main() {
         }
         var p = M.ciniki_ags_main.participant;
         p.data = rsp;
+        p.data.contact_details = rsp.participant.contact_details;
         p.exhibit_id = rsp.participant.exhibit_id;
         p.exhibitor_id = rsp.participant.exhibitor_id;
         p.refresh();
@@ -1673,6 +1674,15 @@ function ciniki_ags_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'30':'Applied', '50':'Accepted', '70':'Inactive', '90':'Rejected'}},
             'barcode_message':{'label':'Barcode Message', 'type':'text'},
             }},
+        'contact_details':{'label':'Contact', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
+            'cellClasses':['', ''],
+            'changeTxt':'Edit',
+            'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_ags_main.editparticipant.open();\',\'mc\',{\'customer_id\':M.ciniki_ags_main.editparticipant.data.customer_id});',
+            },
+        'membership_details':{'label':'Membership', 'type':'simplegrid', 'aside':'yes', 'num_cols':2,
+            'visible':function() { return (M.modFlagOn('ciniki.customers', 0x08) ? 'yes' : 'no'); },
+            'cellClasses':['label',''],
+            },
         '_submission':{'label':'Import Artwork from Form', 
             'active':function() { return M.ciniki_ags_main.editparticipant.participant_id == 0 && M.modOn('ciniki.forms') ? 'yes' : 'no'; },
             'fields':{
@@ -1716,6 +1726,40 @@ function ciniki_ags_main() {
     this.editparticipant.fieldValue = function(s, i, d) { return this.data[i]; }
     this.editparticipant.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.ags.participantHistory', 'args':{'tnid':M.curTenantID, 'participant_id':this.participant_id, 'field':i}};
+    }
+    this.editparticipant.cellValue = function(s, i, j, d) {
+        if( s == 'contact_details' && j == 0 ) {    
+            return d.label;
+        }
+        if( s == 'contact_details' && j == 1 ) {
+            switch(d.label) {
+                case 'Email': return M.linkEmail(d.value);
+            }
+            return d.value;
+        }
+        if( s == 'membership_details' ) {
+            switch(j) {
+                case 0: return d.label;
+                case 1: 
+                    if( d.expiry_display != null && d.expiry_display != '' ) {
+                        return d.value + '<span class="subdue"> (' + d.expiry_display + ')</span>';
+                    }
+                    return d.value;
+            }
+        }
+    }
+    this.editparticipant.cellColour = function(s, i, j, d) {
+        if( s == 'membership_details' && j == 1 && d.expires != null ) {
+            switch(d.expires) {
+                case 'past': return '#ffdddd';
+                case 'soon': return '#ffefdd';
+                case 'future': return '#ddffdd';
+            }
+        }
+        return '';
+    }
+    this.editparticipant.rowFn = function(s, i, d) {
+        return '';
     }
     this.editparticipant.addCustomer = function(cb, cid, eid,sub_id) {
         this.participant_id = 0;
@@ -1830,7 +1874,7 @@ function ciniki_ags_main() {
     //
     // The panel to list the location
     //
-    this.locations = new M.panel('location', 'ciniki_ags_main', 'locations', 'mc', 'medium', 'sectioned', 'ciniki.ags.main.locations');
+    this.locations = new M.panel('location', 'ciniki_ags_main', 'locations', 'mc', 'large', 'sectioned', 'ciniki.ags.main.locations');
     this.locations.data = {};
     this.locations.nplist = [];
     this.locations.location_id = 0;
@@ -1946,7 +1990,7 @@ function ciniki_ags_main() {
             }
             var p = M.ciniki_ags_main.locations;
             p.data = rsp;
-            p.size = p.location_id > 0 ? 'medium mediumaside' : 'medium';
+            p.size = p.location_id > 0 ? 'large mediumaside' : 'large';
             p.sections._years.visible = 'no';
             p.sections._years.tabs = {};
             if( rsp.years != null && rsp.years != '' ) {

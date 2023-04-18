@@ -259,6 +259,7 @@ function ciniki_ags_participantGet($ciniki) {
             . "exhibitors.display_name, "
             . "exhibitors.profile_name, "
             . "customers.display_name AS customer_name, "
+            . "customers.member_status, "
             . "participants.status, "
             . "participants.status AS status_text, "
             . "participants.flags, "
@@ -283,7 +284,7 @@ function ciniki_ags_participantGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'participants', 'fname'=>'id', 
                 'fields'=>array('id', 'exhibit_id', 'exhibitor_id', 'customer_id', 'display_name', 'profile_name', 'customer_name', 'code', 'barcode_message',
-                    'status', 'status_text', 'flags', 'message', 'notes', 'primary_image_id', 'synopsis', 'fullbio'),
+                    'status', 'status_text', 'flags', 'message', 'notes', 'primary_image_id', 'synopsis', 'fullbio', 'member_status',),
                 'maps'=>array('status_text'=>$maps['participant']['status']),
                 ),
             ));
@@ -333,8 +334,38 @@ function ciniki_ags_participantGet($ciniki) {
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $rsp['customer'] = $rc['customer'];
-        $rsp['contact_details'] = $rc['details'];
+        $rsp['participant']['customer'] = $rc['customer'];
+        $rsp['participant']['contact_details'] = $rc['details'];
+
+        //
+        // Get the membership details
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'membershipDetails');
+            $rc = ciniki_customers_hooks_membershipDetails($ciniki, $args['tnid'], array('customer_id' => $participant['customer_id']));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.sapos.311', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
+            }
+            $rsp['participant']['membership_details'] = isset($rc['membership_details']) ? $rc['membership_details'] : array();
+
+            if( $rsp['participant']['member_status'] == 0 ) {
+                array_unshift($rsp['participant']['membership_details'], array(
+                    'label' => 'Status',
+                    'value' => 'Not a member',
+                    ));
+            } elseif( $rsp['participant']['member_status'] == 10 ) {
+                array_unshift($rsp['participant']['membership_details'], array(
+                    'label' => 'Status',
+                    'value' => 'Active',
+                    ));
+
+            } elseif( $rsp['participant']['member_status'] == 60 ) {
+                array_unshift($rsp['participant']['membership_details'], array(
+                    'label' => 'Status',
+                    'value' => 'Inactive',
+                    ));
+            }
+        }
 
         //
         // Setup totals columns
