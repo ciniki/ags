@@ -803,7 +803,7 @@ function ciniki_ags_main() {
             // Option **future**
             // # Items
             },
-        'contact_details':{'label':'Contact Info', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
+        'contact_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
             'cellClasses':['label', ''],
             'changeTxt':'Edit',
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_ags_main.participant.open();\',\'mc\',{\'customer_id\':M.ciniki_ags_main.participant.data.participant.customer_id});',
@@ -1674,10 +1674,10 @@ function ciniki_ags_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'30':'Applied', '50':'Accepted', '70':'Inactive', '90':'Rejected'}},
             'barcode_message':{'label':'Barcode Message', 'type':'text'},
             }},
-        'contact_details':{'label':'Contact', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
+        'contact_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
             'cellClasses':['', ''],
             'changeTxt':'Edit',
-            'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_ags_main.editparticipant.open();\',\'mc\',{\'customer_id\':M.ciniki_ags_main.editparticipant.data.customer_id});',
+            'changeFn':'M.ciniki_ags_main.editparticipant.save("M.ciniki_ags_main.editparticipant.customerEdit();");',
             },
         'membership_details':{'label':'Membership', 'type':'simplegrid', 'aside':'yes', 'num_cols':2,
             'visible':function() { return (M.modFlagOn('ciniki.customers', 0x08) ? 'yes' : 'no'); },
@@ -1727,6 +1727,9 @@ function ciniki_ags_main() {
     this.editparticipant.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.ags.participantHistory', 'args':{'tnid':M.curTenantID, 'participant_id':this.participant_id, 'field':i}};
     }
+    this.editparticipant.customerEdit = function() {
+        M.startApp('ciniki.customers.edit',null,'M.ciniki_ags_main.editparticipant.open();','mc',{'customer_id':this.data.customer_id});
+    }
     this.editparticipant.cellValue = function(s, i, j, d) {
         if( s == 'contact_details' && j == 0 ) {    
             return d.label;
@@ -1759,6 +1762,9 @@ function ciniki_ags_main() {
         return '';
     }
     this.editparticipant.rowFn = function(s, i, d) {
+        if( s == 'membership_details' ) {
+            return null;
+        }
         return '';
     }
     this.editparticipant.addCustomer = function(cb, cid, eid,sub_id) {

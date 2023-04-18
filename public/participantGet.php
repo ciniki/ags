@@ -330,7 +330,7 @@ function ciniki_ags_participantGet($ciniki) {
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
         $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
-            array('customer_id'=>$participant['customer_id'], 'name'=>'no', 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
+            array('customer_id'=>$participant['customer_id'], 'name'=>'yes', 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
