@@ -94,7 +94,6 @@ function ciniki_ags_wng_apiItemSave(&$ciniki, $tnid, $request) {
         );
     $form_errors = '';
     foreach($fields as $field => $label) {
-//        error_log($field . ": {$item[$field]}");
         if( $field == 'new_inventory' && isset($_POST["f-new_inventory"]) ) {
             if( isset($_POST['f-action']) && $_POST['f-action'] == 'add' ) {
                 $item['new_pending_inventory'] = $_POST["f-{$field}"];
@@ -110,16 +109,13 @@ function ciniki_ags_wng_apiItemSave(&$ciniki, $tnid, $request) {
             ) {
             $_POST["f-{$field}"] = preg_replace("/\r/", '', $_POST["f-{$field}"]);
             if( $item[$field] != $_POST["f-{$field}"] ) {
-                error_log($field);
                 if( isset($_POST['f-action']) && $_POST['f-action'] == 'add' ) {
                     $item[$field] = $_POST["f-{$field}"];
                 } else {
                     $item['requested_changes'][$field] = $_POST["f-{$field}"];
                 }
             } elseif( isset($item['requested_changes'][$field]) ) {
-                error_log('unset');
                 unset($item['requested_changes'][$field]);
-                error_log(print_r($item,true));
             }
         }
         //
@@ -161,8 +157,6 @@ function ciniki_ags_wng_apiItemSave(&$ciniki, $tnid, $request) {
     if( $form_errors != '' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.338', 'msg'=>"{$form_errors}"));
     }
-//        error_log(print_r($_POST,true));
-//        error_log(print_r($item,true));
 
     //
     // Check if adding a new item

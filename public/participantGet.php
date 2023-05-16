@@ -737,7 +737,6 @@ function ciniki_ags_participantGet($ciniki) {
         $rsp['participant']['fee_percent'] = (isset($settings['defaults-item-fee-percent']) ? $settings['defaults-item-fee-percent'] : '');
     }
 
-    error_log(print_r($rsp,true));
     return $rsp;
 }
 ?>

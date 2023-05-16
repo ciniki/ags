@@ -1481,8 +1481,8 @@ function ciniki_ags_main() {
                 return false;
             }
             var p = M.ciniki_ags_main.participant;
-            if( p.data.webupdates != null ) {
                 p.open();
+/*            if( p.data.webupdates != null ) {
             } else {
                 // Add new row to inventory table
                 var tr = p.createSectionGridRow('inventory', p.data.inventory.length, p.sections.inventory, p.sections.inventory.num_cols, rsp.item);
@@ -1498,7 +1498,7 @@ function ciniki_ags_main() {
                 var r = event.target.parentNode.parentNode;
                 var t = r.parentNode;
                 t.deleteRow(r.rowIndex-1);
-            }
+            } */
         });
     }
     this.participant.itemRemove = function(event, item_id) {
