@@ -29,6 +29,7 @@ function ciniki_ags_exhibitorUpdate(&$ciniki) {
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'fullbio'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Full Bio'),
+        'requested_changes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Requested Changes'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

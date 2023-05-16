@@ -23,6 +23,7 @@
 #
 # status:                   The current status of the item.
 #
+#                               30 - Pending (New item add via website)
 #                               50 - Active
 #                               70 - Sold
 #                               90 - Archived
@@ -68,6 +69,8 @@
 #
 # notes:                    Any notes for the item, special instructions, etc.
 #
+# requested_changes:        The changed requested by the customer via the website. This is store in serialized array.
+#
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
 #
@@ -99,6 +102,7 @@ create table ciniki_ags_items (
     current_condition varchar(250) not null,
     tag_info varchar(250) not null,
     notes text not null,
+    requested_changes text not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
@@ -106,4 +110,4 @@ create table ciniki_ags_items (
     unique index (code, tnid),
     unique index (permalink, tnid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.06';
+) ENGINE='InnoDB', COMMENT='v1.07';

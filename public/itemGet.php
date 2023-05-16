@@ -194,7 +194,8 @@ function ciniki_ags_itemGet($ciniki) {
             . "ciniki_ags_items.size, "
             . "ciniki_ags_items.framed_size, "
             . "ciniki_ags_items.current_condition, "
-            . "ciniki_ags_items.notes "
+            . "ciniki_ags_items.notes, "
+            . "ciniki_ags_items.requested_changes "
             . "FROM ciniki_ags_items "
             . "WHERE ciniki_ags_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_ags_items.id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
@@ -206,7 +207,7 @@ function ciniki_ags_itemGet($ciniki) {
                     'unit_amount', 'unit_discount_amount', 'unit_discount_percentage', 'fee_percent', 
                     'taxtype_id', 'shipping_profile_id', 'sapos_category', 'donor_customer_id',
                     'primary_image_id', 'synopsis', 'description', 'tag_info', 
-                    'creation_year', 'medium', 'size', 'framed_size', 'current_condition', 'notes'),
+                    'creation_year', 'medium', 'size', 'framed_size', 'current_condition', 'notes', 'requested_changes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -218,6 +219,10 @@ function ciniki_ags_itemGet($ciniki) {
         $item = $rc['items'][0];
         $item['unit_amount'] = '$' . number_format($item['unit_amount'], 2);
         $item['fee_percent'] = (float)($item['fee_percent']*100) . '%';
+
+        if( $item['requested_changes'] != '' ) {
+            $item['requested_changes'] = unserialize($item['requested_changes']);
+        }
 
         //
         // if the donor is not zero, load the details

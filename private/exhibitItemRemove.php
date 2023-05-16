@@ -18,7 +18,7 @@ function ciniki_ags_exhibitItemRemove(&$ciniki, $tnid, $exhibit_id, $item_id) {
     //
     // Check if the item is already a part of the exhibit
     //
-    $strsql = "SELECT id, exhibit_id, item_id, inventory "
+    $strsql = "SELECT id, exhibit_id, item_id, inventory, pending_inventory "
         . "FROM ciniki_ags_exhibit_items "
         . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $exhibit_id) . "' "
         . "AND item_id = '" . ciniki_core_dbQuote($ciniki, $item_id) . "' "

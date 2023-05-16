@@ -17,6 +17,7 @@ function ciniki_ags_maps(&$ciniki) {
     $maps = array();
     $maps['item'] = array(
         'status'=>array(
+            '30'=>'Pending',
             '50'=>'Active',
             '70'=>'Sold',
             '90'=>'Archived',
@@ -42,6 +43,12 @@ function ciniki_ags_maps(&$ciniki) {
         'status'=>array(
             '50'=>'Active',
             '90'=>'Archived',
+        ),
+    );
+    $maps['exhibititem'] = array(
+        'status'=>array(
+            '30'=>'Pending',
+            '50'=>'Active',
         ),
     );
     $maps['itemlog'] = array(

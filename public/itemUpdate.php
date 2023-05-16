@@ -42,6 +42,7 @@ function ciniki_ags_itemUpdate(&$ciniki) {
         'current_condition'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Condition'),
         'tag_info'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Info'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
+        'requested_changes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Requested Changes'),
         'types'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Types'),
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Categories'),
         'subcategories'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Subcategories'),
@@ -60,6 +61,15 @@ function ciniki_ags_itemUpdate(&$ciniki) {
     $rc = ciniki_ags_checkAccess($ciniki, $args['tnid'], 'ciniki.ags.itemUpdate');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    if( isset($args['requested_changes']) && $args['requested_changes'] != '' ) {
+        $json = json_decode($args['requested_changes'], true);
+        if( count($json) > 0 ) {
+            $args['requested_changes'] = serialize($json);
+        } else {
+            $args['requested_changes'] = '';
+        }
     }
 
     //

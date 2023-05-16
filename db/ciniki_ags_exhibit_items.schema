@@ -4,6 +4,9 @@
 # This table stores the items that are part of an exhibit. This allows items
 # to be in multiple exhibits.
 #
+# Items can be in pending status (50) and the pending inventory should also be set.
+# Items can be in active status(30) and have pending_inventory to be added.
+#
 # Fields 
 # ------
 # id:                       The ID assigned to the record.
@@ -13,7 +16,15 @@
 # exhibit_id:               The ID of the Exhibit.
 # item_id:                  The ID of the item in items table.
 #
+# status:                   The current status of the item for the exhibit.
+#
+#                               30 - Pending item (needs approval to be added)
+#                               50 - Active item
+#
 # inventory:                The current number in inventory for the exhibit.
+#
+# pending_inventory:        The pending quantity to be added or removedto inventory when approved.
+#                           If the number is negative, that is how many to be removed.
 #
 # fee_percent:              The fee percent for this item for this exhibit.
 #                           This allows for different percents at different events. **future**
@@ -27,7 +38,9 @@ create table ciniki_ags_exhibit_items (
     tnid int not null,
     exhibit_id int not null,
     item_id int not null,
+    status tinyint unsigned not null,
     inventory int not null,
+    pending_inventory int not null,
     fee_percent decimal(19,4) not null,
     date_added datetime not null,
     last_updated datetime not null,
@@ -35,4 +48,4 @@ create table ciniki_ags_exhibit_items (
     unique index (uuid),
     unique index (exhibit_id, item_id),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

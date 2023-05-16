@@ -184,6 +184,15 @@ function ciniki_ags_main() {
             'hint':'Search participants',
             'noData':'No participants found',
             },
+        'webupdates':{'label':'Web Updates', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'participants' && M.ciniki_ags_main.exhibit.data.webupdates != null ? 'yes' : 'hidden'},
+            'headerValues':['Name', 'Status'],
+            'sortable':'yes',
+            'sortTypes':['number', 'text', 'number', 'number', 'text'],
+            'noData':'No Items',
+//            'addTxt':'Add Item',
+//            'addFn':'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibitor.open();\',0,M.ciniki_ags_main.exhibitor.exhibitor_id,0);',
+            },
         'participants':{'label':'Exhibit Participants', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'participants' ? 'yes' : 'no'},
             'sortable':'yes',
@@ -293,6 +302,12 @@ function ciniki_ags_main() {
                 case 3: return d.tenant_amount_display;
                 case 4: return d.exhibitor_amount_display;
                 case 5: return d.total_amount_display;
+            }
+        }
+        if( s == 'webupdates' ) {
+            switch(j) {
+                case 0: return d.display_name;
+                case 1: return d.status_text;
             }
         }
         if( s == 'inventory' || s == 'inventory_search' ) {
@@ -407,7 +422,7 @@ function ciniki_ags_main() {
     }
     this.exhibit.rowFn = function(s, i, d) {
         if( d == null ) { return ''; }
-        if( s == 'participants' || s == 'participant_search' || s == 'inactive' ) {
+        if( s == 'participants' || s == 'participant_search' || s == 'inactive' || s == 'webupdates' ) {
             return 'M.ciniki_ags_main.participant.open(\'M.ciniki_ags_main.exhibit.open();\',\'' + d.id + '\');';
         }
         if( s == 'inventory' || s == 'inventory_search' ) {
@@ -595,6 +610,9 @@ function ciniki_ags_main() {
 //            'flags3':{'label':'Link Members', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'on'},
             'flags8':{'label':'Show Participant Bios', 'type':'flagtoggle', 'field':'flags', 'bit':0x80, 'default':'on',
                 'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
+                },
+            'flags9':{'label':'Web Updates', 'type':'flagtoggle', 'field':'flags', 'bit':0x0100, 'default':'off',
+                'visible':function() { return M.modFlagSet('ciniki.ags', 0x08); },
                 },
             'flags13':{'label':'Remove on Payout', 'type':'flagtoggle', 'field':'flags', 'bit':0x1000, 'default':'off'},
             'start_date':{'label':'Start', 'type':'date'},
@@ -899,6 +917,16 @@ function ciniki_ags_main() {
             'hint':'Search inventory',
             'noData':'No items found',
             },
+        'webupdates':{'label':'Web Updates', 'type':'simplegrid', 'num_cols':6,
+            'visible':function() { return (M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' || M.ciniki_ags_main.participant.sections._tabs.selected == 'online') && M.ciniki_ags_main.participant.data.webupdates != null ? 'yes' : 'hidden'},
+            'headerValues':['Code', 'Item', 'Price', 'Action', 'Quantity', ''],
+            'cellClasses':['multiline', 'multiline', 'multiline', '', '', 'alignright'],
+            'sortable':'yes',
+            'sortTypes':['number', 'text', 'number', 'text', 'number', ''],
+            'noData':'No Items',
+//            'addTxt':'Add Item',
+//            'addFn':'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibitor.open();\',0,M.ciniki_ags_main.exhibitor.exhibitor_id,0);',
+            },
         'inventory':{'label':'Exhibit Items', 'type':'simplegrid', 'panelcolumn':1, 'num_cols':6,
             'visible':function() { return M.ciniki_ags_main.participant.sections._tabs.selected == 'inventory' ? 'yes' : 'no'},
             'sortable':'yes',
@@ -1043,6 +1071,33 @@ function ciniki_ags_main() {
                         return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.id + ');">Remove</button>';
                     } 
                     return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemAdd(event,' + d.id + ');">Add</button>';
+            }
+            return '';
+        }
+        if( s == 'webupdates' ) {
+            switch(j) {
+                case 0: return d.code;
+                case 1: return d.name;
+                case 2: return d.unit_amount_display;
+                case 3: return d.action;
+                case 4: return d.action_quantity;
+                case 5: 
+                    if( d.actioncode != null && d.actioncode == 'profileupdate' ) {
+                        return '<button onclick="event.stopPropagation();M.ciniki_ags_main.editparticipant.open(\'M.ciniki_ags_main.participant.open();\',' + d.participant_id + ');">Edit</button>';
+                    }
+                    if( d.actioncode != null && d.actioncode == 'removeitem' ) {
+                        return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.item_id + ');">Remove</button>';
+                    }
+                    if( d.actioncode != null && d.actioncode == 'additem' ) {
+                        return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemAddWebUpdate(event,' + d.item_id + ',' + d.pending_inventory + ');">Add</button>';
+                    }
+                    if( d.actioncode != null && (d.actioncode == 'edititem' || d.actioncode == 'newitem') ) {
+                        return '<button onclick="event.stopPropagation();M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.participant.open();\',\'' + d.item_id + '\',0,0);">Edit</button>';
+                    }
+                    if( d.actioncode != null && d.actioncode == 'addinventory' ) {
+                        return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemAddWebUpdate(event,' + d.item_id + ',' + d.pending_inventory + ');">Add</button>';
+                    }
+                    return '';
             }
             return '';
         }
@@ -1292,6 +1347,12 @@ function ciniki_ags_main() {
     }
     this.participant.rowFn = function(s, i, d) {
         if( d == null ) { return ''; }
+        if( s == 'webupdates' ) {
+            if( d.actioncode != null && d.actioncode == 'profileupdate' ) {
+                return '';
+            }
+            return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.participant.open();\',\'' + d.item_id + '\',0,0);';
+        }
         if( s == 'inventory_search' ) {
             return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.participant.open();\',\'' + d.id + '\',0,0);';
         }
@@ -1399,29 +1460,46 @@ function ciniki_ags_main() {
             });
         }
     }
-    this.participant.itemAdd = function(event, item_id) {
-        M.api.getJSONCb('ciniki.ags.exhibitItemAdd', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'item_id':item_id, 'quantity':1}, function(rsp) {
+    this.participant.itemAddWebUpdate = function(event, item_id, quantity) {
+        M.prompt('Add Quantity:', quantity, 'Add', function(q) {
+            M.api.getJSONCb('ciniki.ags.exhibitItemAdd', {'tnid':M.curTenantID, 'exhibit_id':M.ciniki_ags_main.participant.data.participant.exhibit_id, 'item_id':item_id, 'quantity':q, 'clearpending':'yes'}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_ags_main.participant.open();
+            });
+        });
+    }
+    this.participant.itemAdd = function(event, item_id, quantity) {
+        if( quantity == null || quantity == 0 ) {
+            quantity = 1;
+        }
+        M.api.getJSONCb('ciniki.ags.exhibitItemAdd', {'tnid':M.curTenantID, 'exhibit_id':M.ciniki_ags_main.participant.data.participant.exhibit_id, 'item_id':item_id, 'quantity':quantity}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
             }
             var p = M.ciniki_ags_main.participant;
-            // Add new row to inventory table
-            var tr = p.createSectionGridRow('inventory', p.data.inventory.length, p.sections.inventory, p.sections.inventory.num_cols, rsp.item);
-            var e = M.gE(p.panelUID + '_inventory_grid');
-            e = e.getElementsByTagName('tbody')[0];
-            if( e.children.length == 1 && e.children[0].children[0].innerHTML == 'No items in this exhibit' ) {
-                e.removeChild(e.firstChild);
+            if( p.data.webupdates != null ) {
+                p.open();
+            } else {
+                // Add new row to inventory table
+                var tr = p.createSectionGridRow('inventory', p.data.inventory.length, p.sections.inventory, p.sections.inventory.num_cols, rsp.item);
+                var e = M.gE(p.panelUID + '_inventory_grid');
+                e = e.getElementsByTagName('tbody')[0];
+                if( e.children.length == 1 && e.children[0].children[0].innerHTML == 'No items in this exhibit' ) {
+                    e.removeChild(e.firstChild);
+                }
+                e.appendChild(tr);
+                // Re-sort table
+                M.resortGrid(p.panelUID + '_inventory_grid', p.sections.inventory.sortTypes, null, e);
+                // Delete the row that was clicked on
+                var r = event.target.parentNode.parentNode;
+                var t = r.parentNode;
+                t.deleteRow(r.rowIndex-1);
             }
-            e.appendChild(tr);
-            // Re-sort table
-            M.resortGrid(p.panelUID + '_inventory_grid', p.sections.inventory.sortTypes, null, e);
-            // Delete the row that was clicked on
-            var r = event.target.parentNode.parentNode;
-            var t = r.parentNode;
-            t.deleteRow(r.rowIndex-1);
         });
-        
     }
     this.participant.itemRemove = function(event, item_id) {
         M.api.getJSONCb('ciniki.ags.exhibitItemDelete', {'tnid':M.curTenantID, 'exhibit_id':this.data.participant.exhibit_id, 'item_id':item_id}, function(rsp) {
@@ -1430,20 +1508,24 @@ function ciniki_ags_main() {
                 M.api.err(rsp);
                 return false;
             }
-            // Add new row to inventory table
-            var tr = p.createSectionGridRow('available', p.data.available.length, p.sections.available, p.sections.available.num_cols, rsp.item);
-            var e = M.gE(p.panelUID + '_available_grid');
-            e = e.getElementsByTagName('tbody')[0];
-            if( e.children.length == 1 && e.children[0].children[0].innerHTML == 'No items in their catalog' ) {
-                e.removeChild(e.firstChild);
+            if( p.data.webupdates != null ) {
+                p.open();
+            } else {
+                // Add new row to inventory table
+                var tr = p.createSectionGridRow('available', p.data.available.length, p.sections.available, p.sections.available.num_cols, rsp.item);
+                var e = M.gE(p.panelUID + '_available_grid');
+                e = e.getElementsByTagName('tbody')[0];
+                if( e.children.length == 1 && e.children[0].children[0].innerHTML == 'No items in their catalog' ) {
+                    e.removeChild(e.firstChild);
+                }
+                e.appendChild(tr);
+                // Re-sort table
+                M.resortGrid(p.panelUID + '_available_grid', p.sections.inventory.sortTypes, null, e);
+                // Delete the row that was clicked on
+                var r = event.target.parentNode.parentNode;
+                var t = r.parentNode;
+                t.deleteRow(r.rowIndex-1); 
             }
-            e.appendChild(tr);
-            // Re-sort table
-            M.resortGrid(p.panelUID + '_available_grid', p.sections.inventory.sortTypes, null, e);
-            // Delete the row that was clicked on
-            var r = event.target.parentNode.parentNode;
-            var t = r.parentNode;
-            t.deleteRow(r.rowIndex-1);
         });
     }
     this.participant.itemPaid = function(e, i) {
@@ -1698,6 +1780,13 @@ function ciniki_ags_main() {
             'fields':{
                 'message':{'label':'Message', 'type':'textarea', 'size':'medium'},
             }},
+        'changelist':{'label':'Requested Changes', 'type':'simplegrid', 'num_cols':4, 
+            'visible':function() { return M.ciniki_ags_main.editparticipant.data.requested_changes != null && M.ciniki_ags_main.editparticipant.data.requested_changes != '' ? 'yes' : 'no'; },
+            'headerValues':['Field', 'Current', 'New', 'Action'],
+            'headerClasses':['','','','alignright'],
+            'cellClasses':['','','','alignright'],
+            'noData':'All changes applied',
+            },
         '_synopsis':{'label':'Exhibitor Bio', 
             'active':function() { return M.modFlagSet('ciniki.ags', 0x80); },
             'fields':{
@@ -1750,6 +1839,16 @@ function ciniki_ags_main() {
                     return d.value;
             }
         }
+        if( s == 'changelist' ) {
+            switch(j) {
+                case 0: return d.name;
+                case 1: return d.current;
+                case 2: return d.newvalue;
+                case 3: return '<button onclick="M.ciniki_ags_main.editparticipant.applyChange(' + i + ');">Apply</button>'
+                    + '&nbsp;<button onclick="M.ciniki_ags_main.editparticipant.delChange(' + i + ');">Delete</button>';
+            }
+            return '';
+        }
     }
     this.editparticipant.cellColour = function(s, i, j, d) {
         if( s == 'membership_details' && j == 1 && d.expires != null ) {
@@ -1766,6 +1865,60 @@ function ciniki_ags_main() {
             return null;
         }
         return '';
+    }
+    this.editparticipant.updateChanges = function() {
+        this.data.changelist = {}; 
+        if( this.requested_changes != null ) {
+            var i=0;
+            //
+            // Go through the sections and fields and check for any updates
+            //
+            for(var s in this.sections) {
+                var sc = this.sections[s];
+                if( sc.fields != null ) {
+                    for(var j in sc.fields) {
+                        if( this.requested_changes[j] != null && j == 'primary_image_id' ) {
+                            if( this.data[j] > 0 ) {
+                                var curimage = '<img src=\'' + M.api.getBinaryURL('ciniki.images.get', {'tnid':M.curTenantID, 'image_id':this.data[j], 'version':'thumbnail', 'maxheight':300}) + '\'/>';
+                            } else {
+                                var curimage = '';
+                            }
+                            if( this.requested_changes[j] > 0 ) {
+                                var newimage = '<img src=\'' + M.api.getBinaryURL('ciniki.images.get', {'tnid':M.curTenantID, 'image_id':this.requested_changes[j], 'version':'thumbnail', 'maxheight':300}) + '\'/>';
+                            } else {
+                                var newimage = '';
+                            }
+                            this.data.changelist[i++] = {
+                                'name':'Image',
+                                'field':j,
+                                'current':curimage,
+                                'newvalue':newimage,
+                                };
+                        }
+                        else if( this.requested_changes[j] != null ) {
+                            this.data.changelist[i++] = {
+                                'name':(this.sections[s].fields[j].label == null || this.sections[s].fields[j].label == '' ? this.sections[s].label : this.sections[s].fields[j].label),
+                                'field':j,
+                                'current':this.data[j],
+                                'newvalue':this.requested_changes[j],
+                                };
+                        }
+                    }
+                }
+            }
+        }
+        this.refreshSection('changelist');
+    }
+    this.editparticipant.applyChange = function(i) {
+        var f = this.data.changelist[i].field;
+        this.setFieldValue(f, this.requested_changes[f]);
+        delete this.requested_changes[f];
+        this.updateChanges();
+    }
+    this.editparticipant.delChange = function(i) {
+        var f = this.data.changelist[i].field;
+        delete this.requested_changes[f];
+        this.updateChanges();
     }
     this.editparticipant.addCustomer = function(cb, cid, eid,sub_id) {
         this.participant_id = 0;
@@ -1789,9 +1942,6 @@ function ciniki_ags_main() {
             }
             var p = M.ciniki_ags_main.editparticipant;
             p.data = rsp.participant;
-            if( rsp.participant.id != null && rsp.participant.id > 0 ) {
-                p.participant_id = rsp.participant.id;
-            }
             p.customer_id = rsp.participant.customer_id;
             p.exhibitor_id = rsp.participant.exhibitor_id;
             p.sections._submission.fields.submission_id.options = {};
@@ -1829,9 +1979,21 @@ function ciniki_ags_main() {
             }
             var p = M.ciniki_ags_main.editparticipant;
             p.data = rsp.participant;
+            p.requested_changes = null;
+            if( rsp.participant.requested_changes != null ) {
+                if( rsp.participant.requested_changes.display_name != null ) {
+                    rsp.participant.requested_changes.display_name_override = rsp.participant.requested_changes.display_name;
+                    delete rsp.participant.requested_changes.display_name;
+                }
+                p.requested_changes = JSON.parse(JSON.stringify(rsp.participant.requested_changes));
+            }
+            if( rsp.participant.id != null && rsp.participant.id > 0 ) {
+                p.participant_id = rsp.participant.id;
+            }
             p.customer_id = rsp.participant.customer_id;
             p.refresh();
             p.show(cb);
+            p.updateChanges();
         });
     }
     this.editparticipant.save = function(cb) {
@@ -1839,6 +2001,13 @@ function ciniki_ags_main() {
         if( !this.checkForm() ) { return false; }
         if( this.participant_id > 0 ) {
             var c = this.serializeForm('no');
+            if( this.data.requested_changes != null ) {
+                var o = JSON.stringify(this.data.requested_changes);
+                var n = JSON.stringify(this.requested_changes);
+                if( o != n ) {
+                    c += '&requested_changes=' + n;
+                }
+            }
             if( c != '' ) { 
                 M.api.postJSONCb('ciniki.ags.participantUpdate', {'tnid':M.curTenantID, 'participant_id':this.participant_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
@@ -1852,6 +2021,13 @@ function ciniki_ags_main() {
             }
         } else {
             var c = this.serializeForm('yes');
+            if( this.data.requested_changes != null ) {
+                var o = JSON.stringify(this.data.requested_changes);
+                var n = JSON.stringify(this.requested_changes);
+                if( o != n ) {
+                    c += '&requested_changes=' + n;
+                }
+            }
             M.api.postJSONCb('ciniki.ags.participantAdd', {'tnid':M.curTenantID, 'exhibit_id':this.exhibit_id, 'exhibitor_id':this.exhibitor_id, 'customer_id':this.customer_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -2307,6 +2483,15 @@ function ciniki_ags_main() {
             'hint':'Search catalog',
             'noData':'No items found',
             },
+        'webupdates':{'label':'Web Updates', 'type':'simplegrid', 'num_cols':5,
+            'visible':function() { return M.ciniki_ags_main.exhibitor.sections._tabs.selected == 'items' && M.ciniki_ags_main.exhibitor.data.webupdates != null ? 'yes' : 'hidden'},
+            'headerValues':['Code', 'Name', 'Price', 'Fee', 'Status'],
+            'sortable':'yes',
+            'sortTypes':['number', 'text', 'number', 'number', 'text'],
+            'noData':'No Items',
+            'addTxt':'Add Item',
+            'addFn':'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibitor.open();\',0,M.ciniki_ags_main.exhibitor.exhibitor_id,0);',
+            },
         'items':{'label':'Catalog', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return M.ciniki_ags_main.exhibitor.sections._tabs.selected == 'items' ? 'yes' : 'hidden'},
             'headerValues':['Code', 'Name', 'Price', 'Fee', 'Status'],
@@ -2380,7 +2565,7 @@ function ciniki_ags_main() {
                 case 5: return d.total_amount_display;
             }
         }
-        if( s == 'items' || s == 'item_search' ) {
+        if( s == 'items' || s == 'item_search' || s == 'webupdates' ) {
             switch(j) {
                 case 0: return d.code;
                 case 1: return d.name;
@@ -2433,7 +2618,7 @@ function ciniki_ags_main() {
     }
     this.exhibitor.rowFn = function(s, i, d) {
         if( d == null ) { return ''; }
-        if( s == 'items' ) {
+        if( s == 'items' || s == 'webupdates' ) {
             return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibitor.open();\',\'' + d.id + '\',0,0);';
         }
         return '';
@@ -2475,6 +2660,7 @@ function ciniki_ags_main() {
         this.refreshSection('_tabs');
         this.showHideSection('exhibits');
         this.showHideSection('item_search');
+        this.showHideSection('webupdates');
         this.showHideSection('items');
         this.showHideSection('sales_search');
         this.showHideSection('pending_payouts');
@@ -2528,7 +2714,7 @@ function ciniki_ags_main() {
     //
     // The panel to edit Exhibitor
     //
-    this.editexhibitor = new M.panel('Exhibitor', 'ciniki_ags_main', 'editexhibitor', 'mc', 'medium', 'sectioned', 'ciniki.ags.main.editexhibitor');
+    this.editexhibitor = new M.panel('Exhibitor', 'ciniki_ags_main', 'editexhibitor', 'mc', 'large', 'sectioned', 'ciniki.ags.main.editexhibitor');
     this.nextFn = null;
     this.editexhibitor.data = null;
     this.editexhibitor.exhibitor_id = 0;
@@ -2553,6 +2739,13 @@ function ciniki_ags_main() {
             'code':{'label':'Code', 'required':'yes', 'type':'text'},
             'barcode_message':{'label':'Barcode Message', 'type':'text'},
             }},
+        'changelist':{'label':'Requested Changes', 'type':'simplegrid', 'num_cols':4, 
+            'visible':function() { return M.ciniki_ags_main.editexhibitor.data.requested_changes != null && M.ciniki_ags_main.editexhibitor.data.requested_changes != '' ? 'yes' : 'no'; },
+            'headerValues':['Field', 'Current', 'New', 'Action'],
+            'headerClasses':['','','','alignright'],
+            'cellClasses':['','','','alignright'],
+            'noData':'All changes applied',
+            },
         '_synopsis':{'label':'Exhibitor Synopsis', 
             'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
             'fields':{
@@ -2577,6 +2770,72 @@ function ciniki_ags_main() {
     this.editexhibitor.fieldValue = function(s, i, d) { return this.data[i]; }
     this.editexhibitor.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.ags.exhibitorHistory', 'args':{'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id, 'field':i}};
+    }
+    this.editexhibitor.cellValue = function(s, i, j, d) {
+        if( s == 'changelist' ) {
+            switch(j) {
+                case 0: return d.name;
+                case 1: return d.current;
+                case 2: return d.newvalue;
+                case 3: return '<button onclick="M.ciniki_ags_main.editexhibitor.applyChange(' + i + ');">Apply</button>'
+                    + '&nbsp;<button onclick="M.ciniki_ags_main.editexhibitor.delChange(' + i + ');">Delete</button>';
+            }
+            return '';
+        }
+    }
+    this.editexhibitor.updateChanges = function() {
+        this.data.changelist = {}; 
+        if( this.requested_changes != null ) {
+            var i=0;
+            //
+            // Go through the sections and fields and check for any updates
+            //
+            for(var s in this.sections) {
+                var sc = this.sections[s];
+                if( sc.fields != null ) {
+                    for(var j in sc.fields) {
+                        if( this.requested_changes[j] != null && j == 'primary_image_id' ) {
+                            if( this.data[j] > 0 ) {
+                                var curimage = '<img src=\'' + M.api.getBinaryURL('ciniki.images.get', {'tnid':M.curTenantID, 'image_id':this.data[j], 'version':'thumbnail', 'maxheight':300}) + '\'/>';
+                            } else {
+                                var curimage = '';
+                            }
+                            if( this.requested_changes[j] > 0 ) {
+                                var newimage = '<img src=\'' + M.api.getBinaryURL('ciniki.images.get', {'tnid':M.curTenantID, 'image_id':this.requested_changes[j], 'version':'thumbnail', 'maxheight':300}) + '\'/>';
+                            } else {
+                                var newimage = '';
+                            }
+                            this.data.changelist[i++] = {
+                                'name':'Image',
+                                'field':j,
+                                'current':curimage,
+                                'newvalue':newimage,
+                                };
+                        }
+                        else if( this.requested_changes[j] != null ) {
+                            this.data.changelist[i++] = {
+                                'name':(this.sections[s].fields[j].label == null || this.sections[s].fields[j].label == '' ? this.sections[s].label : this.sections[s].fields[j].label),
+                                'field':j,
+                                'current':this.data[j],
+                                'newvalue':this.requested_changes[j],
+                                };
+                        }
+                    }
+                }
+            }
+        }
+        this.refreshSection('changelist');
+    }
+    this.editexhibitor.applyChange = function(i) {
+        var f = this.data.changelist[i].field;
+        this.setFieldValue(f, this.requested_changes[f]);
+        delete this.requested_changes[f];
+        this.updateChanges();
+    }
+    this.editexhibitor.delChange = function(i) {
+        var f = this.data.changelist[i].field;
+        delete this.requested_changes[f];
+        this.updateChanges();
     }
     this.editexhibitor.addCustomer = function(cb, cid, nextFn) {
         this.exhibitor_id = 0;
@@ -2603,9 +2862,17 @@ function ciniki_ags_main() {
             }
             var p = M.ciniki_ags_main.editexhibitor;
             p.data = rsp.exhibitor;
+            p.requested_changes = null;
+            if( rsp.exhibitor.requested_changes != null ) {
+                if( rsp.exhibitor.requested_changes.display_name != null ) {
+                    rsp.exhibitor.requested_changes.display_name_override = rsp.exhibitor.requested_changes.display_name;
+                }
+                p.requested_changes = JSON.parse(JSON.stringify(rsp.exhibitor.requested_changes));
+            }
             p.customer_id = rsp.exhibitor.customer_id;
             p.refresh();
             p.show(cb);
+            p.updateChanges();
         });
     }
     this.editexhibitor.save = function(cb) {
@@ -2613,6 +2880,13 @@ function ciniki_ags_main() {
         if( !this.checkForm() ) { return false; }
         if( this.exhibitor_id > 0 ) {
             var c = this.serializeForm('no');
+            if( this.data.requested_changes != null ) {
+                var o = JSON.stringify(this.data.requested_changes);
+                var n = JSON.stringify(this.requested_changes);
+                if( o != n ) {
+                    c += '&requested_changes=' + n;
+                }
+            }
             if( c != '' ) { 
                 M.api.postJSONCb('ciniki.ags.exhibitorUpdate', {'tnid':M.curTenantID, 'exhibitor_id':this.exhibitor_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
@@ -2634,6 +2908,13 @@ function ciniki_ags_main() {
             }
         } else {
             var c = this.serializeForm('yes');
+            if( this.data.requested_changes != null ) {
+                var o = JSON.stringify(this.data.requested_changes);
+                var n = JSON.stringify(this.requested_changes);
+                if( o != n ) {
+                    c += '&requested_changes=' + n;
+                }
+            }
             M.api.postJSONCb('ciniki.ags.exhibitorAdd', {'tnid':M.curTenantID, 'customer_id':this.customer_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -2661,7 +2942,7 @@ function ciniki_ags_main() {
     this.item.nplist = [];
     this.item.sections = {
         'general':{'label':'', 'aside':'yes', 'fields':{
-            'status':{'label':'Status', 'type':'toggle', 'toggles':{'50':'Active', '70':'Sold', '90':'Archived'}},
+            'status':{'label':'Status', 'type':'toggle', 'toggles':{'30':'Pending', '50':'Active', '70':'Sold', '90':'Archived'}},
             'code':{'label':'Code', 'required':'yes', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'creation_year':{'label':'Creation Year', 'required':'no', 'size':'small', 'type':'text'},
@@ -2714,18 +2995,25 @@ function ciniki_ags_main() {
                 'quantity':{'label':'Inventory', 'type':'text', 'size':'small'},
             }},
         'inventory':{'label':'Inventory', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
-            'visible':function() { return M.ciniki_ags_main.item.item_id > 0 ? 'yes' : 'no'; },
+            'visible':function() { return M.ciniki_ags_main.item.item_id > 0 && M.ciniki_ags_main.item.data.status > 30 ? 'yes' : 'no'; },
             'headerValues':['Exhibit', 'Inventory', ''],
             'headerClasses':['', 'alignright', 'alignright'],
             'cellClasses':['', 'alignright', 'alignright'],
             'history':'yes',
             },
         'logs':{'label':'History', 'type':'simplegrid', 'num_cols':4, 'aside':'yes',
-            'visible':function() { return M.ciniki_ags_main.item.item_id > 0 ? 'yes' : 'no'; },
+            'visible':function() { return M.ciniki_ags_main.item.item_id > 0 && M.ciniki_ags_main.item.data.status > 30 ? 'yes' : 'no'; },
             'sortable':'yes',
             'sortTypes':['date', 'text', 'number', 'text', 'text'],
             'cellClasses':['', 'multiline', '', ''],
             'headerValues':['Date', 'Action', 'Qty', 'Exhibit'],
+            },
+        'changelist':{'label':'Requested Changes', 'type':'simplegrid', 'num_cols':4, 
+            'visible':function() { return M.ciniki_ags_main.item.data.requested_changes != null && M.ciniki_ags_main.item.data.requested_changes != '' ? 'yes' : 'no'; },
+            'headerValues':['Field', 'Current', 'New', 'Action'],
+            'headerClasses':['','','','alignright'],
+            'cellClasses':['','','','alignright'],
+            'noData':'All changes applied',
             },
         '_primary_image_id':{'label':'Image', 'type':'imageform', 'panelcolumn':1, 'fields':{
             'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
@@ -2795,6 +3083,16 @@ function ciniki_ags_main() {
                 case 1: return d.inventory + '<span class="faicon edit">&#xf040;</span>';
             }
         }
+        if( s == 'changelist' ) {
+            switch(j) {
+                case 0: return d.name;
+                case 1: return d.current;
+                case 2: return d.newvalue;
+                case 3: return '<button onclick="M.ciniki_ags_main.item.applyChange(' + i + ');">Apply</button>'
+                    + '&nbsp;<button onclick="M.ciniki_ags_main.item.delChange(' + i + ');">Delete</button>';
+            }
+            return '';
+        }
         if( s == 'logs' ) {
             switch(j) {
                 case 0: return d.log_date;
@@ -2813,8 +3111,62 @@ function ciniki_ags_main() {
 //        }
         return '';
     }
-    this.item.rowFn = function(s, i, d) {
-        return '';
+//    this.item.rowFn = function(s, i, d) {
+//        return null;
+//    }
+    this.item.updateChanges = function() {
+        this.data.changelist = {}; 
+        if( this.requested_changes != null ) {
+            var i=0;
+            //
+            // Go through the sections and fields and check for any updates
+            //
+            for(var s in this.sections) {
+                var sc = this.sections[s];
+                if( sc.fields != null ) {
+                    for(var j in sc.fields) {
+                        if( this.requested_changes[j] != null && j == 'primary_image_id' ) {
+                            if( this.data[j] > 0 ) {
+                                var curimage = '<img src=\'' + M.api.getBinaryURL('ciniki.images.get', {'tnid':M.curTenantID, 'image_id':this.data[j], 'version':'thumbnail', 'maxheight':300}) + '\'/>';
+                            } else {
+                                var curimage = '';
+                            }
+                            if( this.requested_changes[j] > 0 ) {
+                                var newimage = '<img src=\'' + M.api.getBinaryURL('ciniki.images.get', {'tnid':M.curTenantID, 'image_id':this.requested_changes[j], 'version':'thumbnail', 'maxheight':300}) + '\'/>';
+                            } else {
+                                var newimage = '';
+                            }
+                            this.data.changelist[i++] = {
+                                'name':'Image',
+                                'field':j,
+                                'current':curimage,
+                                'newvalue':newimage,
+                                };
+                        }
+                        else if( this.requested_changes[j] != null ) {
+                            this.data.changelist[i++] = {
+                                'name':(this.sections[s].fields[j].label == null || this.sections[s].fields[j].label == '' ? this.sections[s].label : this.sections[s].fields[j].label),
+                                'field':j,
+                                'current':this.data[j],
+                                'newvalue':this.requested_changes[j],
+                                };
+                        }
+                    }
+                }
+            }
+        }
+        this.refreshSection('changelist');
+    }
+    this.item.applyChange = function(i) {
+        var f = this.data.changelist[i].field;
+        this.setFieldValue(f, this.requested_changes[f]);
+        delete this.requested_changes[f];
+        this.updateChanges();
+    }
+    this.item.delChange = function(i) {
+        var f = this.data.changelist[i].field;
+        delete this.requested_changes[f];
+        this.updateChanges();
     }
     this.item.updateDonor = function(cid) {
         if( cid != null ) {
@@ -2883,6 +3235,10 @@ function ciniki_ags_main() {
             }
             var p = M.ciniki_ags_main.item;
             p.data = rsp.item;
+            p.requested_changes = null;
+            if( rsp.item.requested_changes != null ) {
+                p.requested_changes = JSON.parse(JSON.stringify(rsp.item.requested_changes));
+            }
             p.sections._types.fields.types.tags = rsp.types;
             p.sections._tags.fields.tags.tags = rsp.tags;
             p.sections._categories.fields.categories.tags = rsp.categories;
@@ -2891,6 +3247,7 @@ function ciniki_ags_main() {
             p.sections.price.fields.taxtype_id.options = (rsp.taxtypes != null ? rsp.taxtypes : []);
             p.refresh();
             p.show(cb);
+            p.updateChanges();
         });
     }
     this.item.openLogs = function() {
@@ -2909,6 +3266,13 @@ function ciniki_ags_main() {
         if( !this.checkForm() ) { return false; }
         if( this.item_id > 0 ) {
             var c = this.serializeForm('no');
+            if( this.data.requested_changes != null ) {
+                var o = JSON.stringify(this.data.requested_changes);
+                var n = JSON.stringify(this.requested_changes);
+                if( o != n ) {
+                    c += '&requested_changes=' + n;
+                }
+            }
             if( c != '' ) {
                 M.api.postJSONCb('ciniki.ags.itemUpdate', {'tnid':M.curTenantID, 'item_id':this.item_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {

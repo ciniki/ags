@@ -57,6 +57,7 @@ function ciniki_ags_participantGet($ciniki) {
         return $rc;
     }
     $maps = $rc['maps'];
+    $webupdates = array();
 
     //
     // Load the module settings
@@ -258,6 +259,7 @@ function ciniki_ags_participantGet($ciniki) {
             . "exhibitors.barcode_message, "
             . "exhibitors.display_name, "
             . "exhibitors.profile_name, "
+            . "exhibitors.requested_changes, "
             . "customers.display_name AS customer_name, "
             . "customers.member_status, "
             . "participants.status, "
@@ -284,7 +286,7 @@ function ciniki_ags_participantGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'participants', 'fname'=>'id', 
                 'fields'=>array('id', 'exhibit_id', 'exhibitor_id', 'customer_id', 'display_name', 'profile_name', 'customer_name', 'code', 'barcode_message',
-                    'status', 'status_text', 'flags', 'message', 'notes', 'primary_image_id', 'synopsis', 'fullbio', 'member_status',),
+                    'status', 'status_text', 'flags', 'message', 'notes', 'primary_image_id', 'synopsis', 'fullbio', 'member_status', 'requested_changes'),
                 'maps'=>array('status_text'=>$maps['participant']['status']),
                 ),
             ));
@@ -296,6 +298,18 @@ function ciniki_ags_participantGet($ciniki) {
         }
         $participant = $rc['participants'][0];
         $participant['display_name_override'] = $participant['display_name'];
+
+        if( $participant['requested_changes'] != '' ) {
+            $participant['requested_changes'] = unserialize($participant['requested_changes']);
+            $webupdates[] = array(
+                'participant_id' => $participant['id'],
+                'code' => '',
+                'name' => 'Profile',
+                'action' => 'Updates',
+                'actioncode' => 'profileupdate',
+                'action_quantity' => '',
+                );
+        }
 
         $rsp = array('stat'=>'ok', 'participant'=>$participant);
 
@@ -344,7 +358,7 @@ function ciniki_ags_participantGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'membershipDetails');
             $rc = ciniki_customers_hooks_membershipDetails($ciniki, $args['tnid'], array('customer_id' => $participant['customer_id']));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.sapos.311', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.327', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
             }
             $rsp['participant']['membership_details'] = isset($rc['membership_details']) ? $rc['membership_details'] : array();
 
@@ -395,7 +409,7 @@ function ciniki_ags_participantGet($ciniki) {
             || (isset($args['archived']) && $args['archived'] == 'yes')
             ) {
             $strsql = "SELECT items.id AS item_id, "
-                . "IFNULL(exhibit.id, 0) AS exhibit_item_id, "
+                . "IFNULL(eitem.id, 0) AS exhibit_item_id, "
                 . "items.code, "
                 . "items.exhibitor_code, "
                 . "items.name, "
@@ -407,14 +421,17 @@ function ciniki_ags_participantGet($ciniki) {
                 . "items.unit_amount, "
                 . "items.taxtype_id, "
                 . "items.primary_image_id, "
-                . "IFNULL(exhibit.fee_percent, items.fee_percent) AS fee_percent, "
-                . "IFNULL(exhibit.inventory, 0) AS inventory, "
+                . "items.requested_changes, "
+                . "IFNULL(eitem.fee_percent, items.fee_percent) AS fee_percent, "
+                . "IFNULL(eitem.status, 0) AS eitem_status, "
+                . "IFNULL(eitem.inventory, 0) AS inventory, "
+                . "IFNULL(eitem.pending_inventory, 0) AS pending_inventory, "
                 . "IFNULL(tags.tag_name, '') AS categories "
                 . "FROM ciniki_ags_items AS items "
-                . "LEFT JOIN ciniki_ags_exhibit_items AS exhibit ON ("
-                    . "items.id = exhibit.item_id "
-                    . "AND exhibit.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibit_id']) . "' "
-                    . "AND exhibit.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "LEFT JOIN ciniki_ags_exhibit_items AS eitem ON ("
+                    . "items.id = eitem.item_id "
+                    . "AND eitem.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibit_id']) . "' "
+                    . "AND eitem.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "LEFT JOIN ciniki_ags_item_tags AS tags ON ("
                     . "items.id = tags.item_id "
@@ -427,8 +444,8 @@ function ciniki_ags_participantGet($ciniki) {
                 . "";
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
                 array('container'=>'items', 'fname'=>'item_id', 
-                    'fields'=>array('item_id', 'exhibit_item_id', 'primary_image_id', 'code', 'exhibitor_code', 'name', 'status', 
-                        'flags', 'flags_text', 'online_flags_text', 'unit_amount', 'fee_percent', 'taxtype_id', 'tag_info', 'inventory', 'categories'),
+                    'fields'=>array('item_id', 'exhibit_item_id', 'primary_image_id', 'code', 'exhibitor_code', 'name', 'status', 'eitem_status',
+                        'flags', 'flags_text', 'online_flags_text', 'unit_amount', 'fee_percent', 'taxtype_id', 'tag_info', 'inventory', 'pending_inventory', 'categories', 'requested_changes'),
                     'dlists'=>array('categories'=>', '),
                     'flags'=>array('flags_text'=>$maps['item']['flags'], 
                         'online_flags_text'=>$maps['item']['flags']),
@@ -442,20 +459,75 @@ function ciniki_ags_participantGet($ciniki) {
             $archived = array();
             foreach($available as $iid => $item) {  
                 $item['unit_amount_display'] = '$' . number_format($item['unit_amount'], 2);
-                if( $item['exhibit_item_id'] > 0 ) {
+                if( $item['exhibit_item_id'] > 0 && $item['eitem_status'] > 10 ) {
                     $inventory[] = $item;
                     unset($available[$iid]);
                     $num_exhibit_items++;
                 } elseif( $item['status'] == 90 ) {
                     $archived[] = $item;
                     unset($available[$iid]);
-                } else {
+                } elseif( $item['status'] > 30 ) {
                     $available[$iid]['unit_amount_display'] = '$' . number_format($item['unit_amount'], 2);
                 }
+                // Changes to an existing item
+                if( $item['eitem_status'] == 50 && $item['requested_changes'] != '' ) {
+                    $item['action'] = 'Edit Item';
+                    $item['actioncode'] = 'edititem';
+//                    $item['action_quantity'] = abs($item['pending_inventory']);
+                    $webupdates[] = $item;
+                }
+                // Removing item from exhibit
+                elseif( $item['eitem_status'] == 50 && $item['pending_inventory'] < 0 && abs($item['pending_inventory']) == $item['inventory'] ) {
+                    $item['action'] = 'Remove Item';
+                    $item['actioncode'] = 'removeitem';
+                    $item['action_quantity'] = abs($item['pending_inventory']);
+                    $webupdates[] = $item;
+                }
+                // Removing inventory from an existing exhibit item 
+                elseif( $item['eitem_status'] == 50 && $item['pending_inventory'] < 0 ) {
+                    $item['action'] = 'Remove Inventory';
+                    $item['actioncode'] = 'removeinventory';
+                    $item['action_quantity'] = abs($item['pending_inventory']);
+                    $webupdates[] = $item;
+                }
+                // Adding inventory to an existing exhibit item
+                elseif( $item['eitem_status'] == 50 && $item['pending_inventory'] > 0 ) {
+                    $item['action'] = 'Add Inventory';
+                    $item['actioncode'] = 'addinventory';
+                    $item['action_quantity'] = $item['pending_inventory'];
+                    $webupdates[] = $item;
+                }
+                // Adding new item to catalog 
+                elseif( $item['eitem_status'] == 30 && $item['status'] == 30 ) {
+                    $item['action'] = 'New Item';
+                    $item['actioncode'] = 'newitem';
+                    $item['action_quantity'] = abs($item['pending_inventory']);
+                    $webupdates[] = $item;
+                }
+                // Adding catalog item to exhibit
+                elseif( $item['eitem_status'] == 30 ) {
+                    $item['action'] = 'Add Catalog Item';
+                    $item['actioncode'] = 'additem';
+                    $item['action_quantity'] = abs($item['pending_inventory']);
+                    $webupdates[] = $item;
+                }
+/*                elseif( $item['eitem_status'] == 30 && $item['pending_inventory'] < 0 ) {
+                    $item['action'] = 'Remove';
+                    $item['action_quantity'] = abs($item['pending_inventory']);
+                    $webupdates[] = $item;
+                }
+                elseif( $item['pending_inventory'] > 0 ) {
+                    $item['action'] = 'Add';
+                    $item['action_quantity'] = abs($item['pending_inventory']);
+                    $webupdates[] = $item;
+                } */
             }
             $rsp['inventory'] = $inventory;
             $rsp['available'] = $available;
             $rsp['archived'] = $archived;
+            if( count($webupdates) > 0 ) {
+                $rsp['webupdates'] = $webupdates;
+            }
 
             $rsp['participant_details'][] = array('label'=>'# Items', 'value'=>$num_exhibit_items);
         }
@@ -665,6 +737,7 @@ function ciniki_ags_participantGet($ciniki) {
         $rsp['participant']['fee_percent'] = (isset($settings['defaults-item-fee-percent']) ? $settings['defaults-item-fee-percent'] : '');
     }
 
+    error_log(print_r($rsp,true));
     return $rsp;
 }
 ?>

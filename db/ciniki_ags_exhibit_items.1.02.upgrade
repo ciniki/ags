@@ -1,0 +1,7 @@
+#
+# Adding extra fields for taxes
+#
+ALTER TABLE ciniki_ags_exhibit_items ADD COLUMN status tinyint unsigned not null AFTER item_id;
+ALTER TABLE ciniki_ags_exhibit_items ADD COLUMN pending_inventory int not null AFTER inventory;
+UPDATE ciniki_ags_exhibit_items SET status = 50;
+ALTER TABLE ciniki_ags_exhibit_items COMMENT='v1.02';

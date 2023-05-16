@@ -86,7 +86,9 @@ function ciniki_ags_objects(&$ciniki) {
         'fields' => array(
             'exhibit_id' => array('name'=>'Exhibit', 'ref'=>'ciniki.ags.exhibit'),
             'item_id' => array('name'=>'Item', 'ref'=>'ciniki.ags.item'),
+            'status' => array('name'=>'Status', 'default'=>'10'),
             'inventory' => array('name'=>'Inventory'),
+            'pending_inventory' => array('name'=>'Pending Inventory', 'default'=>'0'),
             'fee_percent' => array('name'=>'Fee', 'default'=>'0'),
             ),
         'history_table' => 'ciniki_ags_history',
@@ -110,6 +112,7 @@ function ciniki_ags_objects(&$ciniki) {
             'primary_image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis' => array('name'=>'Synopsis', 'default'=>''),
             'fullbio' => array('name'=>'Full Bio', 'default'=>''),
+            'requested_changes' => array('name'=>'Requested Changes', 'default'=>''),
             ),
         'history_table' => 'ciniki_ags_history',
         );
@@ -145,6 +148,7 @@ function ciniki_ags_objects(&$ciniki) {
             'current_condition' => array('name'=>'Condition', 'default'=>''),
             'tag_info' => array('name'=>'Tag Info', 'default'=>''),
             'notes' => array('name'=>'Notes', 'default'=>''),
+            'requested_changes' => array('name'=>'Requested Changes', 'default'=>''),
             ),
         'history_table' => 'ciniki_ags_history',
         );

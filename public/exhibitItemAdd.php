@@ -23,6 +23,7 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
         'exhibit_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Exhibit'),
         'item_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Item'),
         'quantity'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Quantity'),
+        'clearpending'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Clear Pending'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -36,13 +37,6 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
     $rc = ciniki_ags_checkAccess($ciniki, $args['tnid'], 'ciniki.ags.exhibitItemAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
-    }
-
-    //
-    // Set the default quantity to 1
-    //
-    if( !isset($args['quantity']) || $args['quantity'] == '' ) {
-        $args['quantity'] = 1;
     }
 
     //
@@ -65,7 +59,7 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
     //
     // Check if the item is already a part of the exhibit
     //
-    $strsql = "SELECT id, item_id, exhibit_id, item_id, inventory, fee_percent "
+    $strsql = "SELECT id, item_id, exhibit_id, item_id, status, inventory, pending_inventory, fee_percent "
         . "FROM ciniki_ags_exhibit_items "
         . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
         . "AND item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
@@ -76,6 +70,13 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.19', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
     $exhibititem = isset($rc['item']) ? $rc['item'] : null;
+
+    //
+    // Set the default quantity to 1
+    //
+    if( !isset($args['quantity']) || $args['quantity'] == '' ) {
+        $args['quantity'] = 1;
+    }
 
     //
     // Start transaction
@@ -95,10 +96,19 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
     // If the item already exists, add 1 to the inventory
     //
     if( $exhibititem != null ) {
+        $update_args = array(
+            'inventory' => $exhibititem['inventory'] + $args['quantity'],
+            );
+        if( $args['quantity'] == $exhibititem['pending_inventory'] 
+            || (isset($args['clearpending']) && $args['clearpending'] == 'yes')
+            ) {
+            $update_args['pending_inventory'] = 0;    
+        }
+        if( $exhibititem['status'] == 30 ) {
+            $update_args['status'] = 50;
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.exhibititem', $exhibititem['id'], array(
-            'inventory'=>$exhibititem['inventory'] + $args['quantity'],
-            ), 0x04);
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.exhibititem', $exhibititem['id'], $update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.151', 'msg'=>'Unable to add item', 'err'=>$rc['err']));
         }
@@ -118,7 +128,9 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
             'item_id' => $args['item_id'],
             'code' => $item['code'],
             'name' => $item['name'],
+            'status' => 50,
             'inventory' => $args['quantity'],
+            'pending_inventory' => 0,
             'unit_amount' => $item['unit_amount'],
             'fee_percent' => $item['fee_percent'],
             );

@@ -168,7 +168,8 @@ function ciniki_ags_exhibitorGet($ciniki) {
             . "ciniki_ags_exhibitors.flags, "
             . "ciniki_ags_exhibitors.primary_image_id, "
             . "ciniki_ags_exhibitors.synopsis, "
-            . "ciniki_ags_exhibitors.fullbio "
+            . "ciniki_ags_exhibitors.fullbio, "
+            . "ciniki_ags_exhibitors.requested_changes "
             . "FROM ciniki_ags_exhibitors "
             . "WHERE ciniki_ags_exhibitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_ags_exhibitors.id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
@@ -178,7 +179,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
             array('container'=>'exhibitors', 'fname'=>'id', 
                 'fields'=>array('customer_id', 'display_name_override', 'display_name', 'profile_name',
                     'permalink', 'code', 'barcode_message',
-                    'status', 'flags', 'primary_image_id', 'synopsis', 'fullbio'),
+                    'status', 'flags', 'primary_image_id', 'synopsis', 'fullbio', 'requested_changes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -191,6 +192,9 @@ function ciniki_ags_exhibitorGet($ciniki) {
 
         if( $exhibitor['display_name_override'] == '' ) {
             $exhibitor['display_name_override'] = $exhibitor['display_name'];
+        }
+        if( $exhibitor['requested_changes'] != '' ) {
+            $exhibitor['requested_changes'] = unserialize($exhibitor['requested_changes']);
         }
     }
 
@@ -267,7 +271,8 @@ function ciniki_ags_exhibitorGet($ciniki) {
         . "items.status, "
         . "items.flags, "
         . "items.unit_amount, "
-        . "items.fee_percent "
+        . "items.fee_percent, "
+        . "items.requested_changes "
         . "FROM ciniki_ags_items AS items "
         . "WHERE items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
         . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -276,7 +281,9 @@ function ciniki_ags_exhibitorGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'items', 'fname'=>'id', 
-            'fields'=>array('id', 'code', 'name', 'status', 'flags', 'unit_amount', 'fee_percent'),
+            'fields'=>array('id', 'code', 'name', 'status', 'flags', 
+                'unit_amount', 'fee_percent', 'requested_changes',
+                ),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -402,6 +409,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
     //
     // Format numbers for items
     //
+    $webupdates = array();
     foreach($items as $iid => $item) {
         $items[$iid]['status_text'] = $maps['item']['status'][$item['status']];
         $items[$iid]['unit_amount_display'] = '$' . number_format($item['unit_amount'], 2);
@@ -422,9 +430,19 @@ function ciniki_ags_exhibitorGet($ciniki) {
         } else {
             $items[$iid]['total_amount_display'] = '';
         }
+        if( $item['status'] == 30 || $item['requested_changes'] != '' ) {
+            if( $items[$iid]['status'] > 30 ) {
+                $items[$iid]['status_text'] = 'Updates';
+            }
+            $webupdates[] = $items[$iid];
+            unset($items[$iid]);
+        }
     }
     $rsp['exhibits'] = array_values($exhibits);
     $rsp['items'] = array_values($items);
+    if( count($webupdates) > 0 ) {
+        $rsp['webupdates'] = $webupdates;
+    }
 
     return $rsp;
 }

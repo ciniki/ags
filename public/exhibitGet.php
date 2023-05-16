@@ -262,6 +262,7 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "exhibitors.customer_id, "
             . "exhibitors.id AS exhibitor_id, "
             . "exhibitors.display_name, "
+            . "IF(exhibitors.requested_changes<>'','yes','no') AS webupdates, "
             . "customers.display_name AS customer_name, "
             . "participants.status, "
             . "participants.status AS status_text "
@@ -282,7 +283,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'participants', 'fname'=>'exhibitor_id', 
-                'fields'=>array('id', 'customer_id', 'customer_name', 'exhibitor_id', 'display_name', 'status', 'status_text'),
+                'fields'=>array('id', 'customer_id', 'customer_name', 'exhibitor_id', 'display_name', 'status', 'status_text', 'webupdates'),
                 'maps'=>array('status_text'=>$maps['participant']['status']),
                 ),
             ));
@@ -300,8 +301,10 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "items.code, "
             . "items.name, "
             . "items.unit_amount, "
+            . "IF(items.requested_changes<>'', 'yes', 'no') AS webupdates, "
             . "exhibit.fee_percent, "
-            . "exhibit.inventory "
+            . "exhibit.inventory, "
+            . "exhibit.pending_inventory "
             . "FROM ciniki_ags_exhibit_items AS exhibit "
             . "INNER JOIN ciniki_ags_items AS items ON ("
                 . "exhibit.item_id = items.id "
@@ -314,7 +317,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'items', 'fname'=>'id', 
-                'fields'=>array('id', 'item_id', 'exhibitor_id', 'code', 'name', 'unit_amount', 'fee_percent', 'inventory'),
+                'fields'=>array('id', 'item_id', 'exhibitor_id', 'code', 'name', 'unit_amount', 'fee_percent', 'inventory', 'pending_inventory', 'webupdates'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -436,6 +439,10 @@ function ciniki_ags_exhibitGet($ciniki) {
         foreach($inventory as $iid => $item) {
             if( isset($participants[$item['exhibitor_id']]) ) {
                 $participants[$item['exhibitor_id']]['num_items']++;
+                if( $item['webupdates'] == 'yes' || $item['pending_inventory'] != 0 ) {
+                    $participants[$item['exhibitor_id']]['itemwebupdates'] = 'yes';
+                }
+
                 $inventory[$iid]['display_name'] = $participants[$item['exhibitor_id']]['display_name'];
             } else {
                 $inventory[$iid]['display_name'] = '';
@@ -479,11 +486,17 @@ function ciniki_ags_exhibitGet($ciniki) {
         //
         // Format the totals numbers for the participants
         //
+        $webupdates = array();
         foreach($participants as $pid => $participant) {    
             $totals['participants']['num_items'] += $participant['num_items'];
             $participants[$pid]['tenant_amount_display'] = '$' . number_format($participant['tenant_amount'], 2);
             $participants[$pid]['exhibitor_amount_display'] = '$' . number_format($participant['exhibitor_amount'], 2);
             $participants[$pid]['total_amount_display'] = '$' . number_format($participant['total_amount'], 2);
+            if( $participant['webupdates'] == 'yes' 
+                || (isset($participant['itemwebupdates']) && $participant['itemwebupdates'] == 'yes')
+                ) {
+                $webupdates[] = $participant;
+            }
         }
 
         $totals['participants']['tenant_amount_display'] = '$' . number_format($totals['participants']['tenant_amount'], 2);
@@ -508,6 +521,9 @@ function ciniki_ags_exhibitGet($ciniki) {
         $rsp['pending_payouts'] = $pending_payouts;
         $rsp['paid_sales'] = $paid_sales;
         $rsp['totals'] = $totals;
+        if( count($webupdates) > 0 ) {
+            $rsp['webupdates'] = $webupdates;
+        }
     }
 
     if( isset($args['categories']) && $args['categories'] == 'yes' ) {

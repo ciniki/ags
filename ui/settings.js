@@ -5,14 +5,14 @@ function ciniki_ags_settings() {
     //
     // The main panel, which lists the options for production
     //
-    this.main = new M.panel('Blog Settings', 'ciniki_ags_settings', 'main', 'mc', 'medium', 'sectioned', 'ciniki.ags.settings.main');
+    this.main = new M.panel('Blog Settings', 'ciniki_ags_settings', 'main', 'mc', 'large', 'sectioned', 'ciniki.ags.settings.main');
     this.main.sections = {
         'options':{'label':'Defaults', 'fields':{
             'defaults-item-fee-percent':{'label':'Fee Percent', 'type':'text', 'size':'small'},
             }},
         'options2':{'label':'Sales Reporting', 'fields':{
-            'sales-customer-name':{'label':'Show Sales Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
-            'sales-pdf-customer-name':{'label':'PDF Include Customer Name', 'type':'toggle', 'toggles':{'no':'No', 'yes':'Yes'}},
+            'sales-customer-name':{'label':'Show Sales Customer Name', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+            'sales-pdf-customer-name':{'label':'PDF Include Customer Name', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
         'barcodes':{'label':'Barcode Printing', 'fields':{
             'barcodes-barcode-format':{'label':'Barcode Format', 'type':'select', 'default':'exhibitorcode-message', 'options':{
@@ -47,6 +47,82 @@ function ciniki_ags_settings() {
             'headerValues':['Image', 'Exhibit Type', 'Format'],
             'cellClasses':['thumbnail', ''],
             },
+        'web_updater_profile':{'label':'Web Updater Profile Options', 
+            'visible':function() { return M.modFlagOn('ciniki.ags', 0x08) ? 'yes' : 'no'; },
+            'fields':{
+                'web-updater-profile-form-intro':{'label':'Form Intro', 'type':'textarea', 'size':'small'},
+                'web-updater-profile-display_name':{'label':'Name', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-profile-profile_name':{'label':'Profile Name', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-profile-primary_image_id':{'label':'Image', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-profile-synopsis':{'label':'Synopsis', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-profile-fullbio':{'label':'Long Bio', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                }},
+        'web_updater_item':{'label':'Web Updater Item Options', 
+            'visible':function() { return M.modFlagOn('ciniki.ags', 0x08) ? 'yes' : 'no'; },
+            'fields':{
+                'web-updater-item-form-intro':{'label':'Form Intro', 'type':'textarea', 'size':'small'},
+                'web-updater-item-name':{'label':'Name', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-exhibitor_code':{'label':'Their Item Code', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-unit_amount':{'label':'Price', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-categories':{'label':'Categories', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+//                'web-updater-item-numcategories':{'label':'Number of Categories', 'type':'toggle', 'default':'one', 'toggles':{
+//                    'one':'One', 'multiple':'Multiple',
+//                    }},
+                'web-updater-item-categories-list':{'label':'Category List', 'type':'textarea', 'size':'small'},
+                'web-updater-item-subcategories':{'label':'Subcategories', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+//                'web-updater-item-numsubcategories':{'label':'Number of Subcategories', 'type':'toggle', 'default':'one', 'toggles':{
+//                    'one':'One', 'multiple':'Multiple',
+//                    }},
+                'web-updater-item-subcategories-list':{'label':'Subcategory List', 'type':'textarea', 'size':'small'},
+                'web-updater-item-primary_image_id':{'label':'Image', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-creation_year':{'label':'Year Created', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-medium':{'label':'Medium', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-medium-list':{'label':'Medium List', 'type':'textarea', 'size':'small'},
+                'web-updater-item-size':{'label':'Size', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-framed_size':{'label':'Framed Size', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-current_condition':{'label':'Current Condition', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-synopsis':{'label':'Synopis', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-description':{'label':'Description', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'web-updater-item-notes':{'label':'Notes', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+            }},
     };
     this.main.fieldValue = function(s, i, d) { 
         return this.data[i];

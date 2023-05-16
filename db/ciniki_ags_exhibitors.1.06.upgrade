@@ -1,0 +1,5 @@
+#
+# Add column to store requested changes to the record.
+#
+ALTER TABLE ciniki_ags_exhibitors ADD COLUMN requested_changes text not null AFTER fullbio;
+ALTER TABLE ciniki_ags_exhibitors COMMENT='v1.06';

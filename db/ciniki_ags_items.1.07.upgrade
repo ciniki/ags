@@ -1,0 +1,5 @@
+#
+# Add field for storing changes requested via website
+#
+ALTER TABLE ciniki_ags_items ADD COLUMN requested_changes text not null AFTER notes;
+ALTER TABLE ciniki_ags_items COMMENT='v1.07';
