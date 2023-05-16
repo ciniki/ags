@@ -86,7 +86,7 @@ function ciniki_ags_objects(&$ciniki) {
         'fields' => array(
             'exhibit_id' => array('name'=>'Exhibit', 'ref'=>'ciniki.ags.exhibit'),
             'item_id' => array('name'=>'Item', 'ref'=>'ciniki.ags.item'),
-            'status' => array('name'=>'Status', 'default'=>'10'),
+            'status' => array('name'=>'Status', 'default'=>'50'),
             'inventory' => array('name'=>'Inventory'),
             'pending_inventory' => array('name'=>'Pending Inventory', 'default'=>'0'),
             'fee_percent' => array('name'=>'Fee', 'default'=>'0'),
