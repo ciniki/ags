@@ -67,6 +67,8 @@ function ciniki_ags_exhibitorGet($ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
     $mysql_date_format = ciniki_users_dateFormat($ciniki, 'mysql');
 
+    $webupdates = array();
+
     //
     // Check if action is to mark item paid
     //
@@ -194,6 +196,13 @@ function ciniki_ags_exhibitorGet($ciniki) {
             $exhibitor['display_name_override'] = $exhibitor['display_name'];
         }
         if( $exhibitor['requested_changes'] != '' ) {
+            $webupdates = array(array(
+                'code' => '',
+                'name' => 'Exhibitor Profile',
+                'unit_amount' => '',
+                'fee_percent' => '',
+                'status_text' => 'Updates',
+                ));
             $exhibitor['requested_changes'] = unserialize($exhibitor['requested_changes']);
         }
     }
@@ -409,7 +418,6 @@ function ciniki_ags_exhibitorGet($ciniki) {
     //
     // Format numbers for items
     //
-    $webupdates = array();
     foreach($items as $iid => $item) {
         $items[$iid]['status_text'] = $maps['item']['status'][$item['status']];
         $items[$iid]['unit_amount_display'] = '$' . number_format($item['unit_amount'], 2);
