@@ -3814,7 +3814,8 @@ function ciniki_ags_main() {
             M.alert('App Error');
             return false;
         }
-    
+
+console.log(args);
         if( M.modFlagAny('ciniki.ags', 0x6002) == 'yes' ) {
             this.exhibits.addButton('tools', 'Tools', 'M.startApp(\'ciniki.ags.tools\',null,\'M.ciniki_ags_main.exhibits.open();\',\'mc\',{});');
         } else {
@@ -3836,6 +3837,9 @@ function ciniki_ags_main() {
         }
         if( args.customer_id != null && args.customer_id > 0 && args.participant_submission_id != null && args.participant_submission_id > 0 ) {
             this.chooseexhibit.open(cb, args.customer_id, args.participant_submission_id);
+        }
+        else if( args.customer_id != null && args.customer_id > 0 && args.exhibitor_id != null && args.exhibitor_id > 0 ) {
+            this.exhibitor.open(cb, args.exhibitor_id, args.customer_id);
         }
         else if( this[this.menutabs.selected] == null ) {
             this.exhibits.open(null,this.menutabs.selected);
