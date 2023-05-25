@@ -89,6 +89,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
     }
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
         $strsql = "SELECT exhibits.name, "
+            . "exhibits.permalink, "
             . "DATE_FORMAT(exhibits.start_date, '%b %e, %Y') AS start_date, "
             . "DATE_FORMAT(exhibits.end_date, '%b %e, %Y') AS end_date, "
             . "locations.name AS location_name "
@@ -114,6 +115,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
     $strsql = "SELECT eitems.id AS exhibit_item_id, "
         . "exhibitors.display_name, "
         . "items.exhibitor_id, "
+        . "items.permalink, "
         . "items.code, "
         . "items.name, "
         . "items.creation_year, "
@@ -157,7 +159,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
             'fields'=>array('display_name')),
         array('container'=>'items', 'fname'=>'exhibit_item_id', 
             'fields'=>array('code', 'name', 'exhibitor_code', 'creation_year', 'medium', 'size', 'framed_size', 'current_condition', 
-                'tag_info', 'flags', 'flags_text', 'inventory', 'unit_amount', 'taxtype_id')),
+                'tag_info', 'flags', 'flags_text', 'inventory', 'unit_amount', 'taxtype_id', 'permalink')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.147', 'msg'=>'Unable to load exhibitors', 'err'=>$rc['err']));
@@ -194,6 +196,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
             'end_date' => $exhibit['end_date'],
             'author' => $tenant_details['name'],
             'location' => $exhibit['location_name'],
+            'permalink' => $exhibit['permalink'],
             'footer' => $today->format('M d, Y'),
             'exhibitors' => $exhibitors,
             'start_col' => (isset($args['start_col']) && $args['start_col'] > 0 ? $args['start_col'] : 1),
@@ -223,7 +226,7 @@ function ciniki_ags_exhibitInventoryPDF($ciniki) {
     //
     $filename = $report_title . ' - ' . $today->format('M d, Y');
     $filename = preg_replace('/[^A-Za-z0-9\-]/', '', $filename) . '.pdf';
-    $pdf->Output($filename, 'D');
+    $pdf->Output($filename, 'I');
 
     return array('stat'=>'exit');
 }

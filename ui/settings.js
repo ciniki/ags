@@ -206,6 +206,7 @@ function ciniki_ags_settings() {
                 'yes':'Yes',
                 }},
             'last-line':{'label':'Last Line', 'type':'text'},
+            'qr-code-prefix':{'label':'QR Code URL', 'type':'text'},
         }},
         '_description':{'label':'Website Description', 
             'visible':function() { return M.modOn('ciniki.wng') ? 'yes' : 'no'; },

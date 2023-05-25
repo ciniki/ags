@@ -112,8 +112,8 @@ function ciniki_ags_wng_accountProfileProcess(&$ciniki, $tnid, &$request, $item)
         $fields['profile_name'] = array(
             'id' => 'profile_name',
             'label' => 'Full Name',
-            'ftype' => 'textarea',
-            'size' => 'small',
+            'ftype' => 'text',
+            'size' => 'large',
             'editable' => $editable,
             'required' => $editable == 'yes' && $settings['web-updater-profile-profile_name'] == 'required' ? 'yes' : 'no',
             'value' => isset($exhibitor['requested_changes']['profile_name']) ? $exhibitor['requested_changes']['profile_name'] : $exhibitor['profile_name'],

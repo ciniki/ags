@@ -76,7 +76,7 @@ function ciniki_ags_settingsGet($ciniki) {
     
         $settings['typecards'] = array();
         foreach($types as $type) {
-            foreach(['image', 'template', 'artist-prefix', 'include-size', 'last-line', 'title', 'description'] as $item) {
+            foreach(['image', 'template', 'artist-prefix', 'include-size', 'last-line', 'qr-code-prefix', 'title', 'description'] as $item) {
                 if( isset($settings["namecards-{$type['permalink']}-{$item}"]) ) {
                     $type[$item] = $settings["namecards-{$type['permalink']}-{$item}"];
                 } else {

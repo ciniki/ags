@@ -72,6 +72,26 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
         $template = $settings['namecards-template'];
     }
 
+    // Set qr_code style
+    $style = array(
+        'border' => 0,
+        'hpadding' => 'auto',
+        'vpadding' => 'auto',
+        'fgcolor' => array(0,0,0),
+        'bgcolor' => false,
+        'module_width' => 0.25,
+        'module_height' => 0.25,
+/*        'position' => '',
+        'align' => 'C',
+        'stretch' => false,
+        'fitwidth' => true,
+        'cellfitalign' => '',
+        'border' => false,
+        'text' => true,
+        'font' => 'helvetica',
+        'fontsize' => 7,
+        'stretchtext' => 4, */
+        );
 
     //
     // Setup artist prefix
@@ -88,12 +108,19 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
     elseif( isset($settings['namecards-artist-prefix']) && $settings['namecards-artist-prefix'] != '' && $settings['namecards-artist-prefix'] != 'none' ) {
         $artist_prefix = $settings['namecards-artist-prefix'] . ' ';
     }
+    $qr_code_prefix = '';
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.ags', 0x0400) ) {
         if( isset($type) 
             && isset($settings["namecards-{$type}-last-line"]) 
             && $settings["namecards-{$type}-last-line"] != '' 
             ) {
             $last_line = $settings["namecards-{$type}-last-line"];
+        }
+        if( isset($type) 
+            && isset($settings["namecards-{$type}-qr-code-prefix"]) 
+            && $settings["namecards-{$type}-qr-code-prefix"] != '' 
+            ) {
+            $qr_code_prefix = $settings["namecards-{$type}-qr-code-prefix"];
         }
     }
     elseif( isset($settings['namecards-last-line']) && $settings['namecards-last-line'] != '' ) {
@@ -231,11 +258,28 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
                 $card_width + 2,
                 $card_height + 2,
                 ); */
-            
+           
+            //
+            // Check for qr code
+            //
+            if( $qr_code_prefix != '' && $item['permalink'] != '' ) {
+                $url = $qr_code_prefix . '/' . $args['permalink'] . '/item/' . $item['permalink'];
+            }
+
             $pdf->SetY($y_offset + ($y*$card_height) + ($y*$y_margin));
             $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
             
-            if( $template == 'fourbythree' && isset($card_image) ) {
+            if( $template == 'fourbythree' && isset($card_image) && isset($url) ) {
+                $pdf->Image('@'.$card_image->getImageBlob(), 
+                    $x_offset + ($x*$card_width) + ($x*$x_margin),
+                    $y_offset + ($y*$card_height) + ($y*$y_margin),
+                    $image_width,
+                    $image_height,
+                    'JPEG', '', '', true, 150, '', false, false, 0, 'B');
+                $pdf->SetY($y_offset + ($y*$card_height) + ($y*$y_margin) + $image_height + 2 );
+                $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
+            }
+            elseif( $template == 'fourbythree' && isset($card_image) ) {
                 $pdf->Image('@'.$card_image->getImageBlob(), 
                     $x_offset + ($x*$card_width) + ($x*$x_margin) 
                         + (($card_width-$image_width) != 0 ? ($card_width-$image_width)/2 : 0),
@@ -243,7 +287,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
                     $image_width,
                     $image_height,
                     'JPEG', '', '', true, 150, '', false, false, 0, 'B');
-                $pdf->SetY($y_offset + ($y*$card_height) + ($y*$y_margin) + $image_height + 5 );
+                $pdf->SetY($y_offset + ($y*$card_height) + ($y*$y_margin) + $image_height + 2 );
                 $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
             }
 
@@ -270,7 +314,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
             }
 
             if( $template == 'fourbythree' && isset($card_image) ) {
-                $pdf->SetY($y_offset + ($card_height-2) + ($y*$card_height) + ($y*$y_margin));
+                $pdf->SetY($y_offset + ($card_height-5) + ($y*$card_height) + ($y*$y_margin));
                 $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
                 if( !isset($args['tag_price']) || $args['tag_price'] == 'yes' ) {
                     if( ($item['flags']&0x01) == 0x01 && $item['unit_amount'] != 0 ) {
@@ -292,10 +336,20 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
                     $pdf->Cell($card_width-20, 6, $last_line, 0, 0, 'L', 0, '', 1);
                 }
                 if( $item['code'] != '' ) {
-                    $pdf->SetY($y_offset + ($card_height-1) + ($y*$card_height) + ($y*$y_margin));
-                    $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin) + $card_width - 25);
+                    $pdf->SetY($y_offset + ($card_height) + ($y*$card_height) + ($y*$y_margin) + 4);
+                    $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin) + $card_width - 20);
                     $pdf->SetFont($font_other, '', 9);
-                    $pdf->Cell(25, 6, $item['code'], 0, 1, 'R', 0);
+                    $pdf->Cell(20, 6, $item['code'], 0, 1, 'R', 0);
+                }
+                if( isset($url) ) {
+                    $url = $qr_code_prefix . '/' . $args['permalink'] . '/item/' . $item['permalink'];
+                    $pdf->write2DBarcode($url, 'QRCODE,H', 
+//                        $x_offset + ($x*$card_width) + ($x*$x_margin) + $card_width - 60,
+//                        $y_offset + $card_height + ($y*$card_height) + ($y*$y_margin) - 60,
+                        $x_offset + ($x*$card_width) + ($x*$x_margin) + $card_width - 30,
+                        $y_offset + ($y*$card_height) + ($y*$y_margin) + 0,
+                        30, 30, $style, 'N');
+                    
                 }
 
             } else {
