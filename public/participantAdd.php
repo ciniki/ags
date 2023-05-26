@@ -201,6 +201,24 @@ function ciniki_ags_participantAdd(&$ciniki) {
     }
 
     //
+    // Check to make sure the exhibitor does not already exist
+    //
+    $strsql = "SELECT id, status "  
+        . "FROM ciniki_ags_participants AS participants "
+        . "WHERE participants.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
+        . "AND participants.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
+        . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'participant');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.364', 'msg'=>'Unable to load participant', 'err'=>$rc['err']));
+    }
+    if( isset($rc['participant']) ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.ags.364', 'msg'=>'This exhibitor has already be added to the exhibit.'));
+    }
+    
+
+    //
     // Add the participant to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');

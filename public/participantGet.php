@@ -201,7 +201,7 @@ function ciniki_ags_participantGet($ciniki) {
         // Get the customer details
         //
         if( isset($args['customer_id']) ) {
-            $strsql = "SELECT id, display_name, profile_name, code, synopsis "
+            $strsql = "SELECT id, display_name, profile_name, code, synopsis, primary_image_id "
                 . "FROM ciniki_ags_exhibitors "
                 . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -216,6 +216,7 @@ function ciniki_ags_participantGet($ciniki) {
                 $participant['profile_name'] = $rc['exhibitor']['profile_name'];
                 $participant['code'] = $rc['exhibitor']['code'];
                 $participant['synopsis'] = $rc['exhibitor']['synopsis'];
+                $participant['primary_image_id'] = $rc['exhibitor']['primary_image_id'];
             } else {
                 $participant['exhibitor_id'] = 0;
                 $strsql = "SELECT display_name "
@@ -338,48 +339,6 @@ function ciniki_ags_participantGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.18', 'msg'=>'Unable to find requested exhibit'));
         }
         $rsp['exhibit_details'] = array(array('label'=>'Name', 'value'=>$rc['exhibit']['name'])); 
-
-        //
-        // Get the participant contact details
-        //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
-        $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
-            array('customer_id'=>$participant['customer_id'], 'name'=>'yes', 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        $rsp['participant']['customer'] = $rc['customer'];
-        $rsp['participant']['contact_details'] = $rc['details'];
-
-        //
-        // Get the membership details
-        //
-        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'membershipDetails');
-            $rc = ciniki_customers_hooks_membershipDetails($ciniki, $args['tnid'], array('customer_id' => $participant['customer_id']));
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.327', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
-            }
-            $rsp['participant']['membership_details'] = isset($rc['membership_details']) ? $rc['membership_details'] : array();
-
-            if( $rsp['participant']['member_status'] == 0 ) {
-                array_unshift($rsp['participant']['membership_details'], array(
-                    'label' => 'Status',
-                    'value' => 'Not a member',
-                    ));
-            } elseif( $rsp['participant']['member_status'] == 10 ) {
-                array_unshift($rsp['participant']['membership_details'], array(
-                    'label' => 'Status',
-                    'value' => 'Active',
-                    ));
-
-            } elseif( $rsp['participant']['member_status'] == 60 ) {
-                array_unshift($rsp['participant']['membership_details'], array(
-                    'label' => 'Status',
-                    'value' => 'Inactive',
-                    ));
-            }
-        }
 
         //
         // Setup totals columns
@@ -685,6 +644,50 @@ function ciniki_ags_participantGet($ciniki) {
                 return $rc;
             }
             $rsp['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
+        }
+    }
+
+    if( isset($participant['customer_id']) ) {
+        //
+        // Get the participant contact details
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+        $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
+            array('customer_id'=>$participant['customer_id'], 'name'=>'yes', 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $rsp['participant']['customer'] = $rc['customer'];
+        $rsp['participant']['contact_details'] = $rc['details'];
+
+        //
+        // Get the membership details
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.customers', 0x08) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'membershipDetails');
+            $rc = ciniki_customers_hooks_membershipDetails($ciniki, $args['tnid'], array('customer_id' => $participant['customer_id']));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.327', 'msg'=>'Unable to get purchases', 'err'=>$rc['err']));
+            }
+            $rsp['participant']['membership_details'] = isset($rc['membership_details']) ? $rc['membership_details'] : array();
+
+            if( $rsp['participant']['member_status'] == 0 ) {
+                array_unshift($rsp['participant']['membership_details'], array(
+                    'label' => 'Status',
+                    'value' => 'Not a member',
+                    ));
+            } elseif( $rsp['participant']['member_status'] == 10 ) {
+                array_unshift($rsp['participant']['membership_details'], array(
+                    'label' => 'Status',
+                    'value' => 'Active',
+                    ));
+
+            } elseif( $rsp['participant']['member_status'] == 60 ) {
+                array_unshift($rsp['participant']['membership_details'], array(
+                    'label' => 'Status',
+                    'value' => 'Inactive',
+                    ));
+            }
         }
     }
 
