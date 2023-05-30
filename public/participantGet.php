@@ -671,7 +671,7 @@ function ciniki_ags_participantGet($ciniki) {
             }
             $rsp['participant']['membership_details'] = isset($rc['membership_details']) ? $rc['membership_details'] : array();
 
-            if( $rsp['participant']['member_status'] == 0 ) {
+            if( !isset($rsp['participant']['member_status']) || $rsp['participant']['member_status'] == 0 ) {
                 array_unshift($rsp['participant']['membership_details'], array(
                     'label' => 'Status',
                     'value' => 'Not a member',
