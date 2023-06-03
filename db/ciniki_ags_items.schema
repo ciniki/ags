@@ -109,5 +109,6 @@ create table ciniki_ags_items (
     unique index (uuid),
     unique index (code, tnid),
     unique index (permalink, tnid),
+    index exhibitor_id (exhibitor_id),
     index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.07';

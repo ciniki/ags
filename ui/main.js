@@ -614,6 +614,7 @@ function ciniki_ags_main() {
             'flags9':{'label':'Web Updates', 'type':'flagtoggle', 'field':'flags', 'bit':0x0100, 'default':'off',
                 'visible':function() { return M.modFlagSet('ciniki.ags', 0x08); },
                 },
+            'flags12':{'label':'Search Priority', 'type':'flagtoggle', 'field':'flags', 'bit':0x0800, 'default':'off'},
             'flags13':{'label':'Remove on Payout', 'type':'flagtoggle', 'field':'flags', 'bit':0x1000, 'default':'off'},
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},

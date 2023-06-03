@@ -32,6 +32,7 @@ function ciniki_ags_sapos_itemSearch($ciniki, $tnid, $args) {
         . "items.taxtype_id, "
         . "items.shipping_profile_id, "
         . "eitems.inventory AS num_available, "
+        . "(exhibits.flags&0x0800) AS search_priority, "
         . "exhibits.name AS exhibit_name "
         . "FROM ciniki_ags_items AS items "
         . "INNER JOIN ciniki_ags_exhibit_items AS eitems ON ("
@@ -56,7 +57,7 @@ function ciniki_ags_sapos_itemSearch($ciniki, $tnid, $args) {
             . "OR exhibitors.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR exhibitors.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . ") "
-        . "ORDER BY items.code, items.name, eitems.inventory DESC, items.notes "
+        . "ORDER BY items.code, search_priority DESC, items.name, eitems.inventory DESC, items.notes "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
