@@ -99,6 +99,9 @@ function ciniki_ags_participantUpdate(&$ciniki) {
     // Update the Participant in the database
     //
     if( isset($args['status']) || isset($args['message']) ) {
+        if( isset($args['requested_changes']) && $args['requested_changes'] == '{}' ) {
+            $args['requested_changes'] = '';
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.participant', $args['participant_id'], $args, 0x04);
         if( $rc['stat'] != 'ok' ) {

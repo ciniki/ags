@@ -2400,7 +2400,7 @@ function ciniki_ags_main() {
     //
     // The panel to list the exhibitor
     //
-    this.exhibitors = new M.panel('exhibitor', 'ciniki_ags_main', 'exhibitors', 'mc', 'large', 'sectioned', 'ciniki.ags.main.exhibitors');
+    this.exhibitors = new M.panel('Exhibitor', 'ciniki_ags_main', 'exhibitors', 'mc', 'large', 'sectioned', 'ciniki.ags.main.exhibitors');
     this.exhibitors.data = {};
     this.exhibitors.nplist = [];
     this.exhibitors.sections = {
@@ -3868,7 +3868,6 @@ function ciniki_ags_main() {
             return false;
         }
 
-console.log(args);
         if( M.modFlagAny('ciniki.ags', 0x6002) == 'yes' ) {
             this.exhibits.addButton('tools', 'Tools', 'M.startApp(\'ciniki.ags.tools\',null,\'M.ciniki_ags_main.exhibits.open();\',\'mc\',{});');
         } else {

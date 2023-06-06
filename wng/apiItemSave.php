@@ -230,6 +230,7 @@ function ciniki_ags_wng_apiItemSave(&$ciniki, $tnid, $request) {
         //
         // Add the item
         //
+        $item['requested_changes'] = '';
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.ags.item', $item, 0x04);
         if( $rc['stat'] != 'ok' ) {

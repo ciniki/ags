@@ -195,7 +195,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
         if( $exhibitor['display_name_override'] == '' ) {
             $exhibitor['display_name_override'] = $exhibitor['display_name'];
         }
-        if( $exhibitor['requested_changes'] != '' ) {
+        if( $exhibitor['requested_changes'] != '' && $exhibitor['requested_changes'] != '{}' ) {
             $webupdates = array(array(
                 'code' => '',
                 'name' => 'Exhibitor Profile',

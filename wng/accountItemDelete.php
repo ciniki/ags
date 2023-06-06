@@ -136,6 +136,6 @@ function ciniki_ags_wng_accountItemDelete(&$ciniki, $tnid, &$request, $ags_item)
         return $rc;
     }
 
-    return array('stat'=>'ok', 'blocks'=>$blocks);
+    return array('stat'=>'ok');
 }
 ?>

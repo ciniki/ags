@@ -262,7 +262,7 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "exhibitors.customer_id, "
             . "exhibitors.id AS exhibitor_id, "
             . "exhibitors.display_name, "
-            . "IF(exhibitors.requested_changes<>'','yes','no') AS webupdates, "
+            . "IF(exhibitors.requested_changes<>'' AND exhibitors.requested_changes<>'{}','yes','no') AS webupdates, "
             . "customers.display_name AS customer_name, "
             . "participants.status, "
             . "participants.status AS status_text "
@@ -291,6 +291,7 @@ function ciniki_ags_exhibitGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.11', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
         }
         $participants = isset($rc['participants']) ? $rc['participants'] : array();
+        error_log(print_r($participants,true));
 
         //
         // Get the inventory
@@ -301,7 +302,7 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "items.code, "
             . "items.name, "
             . "items.unit_amount, "
-            . "IF(items.requested_changes<>'', 'yes', 'no') AS webupdates, "
+            . "IF(items.requested_changes<>''AND items.requested_changes<>'{}', 'yes', 'no') AS webupdates, "
             . "exhibit.fee_percent, "
             . "exhibit.inventory, "
             . "exhibit.pending_inventory "

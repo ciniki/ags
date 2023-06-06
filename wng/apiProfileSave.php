@@ -37,14 +37,32 @@ function ciniki_ags_wng_apiProfileSave(&$ciniki, $tnid, $request) {
     //
     // Load the exhibitor
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'wng', 'accountExhibitorLoad');
-    $rc = ciniki_ags_wng_accountExhibitorLoad($ciniki, $tnid, $request);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.351', 'msg'=>'Unable to load your account.'));
-    }
-    $exhibitor = $rc['exhibitor'];
-    if( !isset($exhibitor['requested_changes']) || !is_array($exhibitor['requested_changes']) ) {
-        $exhibitor['requested_changes'] = array();
+    if( isset($_POST['f-action']) && $_POST['f-action'] == 'add' ) {
+        $exhibitor = array(
+            'id' => 0,
+            'customer_id' => $request['session']['customer']['id'],
+            'display_name' => '',
+            'display_name_override' => '',
+            'profile_name' => '',
+            'permalink' => '',
+            'code' => '',
+            'barcode_message' => '',
+            'status' => 10,
+            'flags' => 0,
+            'primary_image_id' => 0,
+            'synopsis' => '',
+            'fullbio' => '',
+            );
+    } else {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'wng', 'accountExhibitorLoad');
+        $rc = ciniki_ags_wng_accountExhibitorLoad($ciniki, $tnid, $request);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.351', 'msg'=>'Unable to load your account.'));
+        }
+        $exhibitor = $rc['exhibitor'];
+        if( !isset($exhibitor['requested_changes']) || !is_array($exhibitor['requested_changes']) ) {
+            $exhibitor['requested_changes'] = array();
+        }
     }
 
     //

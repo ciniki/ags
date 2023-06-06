@@ -73,7 +73,7 @@ function ciniki_ags_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'exhibits', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'permalink')),
+            'fields'=>array('id', 'name', 'permalink', 'pid', 'pstatus')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.328', 'msg'=>'Unable to load exhibits', 'err'=>$rc['err']));
@@ -92,7 +92,7 @@ function ciniki_ags_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
             . "AND participants.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $exhibitor['id']) . "' "
             . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE exhibits.status = 50 "
+        . "WHERE exhibits.status <= 50 "
         . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY exhibits.name "
         . "";

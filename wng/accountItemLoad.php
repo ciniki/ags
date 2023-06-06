@@ -34,7 +34,7 @@ function ciniki_ags_wng_accountItemLoad(&$ciniki, $tnid, &$request, $args) {
             'current_condition' => '',
             'notes' => '',
             'inventory' => '1',
-            'pending_inventory' => '1',
+            'pending_inventory' => '0',
             'categories' => '',
             'subcategories' => '',
             );

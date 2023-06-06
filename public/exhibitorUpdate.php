@@ -105,6 +105,10 @@ function ciniki_ags_exhibitorUpdate(&$ciniki) {
         }
     }
 
+    if( isset($args['requested_changes']) && $args['requested_changes'] == '{}' ) {
+        $args['requested_changes'] = '';
+    }
+
     //
     // Start transaction
     //

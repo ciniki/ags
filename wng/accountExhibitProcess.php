@@ -81,11 +81,15 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'wng', 'accountExhibitorLoad');
     $rc = ciniki_ags_wng_accountExhibitorLoad($ciniki, $tnid, $request);
-    if( $rc['stat'] != 'ok' ) {
+    if( $rc['stat'] != 'ok' && $rc['err']['code'] == 'ciniki.ags.314' ) {
+        $item['apply'] = 'yes';
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'wng', 'accountProfileProcess');
+        return ciniki_ags_wng_accountProfileProcess($ciniki, $tnid, $request, $item);
+    } elseif( $rc['stat'] != 'ok' ) {
         return array('stat'=>'ok', 'blocks'=>array(array(
             'type' => 'msg', 
             'level' => 'error',
-            'content' => "Not currently an exhibitor."
+            'content' => "Internal Error, please try again."
             )));
     }
     $exhibitor = $rc['exhibitor'];
@@ -98,6 +102,9 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
         . "exhibits.permalink, "
         . "exhibits.status, "
         . "exhibits.flags, "
+        . "exhibits.primary_image_id, "
+        . "exhibits.synopsis, "
+        . "exhibits.description, "
         . "IFNULL(participants.id, 0) AS participant_id "
         . "FROM ciniki_ags_exhibits AS exhibits "
         . "LEFT JOIN ciniki_ags_participants AS participants ON ("
@@ -147,6 +154,13 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
         'class' => 'limit-width limit-width-80',
         'title' => $exhibit['name'],
         );
+    if( $exhibit['status'] == 30 ) {
+        $blocks[] = array(
+            'type' => 'text',
+            'class' => 'limit-width limit-width-80',
+            'content' => $exhibit['description'],
+            );
+    }
 
     //
     // Load the exhibitor items in the exhibit
@@ -312,6 +326,25 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
         // Add a catalog item to the exhibit
         //
         elseif( $action == 'add' ) {
+            //
+            // Check to make sure exhibitor is part of this exhibit
+            //
+            if( $exhibit['participant_id'] == 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.ags.participant', array(
+                    'exhibit_id' => $exhibit['id'],
+                    'exhibitor_id' => $exhibitor['id'],
+                    'status' => 30,
+                    ), 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'ok', 'blocks'=>array(array(
+                        'type' => 'msg', 
+                        'level' => 'error',
+                        'content' => "Unable to submit application."
+                        )));
+                }
+            }
+
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
             $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.ags.exhibititem', array(
                 'exhibit_id' => $exhibit['id'],
@@ -431,6 +464,8 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
             );
     } elseif( count($pending_items) == 0 && count($catalog_items) > 0 && $exhibit['status'] == 30 ) {
         $message = "If you would like to apply for this exhibit, you can add items from your catalog below you use the Add Item button to add new items.";
+    } elseif( count($pending_items) == 0 && count($catalog_items) == 0 && $exhibit['status'] == 30 ) {
+        $message = "If you would like to apply for this exhibit, please use the Add New Item button to get started.";
     } elseif( count($pending_items) == 0 && count($catalog_items) > 0 ) {
         $message = "You do not have any items in this exhibit. You can add items from your catalog below or use the Add Item button to add new items.";
     } elseif( count($pending_items) == 0 ) {
