@@ -291,7 +291,6 @@ function ciniki_ags_exhibitGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.11', 'msg'=>'Unable to load participants', 'err'=>$rc['err']));
         }
         $participants = isset($rc['participants']) ? $rc['participants'] : array();
-        error_log(print_r($participants,true));
 
         //
         // Get the inventory

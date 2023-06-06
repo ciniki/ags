@@ -64,8 +64,8 @@ function ciniki_ags_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
             . "AND participants.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $exhibitor['id']) . "' "
             . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE exhibits.status = 30 "             // Open for submissions
-        . "AND (exhibits.flags&0x0100) = 0x0100 "  // Open for web updates
+        . "WHERE exhibits.status <= 50 "             // Open for submissions
+        . "AND (exhibits.flags&0x0300) = 0x0300 "  // Open for web updates and web applications
         . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "HAVING pid = 0 OR pstatus = 30 "
         . "ORDER BY exhibits.name "

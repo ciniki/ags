@@ -611,11 +611,16 @@ function ciniki_ags_main() {
             'flags8':{'label':'Show Participant Bios', 'type':'flagtoggle', 'field':'flags', 'bit':0x80, 'default':'on',
                 'visible':function() { return M.modFlagSet('ciniki.ags', 0x80); },
                 },
-            'flags9':{'label':'Web Updates', 'type':'flagtoggle', 'field':'flags', 'bit':0x0100, 'default':'off',
-                'visible':function() { return M.modFlagSet('ciniki.ags', 0x08); },
-                },
             'flags12':{'label':'Search Priority', 'type':'flagtoggle', 'field':'flags', 'bit':0x0800, 'default':'off'},
             'flags13':{'label':'Remove on Payout', 'type':'flagtoggle', 'field':'flags', 'bit':0x1000, 'default':'off'},
+            'flags9':{'label':'Web Updates', 'type':'flagtoggle', 'field':'flags', 'bit':0x0100, 'default':'off',
+                'visible':function() { return M.modFlagSet('ciniki.ags', 0x08); },
+                'on_fields':['flags10'],
+                },
+            'flags10':{'label':'Web Applications Open', 'type':'flagtoggle', 'field':'flags', 'bit':0x0200, 'default':'off',
+                'visible':'no',
+//                'visible':function() { return M.modFlagSet('ciniki.ags', 0x08); },
+                },
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},
             'reception_info':{'label':'Opening Reception', 'type':'text'},
@@ -673,6 +678,7 @@ function ciniki_ags_main() {
                 }
             }
             p.sections.general.fields.application_form_id.options = [{'id':0, 'name':'None'}];
+            p.sections.general.fields.flags10.visible = (M.modFlagOn('ciniki.ags', 0x08) && (p.data.flags&0x0100) == 0x0100 ? 'yes' :'no');
             if( M.modOn('ciniki.forms') && rsp.forms != null ) {
                 p.sections.general.fields.application_form_id.options = rsp.forms;
                 p.sections.general.fields.application_form_id.options.unshift({'id':0, 'name':'None'});

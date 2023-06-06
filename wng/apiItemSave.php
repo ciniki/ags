@@ -301,6 +301,39 @@ function ciniki_ags_wng_apiItemSave(&$ciniki, $tnid, $request) {
         // Add exhibit item
         //
         if( isset($_POST['f-exhibit_id']) && $_POST['f-exhibit_id'] > 0 ) {
+            
+            //
+            // Get the current status of participant
+            //
+            $strsql = "SELECT id, status "
+                . "FROM ciniki_ags_participants "
+                . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $_POST['f-exhibit_id']) . "' "
+                . "AND exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $exhibitor['id']) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'participant');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.358', 'msg'=>'Unable to load participant', 'err'=>$rc['err']));
+            }
+            if( !isset($rc['participant']) ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.ags.participant', array(
+                    'exhibit_id' => $_POST['f-exhibit_id'],
+                    'exhibitor_id' => $exhibitor['id'],
+                    'status' => 30,
+                    'flags' => 0,
+                    'message' => '',
+                    'notes' => '',
+                    ), 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.357', 'msg'=>'Unable to add the participant', 'err'=>$rc['err']));
+                }
+            }
+           
+            // 
+            // Add the item to the exhibit
+            //
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
             $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.ags.exhibititem', array(
                 'exhibit_id' => $_POST['f-exhibit_id'],

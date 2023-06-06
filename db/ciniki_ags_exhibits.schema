@@ -32,7 +32,7 @@
 #                               0x40 - 
 #                               0x80 - Show Artist Synopsis
 #                               0x0100 - Web Updates Enabled 
-#                               0x0200 - 
+#                               0x0200 - Web Applications Open
 #                               0x0400 -
 #                               0x0800 - Search Priority (for barcode scanners auto add)
 #                               0x1000 - Auto remove items from exhibit when commission paid
