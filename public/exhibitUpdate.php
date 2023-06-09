@@ -28,6 +28,7 @@ function ciniki_ags_exhibitUpdate(&$ciniki) {
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
+        'application_description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Application Description'),
         'application_form_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Application Form'),
         'types'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Type'),
         'webcollections'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Web Collections'),

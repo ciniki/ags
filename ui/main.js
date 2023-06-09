@@ -643,6 +643,11 @@ function ciniki_ags_main() {
         '_description':{'label':'Description', 'fields':{
             'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
+        '_application_description':{'label':'Application Information', 
+            'visible':function() { return M.modFlagSet('ciniki.ags', 0x08); },
+            'fields':{
+            'application_description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_ags_main.exhibitedit.save();'},
             'duplicate':{'label':'Duplicate & End Exhibit', 

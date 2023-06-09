@@ -111,6 +111,7 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "exhibits.primary_image_id, "
             . "exhibits.synopsis, "
             . "exhibits.description, "
+            . "exhibits.application_description, "
             . "exhibits.application_form_id "
             . "FROM ciniki_ags_exhibits AS exhibits "
             . "LEFT JOIN ciniki_ags_locations AS locations ON ("
@@ -124,7 +125,7 @@ function ciniki_ags_exhibitGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'exhibits', 'fname'=>'id', 
                 'fields'=>array('name', 'permalink', 'location_id', 'location_name', 'status', 'status_text', 
-                    'flags', 'start_date', 'end_date', 'reception_info', 'primary_image_id', 'synopsis', 'description', 'application_form_id'),
+                    'flags', 'start_date', 'end_date', 'reception_info', 'primary_image_id', 'synopsis', 'description', 'application_description', 'application_form_id'),
                 'maps'=>array('status_text'=>$maps['exhibit']['status']),
                 'utctotz'=>array('start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
                     'end_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),

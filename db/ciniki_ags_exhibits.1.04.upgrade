@@ -1,0 +1,5 @@
+#
+# Add field for application description
+#
+ALTER TABLE ciniki_ags_exhibits ADD COLUMN application_description text not null AFTER description;
+ALTER TABLE ciniki_ags_exhibits COMMENT='v1.04';

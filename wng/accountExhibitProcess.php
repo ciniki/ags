@@ -105,7 +105,9 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
         . "exhibits.primary_image_id, "
         . "exhibits.synopsis, "
         . "exhibits.description, "
-        . "IFNULL(participants.id, 0) AS participant_id "
+        . "exhibits.application_description, "
+        . "IFNULL(participants.id, 0) AS participant_id, "
+        . "IFNULL(participants.status, 0) AS participant_status "
         . "FROM ciniki_ags_exhibits AS exhibits "
         . "LEFT JOIN ciniki_ags_participants AS participants ON ("
             . "exhibits.id = participants.exhibit_id "
@@ -155,10 +157,29 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
         'title' => $exhibit['name'],
         );
     if( $exhibit['status'] == 30 ) {
+        if( $exhibit['application_description'] != '' ) {
+            $blocks[] = array(
+                'type' => 'text',
+                'class' => 'limit-width limit-width-80',
+                'content' => $exhibit['application_description'],
+                );
+        } else {
+            $blocks[] = array(
+                'type' => 'text',
+                'class' => 'limit-width limit-width-80',
+                'content' => $exhibit['description'],
+                );
+        }
+    }
+    elseif( $exhibit['status'] == 50 
+        && ($exhibit['flags']&0x0300) == 0x0300 
+        && $exhibit['application_description'] != '' 
+        && $exhibit['participant_status'] <= 30 
+        ) {
         $blocks[] = array(
             'type' => 'text',
             'class' => 'limit-width limit-width-80',
-            'content' => $exhibit['description'],
+            'content' => $exhibit['application_description'],
             );
     }
 
