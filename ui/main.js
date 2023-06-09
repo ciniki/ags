@@ -3836,7 +3836,7 @@ function ciniki_ags_main() {
                 this.menutabs.tabs[i] = {'label':M.curTenant.modules['ciniki.ags'].settings.etypes[i].name, 'fn':'M.ciniki_ags_main.switchTab("' + i + '");'};
                 c++;
             }
-            if( c <= 1 || c > 5 ) {
+            if( c <= 1 || c > 7 ) {
                 this.menutabs.tabs = {
                     'exhibits':{'label':'Exhibits', 'fn':'M.ciniki_ags_main.switchTab("exhibits");'},
                     };
