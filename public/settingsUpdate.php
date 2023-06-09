@@ -73,6 +73,7 @@ function ciniki_ags_settingsUpdate(&$ciniki) {
         'namecards-last-line',
         'barcodes-barcode-format',
         'barcodes-label-format',
+        'web-updater-profile-form-application',
         'web-updater-profile-form-intro',
         'web-updater-profile-display_name',
         'web-updater-profile-profile_name',

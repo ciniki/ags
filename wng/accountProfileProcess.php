@@ -89,11 +89,19 @@ function ciniki_ags_wng_accountProfileProcess(&$ciniki, $tnid, &$request, $item)
             'class' => 'limit-width limit-width-60',
             'title' => 'Exhibitor Application',
             );
-        $blocks[] = array(
-            'type' => 'text', 
-            'class' => 'limit-width limit-width-60',
-            'content' => 'Please fill out the form below to apply to be an exhibitor. Once your profile is completed you will then be able to add items.',
-            );
+        if( isset($settings['web-updater-profile-form-application']) && $settings['web-updater-profile-form-application'] != '' ) {
+            $blocks[] = array(
+                'type' => 'text', 
+                'class' => 'limit-width limit-width-60',
+                'content' => $settings['web-updater-profile-form-application'],
+                );
+        } else {
+            $blocks[] = array(
+                'type' => 'text', 
+                'class' => 'limit-width limit-width-60',
+                'content' => 'Please fill out the form below to apply to be an exhibitor. Once your profile is completed you will then be able to add items.',
+                );
+        }
 
         //
         // Load the customer

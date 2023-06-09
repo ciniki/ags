@@ -418,7 +418,7 @@ function ciniki_ags_participantGet($ciniki) {
             $archived = array();
             foreach($available as $iid => $item) {  
                 $item['unit_amount_display'] = '$' . number_format($item['unit_amount'], 2);
-                if( $item['exhibit_item_id'] > 0 && $item['eitem_status'] > 10 ) {
+                if( $item['exhibit_item_id'] > 0 && $item['eitem_status'] > 30 ) {
                     $inventory[] = $item;
                     unset($available[$iid]);
                     $num_exhibit_items++;
@@ -462,6 +462,7 @@ function ciniki_ags_participantGet($ciniki) {
                     $item['actioncode'] = 'newitem';
                     $item['action_quantity'] = abs($item['pending_inventory']);
                     $webupdates[] = $item;
+                    unset($available[$iid]);
                 }
                 // Adding catalog item to exhibit
                 elseif( $item['eitem_status'] == 30 ) {

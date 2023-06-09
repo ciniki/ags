@@ -497,6 +497,9 @@ function ciniki_ags_exhibitGet($ciniki) {
                 || (isset($participant['itemwebupdates']) && $participant['itemwebupdates'] == 'yes')
                 ) {
                 $webupdates[] = $participant;
+                if( $participant['status'] == 30 ) {
+                    unset($participants[$pid]);
+                }
             }
         }
 

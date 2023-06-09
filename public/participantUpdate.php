@@ -59,6 +59,24 @@ function ciniki_ags_participantUpdate(&$ciniki) {
     }
 
     //
+    // Load existing settings
+    //
+    $strsql = "SELECT participants.id, "
+        . "participants.exhibitor_id "
+        . "FROM ciniki_ags_participants AS participants "
+        . "WHERE participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND participants.id = '" . ciniki_core_dbQuote($ciniki, $args['participant_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'participant');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.32', 'msg'=>'Unable to load participant', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['participant']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.168', 'msg'=>'Unable to find requested participant'));
+    }
+    $participant = $rc['participant'];
+
+    //
     // Check if updating exhibitor name or code
     //
     if( isset($args['display_name_override']) 
@@ -68,22 +86,8 @@ function ciniki_ags_participantUpdate(&$ciniki) {
         || isset($args['synopsis']) 
         || isset($args['fullbio']) 
         ) {
-        $strsql = "SELECT participants.id, "
-            . "participants.exhibitor_id "
-            . "FROM ciniki_ags_participants AS participants "
-            . "WHERE participants.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND participants.id = '" . ciniki_core_dbQuote($ciniki, $args['participant_id']) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'participant');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.32', 'msg'=>'Unable to load participant', 'err'=>$rc['err']));
-        }
-        if( !isset($rc['participant']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.168', 'msg'=>'Unable to find requested participant'));
-        }
-        $participant = $rc['participant'];
         $ciniki['request']['args']['exhibitor_id'] = $participant['exhibitor_id'];
-       
+
         //
         // Update any exhibitor settings
         //
@@ -107,6 +111,36 @@ function ciniki_ags_participantUpdate(&$ciniki) {
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
             return $rc;
+        }
+
+        //
+        // Make sure the exhibitor is also accepted
+        //
+        $strsql = "SELECT id, "
+            . "status "
+            . "FROM ciniki_ags_exhibitors "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND id = '" . ciniki_core_dbQuote($ciniki, $participant['exhibitor_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'exhibitor');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.365', 'msg'=>'Unable to load exhibitor', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['exhibitor']) ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.366', 'msg'=>'Unable to find requested exhibitor'));
+        }
+        $exhibitor = $rc['exhibitor'];
+
+        if( $exhibitor['status'] != 30 ) {
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.exhibitor', $participant['exhibitor_id'], array(
+                'status' => 30,
+                ), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
+                return $rc;
+            }
         }
     }
 

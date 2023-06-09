@@ -50,7 +50,8 @@ function ciniki_ags_settings() {
         'web_updater_profile':{'label':'Web Updater Profile Options', 
             'visible':function() { return M.modFlagOn('ciniki.ags', 0x08) ? 'yes' : 'no'; },
             'fields':{
-                'web-updater-profile-form-intro':{'label':'Form Intro', 'type':'textarea', 'size':'small'},
+                'web-updater-profile-form-application':{'label':'Application Intro', 'type':'textarea', 'size':'small'},
+                'web-updater-profile-form-intro':{'label':'Update Profile Intro', 'type':'textarea', 'size':'small'},
                 'web-updater-profile-display_name':{'label':'Name', 'type':'toggle', 'default':'optional', 'toggles':{
                     'optional':'Optional', 'required':'Required', 'hidden':'Hidden',
                     }},
