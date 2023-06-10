@@ -107,7 +107,9 @@ function ciniki_ags_templates_salesReport(&$ciniki, $tnid, $args) {
         $pdf->SetCellPadding(2);
 
 //        $pdf->title = $args['title']
-        $pdf->subtitle = $exhibitor['display_name'];
+        if( isset($exhibitor['display_name']) ) {
+            $pdf->subtitle = $exhibitor['display_name'];
+        }
         // add a page
         $pdf->startPageGroup();
         $pdf->AddPage();
