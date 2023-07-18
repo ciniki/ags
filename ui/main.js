@@ -1578,12 +1578,12 @@ function ciniki_ags_main() {
     this.participant.itemPaid = function(e, i) {
         e.stopPropagation();
         this.savePos();
-        M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id, 'action':'itempaid', 'sale_id':i}, this.openFinish);
+        M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id, 'sales':'yes', 'action':'itempaid', 'sale_id':i}, this.openFinish);
     }
     this.participant.itemNotPaid = function(e, i) {
         e.stopPropagation();
         this.savePos();
-        M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id, 'action':'itemnotpaid', 'sale_id':i}, this.openFinish);
+        M.api.getJSONCb('ciniki.ags.participantGet', {'tnid':M.curTenantID, 'participant_id':this.participant_id, 'sales':'yes', 'action':'itemnotpaid', 'sale_id':i}, this.openFinish);
     }
     this.participant.donationReceipt = function(e, i) {
         e.stopPropagation();
