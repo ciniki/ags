@@ -93,6 +93,7 @@ function ciniki_ags_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
             . "AND participants.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE exhibits.status <= 50 "
+        . "AND (exhibits.flags&0x0100) = 0x0100 "  // Open for web updates
         . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY exhibits.name "
         . "";
