@@ -5,7 +5,7 @@ function ciniki_ags_settings() {
     //
     // The main panel, which lists the options for production
     //
-    this.main = new M.panel('Blog Settings', 'ciniki_ags_settings', 'main', 'mc', 'large', 'sectioned', 'ciniki.ags.settings.main');
+    this.main = new M.panel('Gallery Settings', 'ciniki_ags_settings', 'main', 'mc', 'large', 'sectioned', 'ciniki.ags.settings.main');
     this.main.sections = {
         'options':{'label':'Defaults', 'fields':{
             'defaults-item-fee-percent':{'label':'Fee Percent', 'type':'text', 'size':'small'},
