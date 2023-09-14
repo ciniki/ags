@@ -118,7 +118,7 @@ function ciniki_ags_barcodesPDF($ciniki) {
         . "";
     if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 ) {
         if( isset($args['inventory_days']) && $args['inventory_days'] > 0 ) {
-            $strsql .= ", logs.quantity AS quantity "
+            $strsql .= ", SUM(logs.quantity) AS quantity "
                 . "FROM ciniki_ags_exhibit_items AS exhibit "
                 . "INNER JOIN ciniki_ags_items AS items ON ("
                     . "exhibit.item_id = items.id "
@@ -143,6 +143,7 @@ function ciniki_ags_barcodesPDF($ciniki) {
         }
         if( isset($args['exhibitor_id']) ) {
             $strsql .= "WHERE items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
+                . "AND exhibit.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
                 . "AND exhibit.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "";
         } else {
@@ -172,7 +173,11 @@ function ciniki_ags_barcodesPDF($ciniki) {
         //
         $strsql .= "AND (items.flags&0x10) = 0x10 ";
     }
+    if( isset($args['exhibit_id']) && $args['exhibit_id'] > 0 && isset($args['inventory_days']) && $args['inventory_days'] > 0 ) {
+        $strsql .= "GROUP BY items.code ";
+    }
     $strsql .= "ORDER BY items.code ";
+    error_log(print_r($strsql,true));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'items', 'fname'=>'id', 
@@ -182,6 +187,7 @@ function ciniki_ags_barcodesPDF($ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.159', 'msg'=>'Unable to load items', 'err'=>$rc['err']));
     }
+        error_log(print_r($rc,true));
     $args['barcodes'] = array();
     if( isset($rc['items']) ) {
         foreach($rc['items'] as $item) {
