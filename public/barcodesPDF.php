@@ -177,7 +177,6 @@ function ciniki_ags_barcodesPDF($ciniki) {
         $strsql .= "GROUP BY items.code ";
     }
     $strsql .= "ORDER BY items.code ";
-    error_log(print_r($strsql,true));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'items', 'fname'=>'id', 
@@ -187,7 +186,6 @@ function ciniki_ags_barcodesPDF($ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.159', 'msg'=>'Unable to load items', 'err'=>$rc['err']));
     }
-        error_log(print_r($rc,true));
     $args['barcodes'] = array();
     if( isset($rc['items']) ) {
         foreach($rc['items'] as $item) {
