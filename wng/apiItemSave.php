@@ -72,7 +72,7 @@ function ciniki_ags_wng_apiItemSave(&$ciniki, $tnid, $request) {
     }
 
     if( isset($_POST['f-unit_amount']) ) {
-        $_POST['f-unit_amount'] = number_format(preg_replace("/[^0-9\.]/", '', $_POST['f-unit_amount']), 2);
+        $_POST['f-unit_amount'] = preg_replace("/[^0-9\.]/", '', $_POST['f-unit_amount']);
     }
 
     $update_args = array();

@@ -3510,13 +3510,13 @@ function ciniki_ags_main() {
     this.sales.sections = {
         '_tabs':this.menutabs,
         '_filter':{'label':'Filter', 'aside':'yes', 'fields':{
-            'start_date':{'label':'Start', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.open'},
-            'end_date':{'label':'End', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.open'},
+            'start_date':{'label':'Start', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.reload'},
+            'end_date':{'label':'End', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.reload'},
             'paid_status':{'label':'Status', 'type':'select', 
                 'options':{'0':'All', '1':'Pending Payout', '2':'Paid'}, 
                 'onchangeFn':'M.ciniki_ags_main.sales.open',
                 },
-            'exhibitor_id':{'label':'Exhibitor', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_ags_main.sales.open'},
+            'exhibitor_id':{'label':'Exhibitor', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_ags_main.sales.reload'},
             }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
 //            'update':{'label':'Update', 'fn':'M.ciniki_ags_main.sales.open();'},
@@ -3631,6 +3631,9 @@ function ciniki_ags_main() {
         p.refresh();
         p.show();
     }
+    this.sales.reload = function() {
+        this.open();
+    }
     this.sales.open = function(cb) {
         if( cb != null ) { this.cb = cb; }
         var c = {'start_date':'', 'end_date':''};
@@ -3656,9 +3659,9 @@ function ciniki_ags_main() {
     this.donations.sections = {
         '_tabs':this.menutabs,
         '_filter':{'label':'Filter', 'aside':'yes', 'fields':{
-            'start_date':{'label':'Start', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.open'},
-            'end_date':{'label':'End', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.sales.open'},
-            'exhibitor_id':{'label':'Exhibitor', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_ags_main.donations.open'},
+            'start_date':{'label':'Start', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.donations.reload'},
+            'end_date':{'label':'End', 'type':'date', 'onchangeFn':'M.ciniki_ags_main.donations.reload'},
+            'exhibitor_id':{'label':'Exhibitor', 'type':'select', 'options':{}, 'onchangeFn':'M.ciniki_ags_main.donations.reload'},
             }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'receiptspdf':{'label':'Donation Receipts (PDF)', 'fn':'M.ciniki_ags_main.donations.receiptsPDF();'},
@@ -3730,6 +3733,9 @@ function ciniki_ags_main() {
         p.sections._filter.fields.exhibitor_id.options = rsp.exhibitors;
         p.refresh();
         p.show();
+    }
+    this.donations.reload = function() {
+        this.open();
     }
     this.donations.open = function(cb) {
         if( cb != null ) { this.cb = cb; }

@@ -54,7 +54,7 @@ function ciniki_ags_wng_accountOverviewProcess(&$ciniki, $tnid, &$request, $item
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'ags', 'wng', 'accountMenuItems');
     $rc = ciniki_ags_wng_accountMenuItems($ciniki, $tnid, $request, array(
-        'base_url' => $request['base_url'] . '/account',
+        'base_url' => $request['ssl_domain_base_url'] . '/account',
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'ok', 'blocks'=>array(array(
