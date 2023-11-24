@@ -26,7 +26,7 @@ function ciniki_ags_flags(&$ciniki) {
         array('flag'=>array('bit'=>'7', 'name'=>'Participant Message')),    // Sales message auto added to each item
         array('flag'=>array('bit'=>'8', 'name'=>'Exhibitor Bios')),
         // 0x0100
-        array('flag'=>array('bit'=>'9', 'name'=>'Donation Receipts')),
+        array('flag'=>array('bit'=>'9', 'name'=>'Donation Receipts')),   // Personal and in kind sponsor donations
         array('flag'=>array('bit'=>'10', 'name'=>'Exhibitor Profile Names')),
         array('flag'=>array('bit'=>'11', 'name'=>'Name Card Type Images')), // Have different images for each type of exhibit
 //        array('flag'=>array('bit'=>'12', 'name'=>'')),

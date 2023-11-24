@@ -3032,7 +3032,7 @@ function ciniki_ags_main() {
 //            'unit_discount_amount':{'label':'Discount Amount', 'type':'text', 'size':'small'},
 //            'unit_discount_percentage':{'label':'Discount Percent', 'type':'text', 'size':'small'},
             'fee_percent':{'label':'Fee %', 'type':'text', 'size':'small'},
-            'sapos_category':{'label':'Accounting Category', 'type':'text',
+            'sapos_category':{'label':'Act Category', 'type':'text',
                 'visible':function() {return M.modFlagSet('ciniki.sapos', 0x01000000); }, // Item Categories flag in ciniki.sapos
                 },
             'shipping_profile_id':{'label':'Shipping', 'type':'select', 'options':{},
@@ -3043,15 +3043,22 @@ function ciniki_ags_main() {
                 'complex_options':{'value':'id', 'name':'name'},
                 'visible':function() {return (M.modOn('ciniki.taxes') ? 'yes' :'no'); },
                 },
-            'flags6':{'label':'Donated', 'type':'flagtoggle', 'default':'off', 'field':'flags', 'bit':0x20,
+//            'flags6':{'label':'Donated', 'type':'flagtoggle', 'default':'off', 'field':'flags', 'bit':0x20,
+//                'visible':function() { return M.modFlagSet('ciniki.ags', 0x0100); },
+//                'on_sections':['donor_details'],
+//                },
+            'flags6':{'label':'Donated', 'type':'flagspiece', 'field':'flags', 'mask':0x60, 'join':'yes', 'toggle':'yes',
+                'flags':{'0':{'name':'No'}, '6':{'name':'Personal'}, '7':{'name':'Business'}},
                 'visible':function() { return M.modFlagSet('ciniki.ags', 0x0100); },
-                'on_sections':['donor_details'],
+                'onchange':'M.ciniki_ags_main.item.showHideDonor',
+//                'on_sections':['donor_details'],
                 },
             }},
         'donor_details':{'label':'Donor', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 'visible':'hidden',
             'cellClasses':['label', ''],
             'changeTxt':'Change Donor',
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_ags_main.item.show();\',\'mc\',{\'customer_id\':0, \'next\':\'M.ciniki_ags_main.item.updateDonor\'});',
+            'rowFn':function() {return ''; },
             },
         'exhibit':{'label':'Inventory', 'aside':'yes', 
             'visible':function() { return M.ciniki_ags_main.item.item_id == 0 && M.ciniki_ags_main.item.exhibit_id > 0 ? 'yes' : 'no'; },
@@ -3175,9 +3182,6 @@ function ciniki_ags_main() {
 //        }
         return '';
     }
-//    this.item.rowFn = function(s, i, d) {
-//        return null;
-//    }
     this.item.updateChanges = function() {
         this.data.changelist = {}; 
         if( this.requested_changes != null ) {
@@ -3231,6 +3235,11 @@ function ciniki_ags_main() {
         var f = this.data.changelist[i].field;
         delete this.requested_changes[f];
         this.updateChanges();
+    }
+    this.item.showHideDonor = function() {
+        var v = this.formFieldValue(this.sections.price.fields.flags6, 'flags6');
+        this.sections.donor_details.visible = ((v&0x60) > 0 ? 'yes' : 'hidden');
+        this.showHideSections(['donor_details']);
     }
     this.item.updateDonor = function(cid) {
         if( cid != null ) {
@@ -3312,6 +3321,9 @@ function ciniki_ags_main() {
             p.refresh();
             p.show(cb);
             p.updateChanges();
+            if( M.modFlagOn('ciniki.ags', 0x0100) ) {
+                p.showHideDonor();
+            }
         });
     }
     this.item.openLogs = function() {
@@ -3666,10 +3678,10 @@ function ciniki_ags_main() {
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'receiptspdf':{'label':'Donation Receipts (PDF)', 'fn':'M.ciniki_ags_main.donations.receiptsPDF();'},
             }},
-        'sales':{'label':'Sales', 'type':'simplegrid', 'num_cols':8,
+        'sales':{'label':'Sales', 'type':'simplegrid', 'num_cols':7,
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'date', 'number', 'number', 'number'],
-            'headerValues':['Exhibitor', 'Code', 'Item', 'Date', 'Fees', 'Payout', 'Totals', ''],
+            'headerValues':['Exhibitor', 'Code', 'Item', 'Date', 'Value', 'Sold Amount', ''],
             },
     }
     this.donations.fieldValue = function(s, i, d) { return this.data[i]; }
@@ -3681,14 +3693,18 @@ function ciniki_ags_main() {
                 case 2: return d.name;
                 case 3: return d.sell_date_display;
                 case 4: 
-                    if( (M.userPerms&0x01) == 0x01 || M.curTenant.permissions.owners != null || M.curTenant.permissions.resellers != null ) {
-                        return d.tenant_amount_display + '<span class="faicon edit">&#xf040;</span>';
+//                    if( (M.userPerms&0x01) == 0x01 || M.curTenant.permissions.owners != null || M.curTenant.permissions.resellers != null ) {
+//                        return d.tenant_amount_display + '<span class="faicon edit">&#xf040;</span>';
+//                    }
+                    return d.value_display;
+//                case 5: return d.exhibitor_amount_display;
+                case 5: return d.total_amount_display;
+                case 6: 
+                    if( (d.item_flags&0x40) == 0x40 ) {
+                        return 'Business Sponsor';
+                    } else {
+                        return '<button onclick="M.ciniki_ags_main.donations.receiptPDF(event,' + d.id + ');">Receipt&nbsp;#' + d.receipt_number + '</button>';
                     }
-                    return d.tenant_amount_display;
-                case 5: return d.exhibitor_amount_display;
-                case 6: return d.total_amount_display;
-                case 7: 
-                    return '<button onclick="M.ciniki_ags_main.donations.receiptPDF(event,' + d.id + ');">Receipt&nbsp;#' + d.receipt_number + '</button>';
             }
         }
     }
@@ -3699,9 +3715,8 @@ function ciniki_ags_main() {
                 case 1: return '';
                 case 2: return '';
                 case 3: return '';
-                case 4: return this.data.totals.tenant_amount_display;
-                case 5: return this.data.totals.exhibitor_amount_display;
-                case 6: return this.data.totals.total_amount_display;
+                case 4: return this.data.totals.value_amount_display;
+                case 5: return this.data.totals.total_amount_display;
             }
             return '';
         }

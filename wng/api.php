@@ -28,7 +28,7 @@ function ciniki_ags_wng_api(&$ciniki, $tnid, &$request) {
     // Check to make sure logged in
     //
     if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] < 1 ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.323', 'msg'=>"I'm sorry, the you are not authorized."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.ags.323', 'msg'=>"I'm sorry, you are not authorized."));
     }
 
     //

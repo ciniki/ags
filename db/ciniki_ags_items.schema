@@ -36,7 +36,7 @@
 #                               0x08 - Hide Price
 #                               0x10 - Tagged Item (print barcode sticker for tag)
 #                               0x20 - Donated Item (Generate donation receipt)
-#                               0x40 -
+#                               0x40 - In Kind Sponsor Donation (No Receipt)
 #                               0x80 -
 #
 # unit_amount:              The price of them item.

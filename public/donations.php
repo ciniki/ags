@@ -97,6 +97,9 @@ function ciniki_ags_donations($ciniki) {
         . "items.exhibitor_id, "
         . "items.code, "
         . "items.name, "
+        . "items.flags AS item_flags, "
+        . "items.unit_amount AS value, "
+        . "items.unit_amount AS value_display, "
         . "sales.flags, "
         . "sales.sell_date, "
         . "sales.sell_date AS sell_date_display, "
@@ -122,18 +125,20 @@ function ciniki_ags_donations($ciniki) {
         . "WHERE sales.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND sales.sell_date >= '" . ciniki_core_dbQuote($ciniki, $args['start_date']) . "' "
         . "AND sales.sell_date <= '" . ciniki_core_dbQuote($ciniki, $args['end_date']) . "' "
-        . "AND sales.receipt_number <> '' "
+        . "AND (items.flags&0x60) > 0 "
+//        . "AND sales.receipt_number <> '' "
         . "";
     $strsql .= "ORDER BY sales.receipt_number, sales.sell_date, items.code, items.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'sales', 'fname'=>'id', 
-            'fields'=>array('id', 'item_id', 'exhibitor_id', 'display_name', 'code', 'name', 'flags', 'sell_date', 'sell_date_display', 
+            'fields'=>array('id', 'item_id', 'exhibitor_id', 'display_name', 'code', 'name', 'item_flags',
+                'flags', 'sell_date', 'sell_date_display', 'value', 'value_display', 
                 'quantity', 
                 'tenant_amount', 'exhibitor_amount', 'total_amount',
                 'tenant_amount_display', 'exhibitor_amount_display', 'total_amount_display', 'status_text', 'receipt_number'),
-            'naprices'=>array('tenant_amount_display', 'exhibitor_amount_display', 'total_amount_display'),
+            'naprices'=>array('value_display', 'tenant_amount_display', 'exhibitor_amount_display', 'total_amount_display'),
             'utctotz'=>array('sell_date_display'=>array('format'=>$date_format, 'timezone'=>'UTC'),
             ),
             ),
@@ -145,8 +150,7 @@ function ciniki_ags_donations($ciniki) {
 
     $exhibitors = array('0'=>'All Exhibitors');
     $totals = array(
-        'tenant_amount'=>0,
-        'exhibitor_amount'=>0,
+        'value_amount'=>0,
         'total_amount'=>0,
         );
     $sales_ids = array();
@@ -168,11 +172,9 @@ function ciniki_ags_donations($ciniki) {
             continue;
         }
         $totals['tenant_amount'] += $sale['tenant_amount'];
-        $totals['exhibitor_amount'] += $sale['exhibitor_amount'];
         $totals['total_amount'] += $sale['total_amount'];
     }
-    $totals['tenant_amount_display'] = '$' . number_format($totals['tenant_amount'], 2);
-    $totals['exhibitor_amount_display'] = '$' . number_format($totals['exhibitor_amount'], 2);
+    $totals['value_amount_display'] = '$' . number_format($totals['value_amount'], 2);
     $totals['total_amount_display'] = '$' . number_format($totals['total_amount'], 2);
     asort($exhibitors);
 
