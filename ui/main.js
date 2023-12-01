@@ -3841,7 +3841,7 @@ function ciniki_ags_main() {
         'itemupdates':{'label':'Item Updates', 'type':'simplegrid', 'num_cols':2,
             'headerValues':['Name', 'Exhibit'],
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'date', 'date', 'text'],
+            'sortTypes':['text', 'text'],
             'noData':'No item updates',
             },
     }

@@ -436,7 +436,7 @@ function ciniki_ags_participantGet($ciniki) {
                     $webupdates[] = $item;
                 }
                 // Removing item from exhibit
-                elseif( $item['eitem_status'] == 50 && $item['pending_inventory'] < 0 && abs($item['pending_inventory']) == $item['inventory'] ) {
+            elseif( $item['eitem_status'] == 50 && $item['pending_inventory'] < 0 && ($item['inventory'] + $item['pending_inventory']) <= 0 ) {
                     $item['action'] = 'Remove Item';
                     $item['actioncode'] = 'removeitem';
                     $item['action_quantity'] = abs($item['pending_inventory']);

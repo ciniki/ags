@@ -101,6 +101,7 @@ function ciniki_ags_webupdatesList(&$ciniki) {
             . ") "
         . "WHERE (eitems.status = 30 OR eitems.pending_inventory <> 0 OR items.requested_changes <> '' ) "
         . "AND eitems.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY exhibitor_name, exhibit_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
