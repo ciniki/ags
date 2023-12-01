@@ -2120,7 +2120,7 @@ function ciniki_ags_main() {
     //
     // The panel to list the location
     //
-    this.locations = new M.panel('location', 'ciniki_ags_main', 'locations', 'mc', 'large', 'sectioned', 'ciniki.ags.main.locations');
+    this.locations = new M.panel('location', 'ciniki_ags_main', 'locations', 'mc', 'xlarge', 'sectioned', 'ciniki.ags.main.locations');
     this.locations.data = {};
     this.locations.nplist = [];
     this.locations.location_id = 0;
@@ -2411,7 +2411,7 @@ function ciniki_ags_main() {
     //
     // The panel to list the exhibitor
     //
-    this.exhibitors = new M.panel('Exhibitor', 'ciniki_ags_main', 'exhibitors', 'mc', 'large', 'sectioned', 'ciniki.ags.main.exhibitors');
+    this.exhibitors = new M.panel('Exhibitor', 'ciniki_ags_main', 'exhibitors', 'mc', 'xlarge', 'sectioned', 'ciniki.ags.main.exhibitors');
     this.exhibitors.data = {};
     this.exhibitors.nplist = [];
     this.exhibitors.sections = {
@@ -2683,7 +2683,11 @@ function ciniki_ags_main() {
     this.exhibitor.rowFn = function(s, i, d) {
         if( d == null ) { return ''; }
         if( s == 'items' || s == 'webupdates' ) {
-            return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibitor.open();\',\'' + d.id + '\',0,0);';
+            if( d.actioncode != null && d.actioncode == 'profileupdate' ) {
+                return 'M.ciniki_ags_main.editexhibitor.open(\'M.ciniki_ags_main.exhibitor.open();\',\'' + d.id + '\',0,0);';
+            } else {
+                return 'M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.exhibitor.open();\',\'' + d.id + '\',0,0);';
+            }
         }
         return '';
     }
@@ -3807,6 +3811,65 @@ function ciniki_ags_main() {
         });
     }
     this.chooseexhibit.addClose('Back');
+
+    //
+    // The panel to show web updates
+    //
+    this.webupdates = new M.panel('Requested Updates', 'ciniki_ags_main', 'webupdates', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.ags.main.webupdates');
+    this.webupdates.data = {};
+    this.webupdates.nplist = [];
+    this.webupdates.etype = '';
+    this.webupdates.sections = {
+        '_tabs':this.menutabs,
+        'profileupdates':{'label':'Profile Updates', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
+            'headerValues':['Name'],
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'date', 'date', 'text'],
+            'noData':'No profile updates',
+            },
+        'itemupdates':{'label':'Item Updates', 'type':'simplegrid', 'num_cols':2,
+            'headerValues':['Name', 'Exhibit'],
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'date', 'date', 'text'],
+            'noData':'No item updates',
+            },
+    }
+    this.webupdates.cellValue = function(s, i, j, d) {
+        if( s == 'profileupdates' ) {
+            switch(j) {
+                case 0: return d.display_name;
+            }
+        }
+        if( s == 'itemupdates' ) {
+            switch(j) {
+                case 0: return d.exhibitor_name;
+                case 1: return d.exhibit_name;
+            }
+        }
+    }
+    this.webupdates.rowFn = function(s, i, d) {
+        if( s == 'profileupdates' ) {
+            return 'M.ciniki_ags_main.editexhibitor.open(\'M.ciniki_ags_main.webupdates.open();\',\'' + d.id + '\',M.ciniki_ags_main.webupdates.nplist);';
+        }
+        if( s == 'itemupdates' ) {
+            return 'M.ciniki_ags_main.participant.open(\'M.ciniki_ags_main.webupdates.open();\',\'' + d.participant_id + '\',M.ciniki_ags_main.webupdates.nplist);';
+        }
+    }
+    this.webupdates.open = function(cb,t) {
+        if( t != null ) { this.etype = t; } 
+        M.api.getJSONCb('ciniki.ags.webupdatesList', {'tnid':M.curTenantID}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_ags_main.webupdates;
+            p.data = rsp;
+            p.nplist = (rsp.nplist != null ? rsp.nplist : null);
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.webupdates.addClose('Back');
     
 
     //
@@ -3867,6 +3930,9 @@ function ciniki_ags_main() {
             this.menutabs.tabs.sales = {'label':'Sales', 'fn':'M.ciniki_ags_main.switchTab("sales");'};
             if( M.modFlagOn('ciniki.ags', 0x0100) ) {
                 this.menutabs.tabs.donations = {'label':'Donations', 'fn':'M.ciniki_ags_main.switchTab("donations");'};
+            }
+            if( M.modFlagOn('ciniki.ags', 0x08) ) {
+                this.menutabs.tabs.webupdates = {'label':'Updates', 'fn':'M.ciniki_ags_main.switchTab("webupdates");'};
             }
             if( this.menutabs.tabs[this.menutabs.selected] == null ) {
                 this.menutabs.selected = first_tab;

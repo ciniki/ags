@@ -179,7 +179,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'exhibitors', 'fname'=>'id', 
-                'fields'=>array('customer_id', 'display_name_override', 'display_name', 'profile_name',
+                'fields'=>array('id', 'customer_id', 'display_name_override', 'display_name', 'profile_name',
                     'permalink', 'code', 'barcode_message',
                     'status', 'flags', 'primary_image_id', 'synopsis', 'fullbio', 'requested_changes'),
                 ),
@@ -197,6 +197,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
         }
         if( $exhibitor['requested_changes'] != '' && $exhibitor['requested_changes'] != '{}' ) {
             $webupdates = array(array(
+                'id' => $exhibitor['id'],
                 'code' => '',
                 'name' => 'Exhibitor Profile',
                 'unit_amount' => '',
