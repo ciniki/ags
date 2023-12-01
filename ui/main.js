@@ -1107,7 +1107,8 @@ function ciniki_ags_main() {
                         return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemRemove(event,' + d.item_id + ');">Remove</button>';
                     }
                     if( d.actioncode != null && d.actioncode == 'additem' ) {
-                        return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemAddWebUpdate(event,' + d.item_id + ',' + d.pending_inventory + ');">Add</button>';
+                        return '<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemAddWebUpdate(event,' + d.item_id + ',' + d.pending_inventory + ');">Add to Exhibit</button>'
+                            + '&nbsp;<button onclick="event.stopPropagation();M.ciniki_ags_main.participant.itemAddWebUpdate(event,' + d.item_id + ');">Add to Catalog</button>';
                     }
                     if( d.actioncode != null && (d.actioncode == 'edititem' || d.actioncode == 'newitem') ) {
                         return '<button onclick="event.stopPropagation();M.ciniki_ags_main.item.open(\'M.ciniki_ags_main.participant.open();\',\'' + d.item_id + '\',0,0);">Edit</button>';
@@ -1508,15 +1509,25 @@ function ciniki_ags_main() {
         }
     }
     this.participant.itemAddWebUpdate = function(event, item_id, quantity) {
-        M.prompt('Add Quantity:', quantity, 'Add', function(q) {
-            M.api.getJSONCb('ciniki.ags.exhibitItemAdd', {'tnid':M.curTenantID, 'exhibit_id':M.ciniki_ags_main.participant.data.participant.exhibit_id, 'item_id':item_id, 'quantity':q, 'clearpending':'yes'}, function(rsp) {
+        if( quantity == null ) {
+            M.api.getJSONCb('ciniki.ags.exhibitItemAdd', {'tnid':M.curTenantID, 'exhibit_id':M.ciniki_ags_main.participant.data.participant.exhibit_id, 'item_id':item_id, 'quantity':0, 'clearpending':'yes'}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_ags_main.participant.open();
             });
-        });
+        } else {
+            M.prompt('Add Quantity:', quantity, 'Add', function(q) {
+                M.api.getJSONCb('ciniki.ags.exhibitItemAdd', {'tnid':M.curTenantID, 'exhibit_id':M.ciniki_ags_main.participant.data.participant.exhibit_id, 'item_id':item_id, 'quantity':q, 'clearpending':'yes'}, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_ags_main.participant.open();
+                });
+            });
+        }
     }
     this.participant.itemAdd = function(event, item_id, quantity) {
         if( quantity == null || quantity == 0 ) {

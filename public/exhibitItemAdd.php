@@ -59,7 +59,7 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
     //
     // Check if the item is already a part of the exhibit
     //
-    $strsql = "SELECT id, item_id, exhibit_id, item_id, status, inventory, pending_inventory, fee_percent "
+    $strsql = "SELECT id, uuid, item_id, exhibit_id, item_id, status, inventory, pending_inventory, fee_percent "
         . "FROM ciniki_ags_exhibit_items "
         . "WHERE exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
         . "AND item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
@@ -95,7 +95,18 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
     //
     // If the item already exists, add 1 to the inventory
     //
-    if( $exhibititem != null ) {
+    if( $exhibititem != null && $args['quantity'] == 0 && $exhibititem['status'] == 30 ) {
+        //
+        // Remove item from pending status
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+        $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.ags.exhibititem', $exhibititem['id'], $exhibititem['uuid'], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.151', 'msg'=>'Unable to add item', 'err'=>$rc['err']));
+        }
+        $removed = 'yes';
+    }
+    elseif( $exhibititem != null ) {
         $update_args = array(
             'inventory' => $exhibititem['inventory'] + $args['quantity'],
             );
@@ -114,7 +125,8 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
         $exhibititem['name'] = $item['name'];
         $exhibititem['unit_amount'] = $item['unit_amount'];
         $exhibititem['inventory'] += $args['quantity'];
-    } else {
+    } 
+    else {
         $args['fee_percent'] = $item['fee_percent'];
         $args['inventory'] = $args['quantity'];
         $args['status'] = 50;
@@ -138,21 +150,23 @@ function ciniki_ags_exhibitItemAdd(&$ciniki) {
     //
     // Add Log entry
     //
-    $dt = new DateTime('now', new DateTimezone('UTC'));
-    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.ags.itemlog', array(
-        'item_id' => $args['item_id'],
-        'action' => 10,
-        'actioned_id' => $args['exhibit_id'],
-        'quantity' => $args['quantity'],
-        'log_date' => $dt->format('Y-m-d H:i:s'),
-        'user_id' => $ciniki['session']['user']['id'],
-        'notes' => '',
-        ), 0x04);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.178', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
-    }
+    if( !isset($removed) ) {
+        $dt = new DateTime('now', new DateTimezone('UTC'));
+        $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.ags.itemlog', array(
+            'item_id' => $args['item_id'],
+            'action' => 10,
+            'actioned_id' => $args['exhibit_id'],
+            'quantity' => $args['quantity'],
+            'log_date' => $dt->format('Y-m-d H:i:s'),
+            'user_id' => $ciniki['session']['user']['id'],
+            'notes' => '',
+            ), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.178', 'msg'=>'Unable to add log', 'err'=>$rc['err']));
+        }
 
-    $exhibititem['unit_amount_display'] = '$' . number_format($exhibititem['unit_amount'], 2);
+        $exhibititem['unit_amount_display'] = '$' . number_format($exhibititem['unit_amount'], 2);
+    }
 
     //
     // Commit the transaction
