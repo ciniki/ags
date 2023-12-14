@@ -314,6 +314,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
         . "sales.exhibit_id, "
         . "sales.item_id, "
         . "sales.flags, "
+        . "exhibits.name AS exhibit_name, "
         . "items.code, "
         . "items.name, "
         . "DATE_FORMAT(sales.sell_date, '" . ciniki_core_dbQuote($ciniki, $mysql_date_format) . "') AS sell_date, "
@@ -326,6 +327,10 @@ function ciniki_ags_exhibitorGet($ciniki) {
             . "items.id = sales.item_id "
             . "AND sales.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
+        . "LEFT JOIN ciniki_ags_exhibits AS exhibits ON ("
+            . "sales.exhibit_id = exhibits.id "
+            . "AND exhibits.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
         . "WHERE items.exhibitor_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibitor_id']) . "' "
         . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY sell_date DESC "
@@ -333,7 +338,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'sales', 'fname'=>'id', 'fields'=>array('id', 'exhibit_id', 'item_id', 'sell_date', 
-            'code', 'name', 
+            'code', 'name',  'exhibit_name', 
             'flags', 'tenant_amount', 'exhibitor_amount', 'total_amount', 'receipt_number'),
             ),
         ));
@@ -363,7 +368,7 @@ function ciniki_ags_exhibitorGet($ciniki) {
             $exhibits[$sale['exhibit_id']]['tenant_amount'] += $sale['tenant_amount'];
             $exhibits[$sale['exhibit_id']]['exhibitor_amount'] += $sale['exhibitor_amount'];
             $exhibits[$sale['exhibit_id']]['total_amount'] += $sale['total_amount'];
-            $sale['exhibit_name'] = $exhibits[$sale['exhibit_id']]['name'];
+//            $sale['exhibit_name'] = $exhibits[$sale['exhibit_id']]['name'];
         }
         if( isset($items[$sale['item_id']]) ) {
             $items[$sale['item_id']]['num_sold']++;
