@@ -176,8 +176,8 @@ function ciniki_ags_hooks_uiCustomersData($ciniki, $tnid, $args) {
         $tab['sections']['ciniki.ags.donations'] = array(
                 'label' => 'Donated Items',
                 'type' => 'simplegrid', 
-                'num_cols' => 4,
-                'headerValues' => array('Item', 'Value', 'Sold', 'Exhibit'),
+                'num_cols' => 5,
+                'headerValues' => array('Item', 'Value', 'Exhibit', 'Sold For', 'Date'),
                 'cellClasses' => array('', '', '', ''),
                 'noData' => 'No donated items',
                 'data' => $rc['items'],
@@ -186,6 +186,7 @@ function ciniki_ags_hooks_uiCustomersData($ciniki, $tnid, $args) {
                     '1' => 'd.value_display;',
                     '2' => 'd.exhibit_name;',
                     '3' => 'd.total_amount_display;',
+                    '4' => 'd.sell_date_display;',
                     ),
                 );
 
