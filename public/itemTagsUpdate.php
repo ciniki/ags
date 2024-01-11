@@ -48,6 +48,8 @@ function ciniki_ags_itemTagsUpdate(&$ciniki) {
     }
     $tags = isset($rc['types'][0]['type']['tags']) ? $rc['types'][0]['type']['tags'] : array();
 
+    error_log(print_r($ciniki['request']['args'],true));
+
     //
     // Check each tag for a new name
     //
@@ -88,7 +90,7 @@ function ciniki_ags_itemTagsUpdate(&$ciniki) {
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.ags.itemtag', $row['id'], array(
                         'tag_name' => $tag_name,
-                        'tag_permalink' => $tag_permalink,
+                        'permalink' => $tag_permalink,
                         ), 0x04);
                     if( $rc['stat'] != 'ok' ) {
                         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.289', 'msg'=>'Unable to update the tag', 'err'=>$rc['err']));
