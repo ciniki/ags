@@ -79,6 +79,27 @@ function ciniki_ags_hooks_customerMerge($ciniki, $tnid, $args) {
         }
     }
 
+    //
+    // Get the list of donor_customer_id
+    //
+    $strsql = "SELECT id "
+        . "FROM ciniki_ags_items "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND donor_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'items');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.370', 'msg'=>'Unable to find donor customers', 'err'=>$rc['err']));
+    }
+    $items = $rc['rows'];
+    foreach($items as $i => $row) {
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.ags.item', $row['id'], array('donor_customer_id'=>$args['primary_customer_id']), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.371', 'msg'=>'Unable to update donor item.', 'err'=>$rc['err']));
+        }
+        $updated++;
+    }
+
     if( $updated > 0 ) {
         //
         // Update the last_change date in the tenant modules
