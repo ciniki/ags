@@ -108,6 +108,7 @@ function ciniki_ags_hooks_uiCustomersData($ciniki, $tnid, $args) {
     $tab = array(
         'id' => 'ciniki.ags.exhibits',
         'label' => 'Exhibits',
+        'priority' => 3000,
         'sections' => $sections,
         );
 
@@ -174,21 +175,21 @@ function ciniki_ags_hooks_uiCustomersData($ciniki, $tnid, $args) {
     }
     if( isset($rc['items']) && count($rc['items']) > 0 ) {
         $tab['sections']['ciniki.ags.donations'] = array(
-                'label' => 'Donated Items',
-                'type' => 'simplegrid', 
-                'num_cols' => 5,
-                'headerValues' => array('Item', 'Value', 'Exhibit', 'Sold For', 'Date'),
-                'cellClasses' => array('', '', '', ''),
-                'noData' => 'No donated items',
-                'data' => $rc['items'],
-                'cellValues' => array(
-                    '0' => 'd.name;',
-                    '1' => 'd.value_display;',
-                    '2' => 'd.exhibit_name;',
-                    '3' => 'd.total_amount_display;',
-                    '4' => 'd.sell_date_display;',
-                    ),
-                );
+            'label' => 'Donated Items',
+            'type' => 'simplegrid', 
+            'num_cols' => 5,
+            'headerValues' => array('Item', 'Value', 'Exhibit', 'Sold For', 'Date'),
+            'cellClasses' => array('', '', '', ''),
+            'noData' => 'No donated items',
+            'data' => $rc['items'],
+            'cellValues' => array(
+                '0' => 'd.name;',
+                '1' => 'd.value_display;',
+                '2' => 'd.exhibit_name;',
+                '3' => 'd.total_amount_display;',
+                '4' => 'd.sell_date_display;',
+                ),
+            );
 
         //
         // Add a tab the customer UI data screen with the donation list
