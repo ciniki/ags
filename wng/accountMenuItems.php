@@ -163,7 +163,7 @@ function ciniki_ags_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
     if( count($options) > 0 ) {
         $items[] = array(
             'title' => 'Gallery', 
-            'priority' => 800, 
+            'priority' => 2800, 
             'selected' => isset($args['selected']) && $args['selected'] == 'gallery' ? 'yes' : 'no',
             'ref' => 'ciniki.ags.main',
             'url' => $base_url . '/gallery',
