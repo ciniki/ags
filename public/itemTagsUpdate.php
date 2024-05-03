@@ -48,8 +48,6 @@ function ciniki_ags_itemTagsUpdate(&$ciniki) {
     }
     $tags = isset($rc['types'][0]['type']['tags']) ? $rc['types'][0]['type']['tags'] : array();
 
-    error_log(print_r($ciniki['request']['args'],true));
-
     //
     // Check each tag for a new name
     //
