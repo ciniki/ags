@@ -659,6 +659,9 @@ function ciniki_ags_participantGet($ciniki) {
             return $rc;
         }
         $rsp['participant']['customer'] = $rc['customer'];
+        if( !isset($rsp['participant']['member_status']) ) {
+            $rsp['participant']['member_status'] = $rc['customer']['member_status'];
+        }
         $rsp['participant']['contact_details'] = $rc['details'];
 
         //
