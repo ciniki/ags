@@ -87,20 +87,24 @@ function ciniki_ags_hooks_uiCustomersData($ciniki, $tnid, $args) {
     }
     $exhibits = isset($rc['exhibits']) ? $rc['exhibits'] : array();
 
-    $sections = array(
-        'ciniki.ags.exhibits' => array(
-            'label' => 'Exhibits',
-            'type' => 'simplegrid', 
-            'num_cols' => 1,
-            'headerValues' => array('Exhibit'),
-            'cellClasses' => array('', ''),
-            'noData' => 'No exhibits',
-            'data' => $exhibits,
-            'cellValues' => array(
-                '0' => 'd.name;',
+    if( count($exhibits) > 0 ) {
+        $sections = array(
+            'ciniki.ags.exhibits' => array(
+                'label' => 'Exhibits',
+                'type' => 'simplegrid', 
+                'num_cols' => 1,
+                'headerValues' => array('Exhibit'),
+                'cellClasses' => array('', ''),
+                'noData' => 'No exhibits',
+                'data' => $exhibits,
+                'cellValues' => array(
+                    '0' => 'd.name;',
+                    ),
                 ),
-            ),
-        );
+            );
+    } else {
+        $sections = array();
+    }
 
     //
     // Add a tab the customer UI data screen with the certificate list
@@ -115,7 +119,7 @@ function ciniki_ags_hooks_uiCustomersData($ciniki, $tnid, $args) {
     //
     // Check for personal donations
     //
-    $strsql = "SELECT items.id, "
+/*    $strsql = "SELECT items.id, "
         . "IFNULL(sales.item_id, 0) AS sales_id, "
         . "items.exhibitor_id, "
         . "items.code, "
@@ -199,13 +203,14 @@ function ciniki_ags_hooks_uiCustomersData($ciniki, $tnid, $args) {
 //            'label' => 'Donations',
 //            'sections' => $sections,
 //            );
+    } */
+
+    //
+    // Only add the tab if there is something
+    //
+    if( isset($tab['sections']) && count($tab['sections']) > 0 ) {
+        $rsp['tabs'][] = $tab;
     }
-
-    //
-    // Check for business sponsor donations
-    //
-
-    $rsp['tabs'][] = $tab;
     return $rsp;
 }
 ?>
