@@ -55,7 +55,7 @@ function ciniki_ags_wng_accountExhibitorLoad(&$ciniki, $tnid, &$request) {
     $exhibitor = $rc['exhibitors'][0];
 
     if( isset($exhibitor['requested_changes']) && $exhibitor['requested_changes'] != '' && $exhibitor['requested_changes'] != '{}' ) {
-        $exhibitor['requested_changes'] = unserialize($exhibitor['requested_changes']);
+        $exhibitor['requested_changes'] = json_decode($exhibitor['requested_changes'], true);
     } else {
         $exhibitor['requested_changes'] = array();
     }

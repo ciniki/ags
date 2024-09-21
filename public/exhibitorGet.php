@@ -198,11 +198,12 @@ function ciniki_ags_exhibitorGet($ciniki) {
                 'id' => $exhibitor['id'],
                 'code' => '',
                 'name' => 'Exhibitor Profile',
+                'actioncode' => 'profileupdate',
                 'unit_amount' => '',
                 'fee_percent' => '',
                 'status_text' => 'Updates',
                 ));
-            $exhibitor['requested_changes'] = unserialize($exhibitor['requested_changes']);
+            $exhibitor['requested_changes'] = json_decode($exhibitor['requested_changes'], true);
         }
     }
 

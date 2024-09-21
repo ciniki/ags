@@ -401,7 +401,7 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
         // Update with any requested changes
         //
         if( $itm['requested_changes'] != '' ) {
-            $itm['requested_changes'] = unserialize($itm['requested_changes']);
+            $itm['requested_changes'] = json_decode($itm['requested_changes'], true);
             foreach($itm['requested_changes'] as $k => $v) {
                 if( isset($items[$iid][$k]) ) {
                     $itm[$k] = $v;

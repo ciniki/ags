@@ -219,7 +219,7 @@ function ciniki_ags_itemGet($ciniki) {
         $item['fee_percent'] = (float)($item['fee_percent']*100) . '%';
 
         if( $item['requested_changes'] != '' ) {
-            $item['requested_changes'] = unserialize($item['requested_changes']);
+            $item['requested_changes'] = json_decode($item['requested_changes'], true);
         }
 
         //

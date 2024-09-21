@@ -323,7 +323,7 @@ function ciniki_ags_wng_apiProfileSave(&$ciniki, $tnid, $request) {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.ags.exhibitor', $exhibitor['id'], $exhibitor['requested_changes'], 0x04);
             } else {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.ags.exhibitor', $exhibitor['id'], array(
-                    'requested_changes' => serialize($exhibitor['requested_changes']),
+                    'requested_changes' => json_encode($exhibitor['requested_changes']),
                     ), 0x04);
             }
             if( $rc['stat'] != 'ok' ) {

@@ -2914,6 +2914,9 @@ function ciniki_ags_main() {
     this.editexhibitor.delChange = function(i) {
         var f = this.data.changelist[i].field;
         delete this.requested_changes[f];
+        if( f == 'display_name_override' ) {
+            delete this.requested_changes['display_name'];
+        }
         this.updateChanges();
     }
     this.editexhibitor.addCustomer = function(cb, cid, nextFn) {

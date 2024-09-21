@@ -397,7 +397,7 @@ function ciniki_ags_wng_apiItemSave(&$ciniki, $tnid, $request) {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.ags.item', $item['id'], $item['requested_changes'], 0x04);
             } else {
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.ags.item', $item['id'], array(
-                    'requested_changes' => serialize($item['requested_changes']),
+                    'requested_changes' => json_encode($item['requested_changes']),
                     ), 0x04);
             }
             if( $rc['stat'] != 'ok' ) {

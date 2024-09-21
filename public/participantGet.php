@@ -299,7 +299,7 @@ function ciniki_ags_participantGet($ciniki) {
         $participant['display_name_override'] = $participant['display_name'];
 
         if( $participant['requested_changes'] != '' && $participant['requested_changes'] != '{}' ) {
-            $participant['requested_changes'] = unserialize($participant['requested_changes']);
+            $participant['requested_changes'] = json_decode($participant['requested_changes'], true);
             $webupdates[] = array(
                 'participant_id' => $participant['id'],
                 'code' => '',

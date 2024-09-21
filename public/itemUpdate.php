@@ -66,7 +66,7 @@ function ciniki_ags_itemUpdate(&$ciniki) {
     if( isset($args['requested_changes']) && $args['requested_changes'] != '' ) {
         $json = json_decode($args['requested_changes'], true);
         if( count($json) > 0 ) {
-            $args['requested_changes'] = serialize($json);
+            $args['requested_changes'] = json_encode($json);
         } else {
             $args['requested_changes'] = '';
         }

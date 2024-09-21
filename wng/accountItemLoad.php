@@ -102,7 +102,7 @@ function ciniki_ags_wng_accountItemLoad(&$ciniki, $tnid, &$request, $args) {
         $item['unit_amount'] = number_format($item['unit_amount'], 2);
     
         if( $item['requested_changes'] != '' ) {
-            $item['requested_changes'] = unserialize($item['requested_changes']);
+            $item['requested_changes'] = json_decode($item['requested_changes'], true);
             if( isset($item['requested_changes']['unit_amount']) ) {
                 $item['requested_changes']['unit_amount'] = number_format($item['requested_changes']['unit_amount'], 2);
             }
