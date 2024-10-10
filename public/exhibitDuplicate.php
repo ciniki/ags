@@ -115,17 +115,19 @@ function ciniki_ags_exhibitDuplicate(&$ciniki) {
     // Load the items with any inventory
     //
     $strsql = "SELECT items.item_id, "
+        . "items.status, "
         . "items.inventory, "
+        . "items.pending_inventory, "
         . "items.fee_percent "
         . "FROM ciniki_ags_exhibit_items AS items "
         . "WHERE items.exhibit_id = '" . ciniki_core_dbQuote($ciniki, $args['exhibit_id']) . "' "
         . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND items.inventory > 0 "
+        . "AND (items.inventory > 0 || items.pending_inventory > 0) "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
         array('container'=>'items', 'fname'=>'item_id', 
-            'fields'=>array('item_id', 'inventory', 'fee_percent'),
+            'fields'=>array('item_id', 'status', 'inventory', 'pending_inventory', 'fee_percent'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
