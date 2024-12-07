@@ -330,7 +330,7 @@ function ciniki_ags_wng_apiProfileSave(&$ciniki, $tnid, $request) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.ags');
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.341', 'msg'=>'Unable to update the exhibitor', 'err'=>$rc['err']));
             }
-        } elseif( is_array($item['requested_changes']) && count($item['requested_changes']) == 0 ) {
+        } elseif( is_array($exhibitor['requested_changes']) && count($exhibitor['requested_changes']) == 0 ) {
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.ags.exhibitor', $exhibitor['id'], array(
                 'requested_changes' => '',
                 ), 0x04);
