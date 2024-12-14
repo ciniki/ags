@@ -47,7 +47,10 @@ function ciniki_ags_exhibitItemUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.176', 'msg'=>'Item is not part of this exhibit', 'err'=>$rc['err']));
     }
-    $exhibititem = isset($rc['item']) ? $rc['item'] : null;
+    if( !isset($rc['item']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.372', 'msg'=>'Unable to find item.'));
+    }
+    $exhibititem = $rc['item'];
 
     //
     // Start transaction
