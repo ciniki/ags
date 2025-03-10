@@ -48,7 +48,7 @@ function ciniki_ags_hooks_uiSettings(&$ciniki, $tnid, $args) {
     //
     if( isset($ciniki['tenant']['modules']['ciniki.ags'])
         && (isset($args['permissions']['owners'])
-            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['ciniki.ags'])
             || isset($args['permissions']['resellers'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
