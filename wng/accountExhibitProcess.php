@@ -467,6 +467,13 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
     //
     // Output the blocks to show the inventory/pending/catalog
     //
+    $blocks[] = array(
+        'type' => 'buttons', 
+        'class' => 'aligncenter',
+        'list' => array(
+            array('text'=>'Add New Item', 'url'=>$base_url . '/item/0'),
+            ),
+        );
     $message = '';
     if( count($inventory_items) > 0 ) {
         $blocks[] = array(
@@ -516,13 +523,6 @@ function ciniki_ags_wng_accountExhibitProcess(&$ciniki, $tnid, &$request, $item)
             'rows' => $pending_items,
             );
     }
-    $blocks[] = array(
-        'type' => 'buttons', 
-        'class' => 'aligncenter',
-        'list' => array(
-            array('text'=>'Add New Item', 'url'=>$base_url . '/item/0'),
-            ),
-        );
     if( count($catalog_items) > 0 ) {
         $blocks[] = array(
             'type' => 'table',
