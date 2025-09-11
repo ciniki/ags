@@ -153,12 +153,12 @@ function ciniki_ags_templates_donationreceipt(&$ciniki, $tnid, $sale_id, $tenant
                 // and scaled based on either height or width.
                 if( $available_ratio < $image_ratio ) {
                     $this->Image('@'.$this->header_image->getImageBlob(), 15, ($this->getY() + 7), 
-                        $img_width, 0, 'JPEG', '', 'L', 2, '150');
+                        $img_width, 0, '', '', 'L', 2, '150');
                 } else {
                     $this->Image('@'.$this->header_image->getImageBlob(), 15, ($this->getY() + 7), 
-                        0, $this->header_height-5, 'JPEG', '', 'L', 2, '150');
+                        0, $this->header_height-5, '', '', 'L', 2, '150');
 //                    $this->Image('@'.$this->header_image->getImageBlob(), 15, ($this->getY() + 12), 
-//                        0, $this->header_height-5, 'JPEG', '', 'L', 2, '150', '', false, false, 1);
+//                        0, $this->header_height-5, '', '', 'L', 2, '150', '', false, false, 1);
                 }
             }
 
@@ -429,9 +429,9 @@ function ciniki_ags_templates_donationreceipt(&$ciniki, $tnid, $sale_id, $tenant
                     $image_ratio = $width/$height;
                     $available_ratio = $w[2]/25;
                     if( $available_ratio < $image_ratio ) {
-                        $pdf->Image('@'.$rc['image']->getImageBlob(), '', '', $w[2], 0, 'JPEG', '', 'C', 2, '150');
+                        $pdf->Image('@'.$rc['image']->getImageBlob(), '', '', $w[2], 0, '', '', 'C', 2, '150');
                     } else {
-                        $pdf->Image('@'.$rc['image']->getImageBlob(), '', '', 0, 25, 'JPEG', '', 'C', 2, '150');
+                        $pdf->Image('@'.$rc['image']->getImageBlob(), '', '', 0, 25, '', '', 'C', 2, '150');
                     }
                 }
             }

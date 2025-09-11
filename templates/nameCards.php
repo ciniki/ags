@@ -273,7 +273,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
                     $y_offset + ($y*$card_height) + ($y*$y_margin),
                     $image_width,
                     $image_height,
-                    'JPEG', '', '', true, 150, '', false, false, 0, 'B');
+                    '', '', '', true, 150, '', false, false, 0, 'B');
                 $pdf->SetY($y_offset + ($y*$card_height) + ($y*$y_margin) + $image_height + 2 );
                 $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
             }
@@ -284,7 +284,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
                     $y_offset + ($y*$card_height) + ($y*$y_margin),
                     $image_width,
                     $image_height,
-                    'JPEG', '', '', true, 150, '', false, false, 0, 'B');
+                    '', '', '', true, 150, '', false, false, 0, 'B');
                 $pdf->SetY($y_offset + ($y*$card_height) + ($y*$y_margin) + $image_height + 2 );
                 $pdf->SetX($x_offset + ($x*$card_width) + ($x*$x_margin));
             }
@@ -379,7 +379,7 @@ function ciniki_ags_templates_nameCards(&$ciniki, $tnid, $args) {
                         $y_offset + ($y*$card_height) + ($card_height - $image_height - 6),
                         $image_width,
                         $image_height,
-                        'JPEG', '', '', true, 150, '', false, false, 0, 'B');
+                        '', '', '', true, 150, '', false, false, 0, 'B');
                 }
             }
         
