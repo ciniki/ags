@@ -123,10 +123,14 @@ function ciniki_ags_exhibitGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'exhibits', 'fname'=>'id', 
                 'fields'=>array('name', 'permalink', 'location_id', 'location_name', 'status', 'status_text', 
-                    'flags', 'start_date', 'end_date', 'reception_info', 'primary_image_id', 'synopsis', 'description', 'application_description', 'application_form_id'),
+                    'flags', 'start_date', 'end_date', 'reception_info', 'primary_image_id', 'synopsis', 'description', 
+                    'application_description', 'application_form_id',
+                    ),
                 'maps'=>array('status_text'=>$maps['exhibit']['status']),
-                'utctotz'=>array('start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
-                    'end_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),
+                'utctotz'=>array(
+                    'start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                    'end_date'=>array('timezone'=>'UTC', 'format'=>$date_format,
+                    )),                ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.62', 'msg'=>'Exhibit not found', 'err'=>$rc['err']));
@@ -373,7 +377,9 @@ function ciniki_ags_exhibitGet($ciniki) {
             . "sales.quantity, "
             . "sales.tenant_amount, "
             . "sales.exhibitor_amount, "
-            . "sales.total_amount "
+            . "sales.total_amount, "
+            . "IFNULL(invoices.id, '') AS invoice_id, "
+            . "IFNULL(invoices.invoice_number, 'unknown') AS invoice_number "
             . "FROM ciniki_ags_item_sales AS sales "
             . "INNER JOIN ciniki_ags_items AS items ON ("
                 . "sales.item_id = items.id "
@@ -391,7 +397,8 @@ function ciniki_ags_exhibitGet($ciniki) {
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.ags', array(
             array('container'=>'sales', 'fname'=>'id', 
                 'fields'=>array('id', 'item_id', 'exhibitor_id', 'code', 'name', 'flags', 'sell_date', 'sell_date_display', 
-                    'quantity', 'tenant_amount', 'exhibitor_amount', 'total_amount'),
+                    'quantity', 'tenant_amount', 'exhibitor_amount', 'total_amount', 'invoice_id', 'invoice_number',
+                    ),
                 'utctotz'=>array('sell_date_display'=>array('format'=>$date_format, 'timezone'=>'UTC')),
                 ),
             ));

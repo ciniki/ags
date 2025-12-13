@@ -232,7 +232,8 @@ function ciniki_ags_main() {
             'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'sales' ? 'yes' : 'no'},
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'date', 'number', 'number', 'number'],
-            'headerValues':['Exhibitor', 'Code', 'Item', 'Date', 'Fees', 'Payout', 'Total'],
+            'headerValues':['Exhibitor', 'Code', 'Item', 'Date/Inv #', 'Fees', 'Payout', 'Total'],
+            'cellClasses':['', '', '', 'multiline', '', '', ''],
             },
         'paid_sales':{'label':'Paid Sales', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_ags_main.exhibit.sections._tabs.selected == 'sales' ? 'yes' : 'no'},
@@ -334,7 +335,7 @@ function ciniki_ags_main() {
                 case 0: return d.display_name;
                 case 1: return d.code;
                 case 2: return d.name;
-                case 3: return d.sell_date_display;
+                case 3: return M.multiline(d.sell_date_display, 'Invoice #' + d.invoice_number);
                 case 4: 
                     if( (M.userPerms&0x01) == 0x01 || M.curTenant.permissions.owners != null || M.curTenant.permissions.resellers != null ) {
                         return d.tenant_amount_display + '<span class="faicon edit">&#xf040;</span>';
@@ -415,7 +416,7 @@ function ciniki_ags_main() {
         if( (s == 'inventory' || s == 'inventory_search') && j == 4 ) {
             return 'event.stopPropagation(); return M.ciniki_ags_main.exhibit.inventoryUpdate(event,\'' + d.id + '\');';
         }
-        if( s == 'pending_payouts' && j == 3 ) {
+        if( s == 'pending_payouts' && j == 4 ) {
             return 'event.stopPropagation(); return M.ciniki_ags_main.exhibit.saleFeeUpdate(event,\'' + d.id + '\');';
         }
         return '';
@@ -433,6 +434,9 @@ function ciniki_ags_main() {
         }
         if( s == 'messages' ) {
             return 'M.startApp(\'ciniki.mail.main\',null,\'M.ciniki_ags_main.exhibit.open();\',\'mc\',{\'message_id\':\'' + d.id + '\'});';
+        }
+        if( s == 'pending_payouts' ) {
+            return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_ags_main.exhibit.open();\',\'mc\',{\'invoice_id\':\'' + d.invoice_id + '\'});';
         }
         return '';
     }
