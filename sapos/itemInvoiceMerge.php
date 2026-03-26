@@ -19,7 +19,7 @@ function ciniki_ags_sapos_itemInvoiceMerge($ciniki, $tnid, $item, $primary_invoi
         //
         // Check the ags sale exists
         //
-        $strsql = "SELECT id, uuid, festival_id, invoice_id "
+        $strsql = "SELECT id, uuid, invoice_id "
             . "FROM ciniki_ags_item_sales "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
