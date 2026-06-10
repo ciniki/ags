@@ -31,7 +31,9 @@ function ciniki_ags_sapos_cartItemCheck($ciniki, $tnid, $customer, $args) {
             . "items.unit_discount_percentage, "
             . "items.taxtype_id, "
             . "eitems.inventory AS inventory_current_num, "
-            . "exhibits.name AS exhibit_name "
+            . "exhibits.name AS exhibit_name, "
+            . "exhibits.flags AS exhibit_flags, "
+            . "exhibits.status AS exhibit_status "
             . "FROM ciniki_ags_exhibit_items AS eitems "
             . "INNER JOIN ciniki_ags_items AS items ON ("
                 . "eitems.item_id = items.id "
@@ -56,6 +58,12 @@ function ciniki_ags_sapos_cartItemCheck($ciniki, $tnid, $customer, $args) {
         $item = $rc['item'];
         if( $item['inventory'] <= 0 ) {
             return array('stat'=>'unavailable', 'err'=>array('code'=>'ciniki.ags.219', 'msg'=>"I'm sorry but " . $item['description'] . " are now sold out."));
+        }
+        if( ($item['exhibit_flags']&0x01) == 0 ) {
+            return array('stat'=>'unavailable', 'err'=>array('code'=>'ciniki.ags.374', 'msg'=>"I'm sorry but " . $item['description'] . " are now longer available."));
+        }
+        if( $item['exhibit_status'] >= 90 ) {
+            return array('stat'=>'unavailable', 'err'=>array('code'=>'ciniki.ags.375', 'msg'=>"I'm sorry but " . $item['description'] . " are now longer available."));
         }
 
         return array('stat'=>'ok');
