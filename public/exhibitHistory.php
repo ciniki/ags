@@ -51,6 +51,13 @@ function ciniki_ags_exhibitHistory($ciniki) {
         return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.ags', 'ciniki_ags_history', $args['tnid'], 'ciniki_ags_exhibits', $args['exhibit_id'], $args['field'], 'date');
     }
 
+    if( preg_match("/^flags([0-9]+)/", $args['field'], $m) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryFlagBit');
+        return ciniki_core_dbGetModuleHistoryFlagBit($ciniki, 'ciniki.ags', 'ciniki_ags_history', 
+            $args['tnid'], 'ciniki_ags_exhibits', $args['exhibit_id'], 'flags', pow(2, ($m[1]-1)), 'No', 'Yes');
+    }
+
+
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
     return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.ags', 'ciniki_ags_history', $args['tnid'], 'ciniki_ags_exhibits', $args['exhibit_id'], $args['field']);
 }
