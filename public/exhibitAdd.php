@@ -78,7 +78,7 @@ function ciniki_ags_exhibitAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.ags.58', 'msg'=>'You already have a exhibit with that name, please choose another.'));
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.ags.58', 'msg'=>'You already have a exhibit with that name, please choose another.'));
     }
 
     //
