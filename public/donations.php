@@ -171,7 +171,7 @@ function ciniki_ags_donations($ciniki) {
             unset($sales[$sid]);
             continue;
         }
-        $totals['tenant_amount'] += $sale['tenant_amount'];
+        $totals['value_amount'] += $sale['value'];
         $totals['total_amount'] += $sale['total_amount'];
     }
     $totals['value_amount_display'] = '$' . number_format($totals['value_amount'], 2);
