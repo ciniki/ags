@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_ags_wng_apiProfileSave(&$ciniki, $tnid, $request) {
+function ciniki_ags_wng_apiProfileSave(&$ciniki, $tnid, &$request) {
     
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
